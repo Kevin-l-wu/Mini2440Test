@@ -2,7 +2,7 @@
 #include "GlobalDefine.h"
 #include "Error.h"
 #include "Common.h"
-#include "GetoptTemp.h"
+#include "GetoptLib.h"
 
 #include "ModManager.h"
 #include "../Protocol/inc/I2cProtocol.h"
@@ -52,10 +52,9 @@ void MiscTest()
 	}
 }
 
-
-MINI2440_STATUS TestI2c(int argc, char(*argv)[MAX_COMMAND_LENGTH])
+MINI2440_STATUS TestI2c(int argc, char* const* argv)
 {
-	char option = 0;
+	int option = 0;
 	unsigned char address = 0x00;
 	unsigned char data;
 	int length = 0;
@@ -72,17 +71,17 @@ MINI2440_STATUS TestI2c(int argc, char(*argv)[MAX_COMMAND_LENGTH])
 	{
 		gI2cModeOps->I2cInit();
 		
-		GetoptInit();
+		GetoptReset();
 		
-		while ((option = Getopt(argc, argv, "rwt")) != 0)
+		while ((option = Getopt(argc, argv, "r:w:t")) != -1)
 		{
 			switch(option)
 			{
 				case 'r':
-					address = (unsigned char)hex_string_to_int(argv[optInd]);					
+					address = (unsigned char)hex_string_to_int(argv[OptInd - 1]);					
 					printf_string("address = 0x%x\n", address);
 					
-					length = hex_string_to_int(argv[optInd + 1]);
+					length = hex_string_to_int(argv[OptInd]);
 					printf_string("length = 0x%x\n", length);
 					
 					gI2cModeOps->I2cReadBytes(address, length, buf);
@@ -97,10 +96,10 @@ MINI2440_STATUS TestI2c(int argc, char(*argv)[MAX_COMMAND_LENGTH])
 					break;
 				
 				case 'w':
-					address = (unsigned char)hex_string_to_int(argv[optInd]);					
+					address = (unsigned char)hex_string_to_int(argv[OptInd - 1]);					
 					printf_string("address = 0x%x\n", address);
 					
-					data = (unsigned char)hex_string_to_int(argv[optInd + 1]);
+					data = (unsigned char)hex_string_to_int(argv[OptInd]);
 					printf_string("data = 0x%x\n", data);
 					
 					gI2cModeOps->I2cWriteByte(data, address );
@@ -121,7 +120,7 @@ MINI2440_STATUS TestI2c(int argc, char(*argv)[MAX_COMMAND_LENGTH])
 }
 
 #define I2C_COMMAND_HELP "\
-I2c test\n\
+\tI2c test\n\
 	-r : Read a byte. i2c -r address(hex) length(hex)\n\
 	-w : Write a byte. i2c -w address(hex) value(hex)\n\
 	-t : Misc test. i2c -t\

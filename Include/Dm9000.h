@@ -167,19 +167,4 @@
 
 #define PTK_MAX_LEN 1522
 
-
-void DM9000_iow(u16 reg, u16 data);
-u8 DM9000_ior(u16 reg);
-
-void dm9000_int_init();
-
-void dm9000_send(u8* data, u32 length);
-int dm9000_recv(u8* data);
-
-void int_DM9000_process();
-
-void dm9000_dump_register();
-
-MINI2440_STATUS dm9000_test(int argc, char(*argv)[MAX_COMMAND_LENGTH]);
-
 #endif

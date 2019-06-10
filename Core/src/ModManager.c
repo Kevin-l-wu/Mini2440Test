@@ -22,7 +22,6 @@ int gLocateProtocol(MOD_ID modId, void** ops)
 	return 0;
 }
 
-
 int gModuleForEach(ModForEachCallback callback)
 {
 	Module* pModule = (Module*)&Module_begin;

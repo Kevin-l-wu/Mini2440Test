@@ -198,20 +198,43 @@ static int LcdDrawColumn(int column_number, U16 color)
 	return ret;
 }
 
-static int LcdDrawBox(int left, int bottom, int right, int top, U16 color)
+static int LcdDrawBox(int x, int y, int width, int height, U16 color)
 {
 	int indexX = 0, indexY = 0;
 	int ret = -1;
 	
-	if((left <= right) && (right <= SCR_XSIZE) && (bottom <= top) && (top <= SCR_YSIZE))
+	if((x <= width) && (width <= SCR_XSIZE) && (y <= height) && (height <= SCR_YSIZE))
 	{
 		print_string("LcdDrawBox()\n");
 		
-		for(indexX = left; indexX < right; indexX++)
+		for(indexX = x; indexX < width; indexX++)
 		{
-			for(indexY = bottom; indexY < top; indexY++)
+			for(indexY = y; indexY < height; indexY++)
 			{
-				lcd_buffer[indexX][indexY] = color;
+				lcd_buffer[indexY][indexX] = color;
+			}
+		}
+		
+		ret = 0;
+	}
+	
+	return ret;
+}
+
+static int LcdDrawImage(int x, int y, int width, int height, U16* image)
+{
+	int indexX = 0, indexY = 0;
+	int ret = -1;
+	
+	if((x <= width) && (width <= SCR_XSIZE) && (y <= height) && (height <= SCR_YSIZE))
+	{
+		print_string("LcdDrawBox()\n");
+		
+		for(indexX = x; indexX < width; indexX++)
+		{
+			for(indexY = y; indexY < height; indexY++)
+			{
+				lcd_buffer[indexY][indexX] = image[(indexY - y) * (width - x) + (indexX - x)];
 			}
 		}
 		
@@ -229,7 +252,7 @@ static int LcdDrawRect(int left, int bottom, int right, int top, U16 color)
 	
 	if((left <= right) && (right <= SCR_XSIZE) && (bottom <= top) && (top <= SCR_YSIZE))
 	{
-		print_string("LcdDrawBox()\n");
+		print_string("LcdDrawRect()\n");
 		
 		indexX = left;
 		
@@ -347,9 +370,9 @@ static void LcdDisplayChar(int column_number, int line_number, unsigned short* t
 			#ifdef LCD_DEBUG
 			printf_string("x = %d, y = %d\n\n", x, y);
 			#endif
-			lcd_buffer[y][x] = template[(x - column_number) + (y - line_number) * 8];
+			if(template[(x - column_number) + (y - line_number) * 8] != 0x00)
+				lcd_buffer[y][x] = template[(x - column_number) + (y - line_number) * 8];
 		}
-		delay(1000);
 	}
 }
 
@@ -401,6 +424,7 @@ LcdModOps lcdModOps = {
 	.LcdDrawBox = LcdDrawBox,
 	.LcdDrawRect = LcdDrawRect,
 	.LcdClearScreen = LcdClearScreen,
+	.LcdDrawImage = LcdDrawImage,
 	.LcdDisplayChar = LcdDisplayChar,
 	.LcdDisplayCharWithColor = LcdDisplayCharWithColor,
 	.LcdDisplayStringWithColor = LcdDisplayStringWithColor,

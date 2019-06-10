@@ -11,7 +11,7 @@
  * Description:			Print diags sn
  * Author:				Kevin
  *******************************************************************/
-MINI2440_STATUS TestSn(int argc, char(*argv)[MAX_COMMAND_LENGTH])
+MINI2440_STATUS TestSn(int argc, char* const* argv)
 {
 	MINI2440_STATUS status = MINI2440_SUCCESS;
 	
@@ -20,4 +20,4 @@ MINI2440_STATUS TestSn(int argc, char(*argv)[MAX_COMMAND_LENGTH])
 	return status;
 }
 
-COMMAND_INSTALL(sn, "Diags Sn", TestSn);
+COMMAND_INSTALL(sn, "\tDiags Sn", TestSn);

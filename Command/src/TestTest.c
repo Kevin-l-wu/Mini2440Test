@@ -1,13 +1,12 @@
-#include <stdio.h>
 #include "GlobalDefine.h"
 #include "Error.h"
-#include "Malloc.h"
+#include "CoreMalloc.h"
+#include "Stdio.h"
 
 #include "CommandManager.h"
 
 #include "ModManager.h"
 #include "../Protocol/inc/BeepProtocol.h"
-
 
 BeepModOps* gBeepOps = NULL;
 
@@ -18,28 +17,22 @@ BeepModOps* gBeepOps = NULL;
  * Description:			Print diags ver
  * Author:				Kevin
  *******************************************************************/
-static MINI2440_STATUS Test(int argc, char(*argv)[MAX_COMMAND_LENGTH])
+static MINI2440_STATUS Test(int argc, char* const* argv)
 {
 	MINI2440_STATUS status = MINI2440_SUCCESS;
 	
-	print_string("Test start-----------------------------\n");
+	int a = 10;
+	int b = 20;
+	char* c = "Hello world";
 	
-	gLocateProtocol(MOD_BEEP, (void*)&gBeepOps);
+	print_string("GUI Test Start-----------------------------\n");
 	
-	if(gBeepOps != NULL)
-	{
-		gBeepOps->BeepInit();
-		
-		gBeepOps->BeepEnable();
-		
-		delay(1024 * 1024);
-		
-		gBeepOps->BeepDisable();
-	}
+	printf("a = %d, b = %d, c = %s\n", a, b, c);
+	printf("a = %x, b = %x, c = %x\n", a, b, c);
 	
-	print_string("Test end-------------------------------\n");
+	print_string("GUI Test End-------------------------------\n");
 	
 	return status;
 }
 
-COMMAND_INSTALL(test, "Do Some Test", Test);
+COMMAND_INSTALL(test, "\tDo Some Test", Test);

@@ -1,3 +1,4 @@
+#include "GlobalDefine.h"
 #include "Error.h"
 #include "Common.h"
 #include "Uart.h"
@@ -5,7 +6,6 @@
 #include "Gpio.h"
 #include "ModManager.h"
 
-#include "GlobalDefine.h"
 #include "../Protocol/inc/BeepProtocol.h"
 
 void BeepInit()
@@ -25,7 +25,7 @@ void BeepDisable()
 	GPBDAT &= ~(0x01 << 0);
 }
 
-BeepModOps beepModOps ={
+BeepModOps beepModOps = {
 	.BeepInit = BeepInit,
 	.BeepEnable = BeepEnable,
 	.BeepDisable = BeepDisable,

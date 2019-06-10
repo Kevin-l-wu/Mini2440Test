@@ -1,25 +1,5 @@
-/************************************************************************
- 0.1  Kim  20140425  init
- 0.2  Kim  20140730 fix bugs, modify function Gui_ShowInfoPage, optimize the touchscreen processing
- 0.3  Kim  20140806 fix bugs
- 0.4  Kim  20140825 supported Arabic
- 0.5  Kim  20140902 fix bug of Gui_ShowInfoPage
- 0.6  Kim  20140902 fix bug of Gui_ShowInfoPage
- 0.7  Kim  20140911 fix input box "*" flash
- 0.8  Kim  20140916 fix a bug of msgbox
- 0.9  Kim  20140927 add Gui_ShowMenu2(button style)(only for Knet), add GUI_FONT_OPAQUE
- 0.10 Kim  20141124 supports Prolin2.4
- 0.11 Kim  20141219 add status icon for up down on Prolin2.4
- 0.12 Kim  20150113 fix a bug of right alignment(lost the last character)---temporary solution, it's a Xui bug
- ************************************************************************/
-//TODO monitor D210 Touch screen
-//#include <posapi.h>
-//#include <posapi_all.h>
 #include "Global.h"
 #include "GUI.h"
-
-
-//#define _AR_MODE_
 
 #ifdef _AR_MODE_
 #include "ArabicFarsiApi.h"
@@ -144,17 +124,12 @@ static GUI_CALLBACK GetCallbackEvent(gui_callbacktype_t type);
 static int SaveSignImg(const Rect *area, const unsigned char *pszOutputFile);
 static int SaveSignRoute(const Rect *area, const SignData *data, const unsigned char *pszOutputFile);
 
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
-
 
 static unsigned int sg_nDefBg;
 static unsigned int sg_nDefColor;
 static int sg_nScrWidth = 0, sg_nScrHeight = 0;
-static unsigned char sg_isColorScreen;
-static unsigned char sg_hasTouchScreen;
-static unsigned char sg_ucTermialType;
+
+static unsigned char sg_hasTouchScreen = 1;
 static CallbackEvent sg_event[]={
 	{GUI_CALLBACK_LISTEN_EVENT, NULL},
 	{GUI_CALLBACK_UPDATE_TEXT, NULL},
@@ -211,934 +186,8 @@ static char sg_isCalled = 0;
 
 static SignData sgSignData = {{0}, 0};
 
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
 
-// initialize Gui, clear the whole layout.
-int Gui_Init(unsigned int nBgColor, unsigned int nColor) {
-	print_string("Gui_Init()\n");
-	
-	unsigned char sTerminalInfo[32];
-
-	GetTermInfo(sTerminalInfo);
-	sg_ucTermialType = sTerminalInfo[0];
-
-	sg_hasTouchScreen = sTerminalInfo[19] & 0x01;
-	sg_isColorScreen = sTerminalInfo[19] & 0x02;
-   
-	if(20 == sg_ucTermialType || 21 == sg_ucTermialType || 22 == sg_ucTermialType 
-		|| 15 == sg_ucTermialType){
-		sg_isColorScreen = 1;
-	}
-
-	GuiStaticUpdateCanvasSize(); // bug on 1.02.0001_20160517
-	if(OpenTouchScreen() && sg_nScrHeight > sg_nScrWidth) {
-		sg_nRow = 7;
-	}
-	else{
-		sg_nRow = 4;
-	}
-	sg_nHeightOfALine = sg_nScrHeight / sg_nRow;
-	SetKeybyIndex(KEYCANCEL, "CANCEL");
-	SetKeybyIndex(KEYCLEAR, "CLEAR");
-	SetKeybyIndex(KEYENTER, "ENTER");
-	SetKeybyIndex(KEYMENU, "MENU");
-	SetKeybyIndex(KEYFN, "FUNC");
-	SetKeybyIndex(KEYALPHA, "ALPHA");
-	SetKeybyIndex(KEYUP, "UP");
-	SetKeybyIndex(KEYDOWN, "DN");
-	SetKeybyIndex(GUI_KEYPREV, "1.PREV");
-	SetKeybyIndex(GUI_KEYNEXT, "2.NEXT");
-	
-	PrepareRes();
-
-    sg_nDefBg = nBgColor;
-	
-    if (sg_isColorScreen) {
-        sg_nDefColor = nColor;
-        CLcdSetBgColor(sg_nDefBg);
-        CLcdSetFgColor(sg_nDefColor);
-    }
-
-	CLcdInit();
-	
-    GuiStaticClearScr(NULL, 1);
-
-    GuiStaticUpdateCanvasSize();
-	
-	print_string("Gui_Init() Success\n");
-
-    return GUI_OK;
-}
-
-int Gui_ClearScr() {
-	print_string("Gui_ClearScr()\n");
-    
-	GuiStaticClearScr(NULL, 1);
-    
-	return GUI_OK;
-}
-
-int Gui_LoadFont(enum FONTSIZE eFontSize, const ST_FONT *pSingleCodeFont, const ST_FONT *pMultiCodeFont) {
-	print_string("Gui_LoadFont()\n");
-/*
-    // verify parameters
-    if (!IsValid(eFontSize, GUI_FONT_SMALL, GUI_FONT_LARGE)) {
-        return GUI_ERR_INVALIDPARAM;
-    }
-
-    if (pSingleCodeFont)
-        memcpy(&sgFontS[eFontSize], pSingleCodeFont, sizeof(ST_FONT));
-    if (pMultiCodeFont)
-        memcpy(&sgFontM[eFontSize], pMultiCodeFont, sizeof(ST_FONT));
-
-    // Added by Kim 2014-08-25 v0.4
-#ifdef _AR_MODE_
-    if (pMultiCodeFont && pMultiCodeFont->CharSet == CHARSET_ARABIA) {
-        int iNum = ArFontAmount(sg_uiArabicFileID);
-        int iMatchedHeight = 3;
-        int i;
-
-        for (i = 0; i < iNum; ++i) {
-            if (pMultiCodeFont->Height == ArFontHeight(sg_uiArabicFileID, i)) {
-                iMatchedHeight = i;
-                break;
-            }
-        }
-        sgFontM[eFontSize].Height = iMatchedHeight;
-    }
-#endif
-*/
-    return GUI_OK;
-}
-
-int Gui_DrawText(const unsigned char *pszText, const GUI_TEXT_ATTR stTextAttr, unsigned int x_percent, unsigned int y_percent) {
-    print_string("Gui_DrawText()\n");
-
-    // verify parameters
-    if (!pszText || !IsValid(stTextAttr.eAlign, GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT) 
-		|| !IsValid(stTextAttr.eFontSize, GUI_FONT_SMALL, GUI_FONT_LARGE) || x_percent > 100 || y_percent > 100) {
-        
-		return GUI_ERR_INVALIDPARAM;
-    }
-
-    {
-        // for getting background box
-        int nWidth;
-        int nHeight;
-        int nLeft = x_percent * sg_nScrWidth / 100, nLeftBak = nLeft;
-
-        nWidth = GetStrPix(pszText, &sgFontS[stTextAttr.eFontSize], &sgFontM[stTextAttr.eFontSize], 1);
-        nHeight = GetFontHeight(sgFontS[stTextAttr.eFontSize], sgFontM[stTextAttr.eFontSize]);
-
-        switch (stTextAttr.eAlign) {
-            case GUI_ALIGN_RIGHT:
-                nLeft = sg_nScrWidth - nWidth;
-                break;
-            case GUI_ALIGN_CENTER:
-                nLeft += (sg_nScrWidth - nLeft - nWidth) / 2;
-                break;
-        }
-        if (nLeft < nLeftBak)
-            nLeft = nLeftBak;
-        GuiStaticDrawText((void*) pszText, (void*) &stTextAttr, y_percent * sg_nScrHeight / 100, y_percent * sg_nScrHeight / 100 + nHeight, nLeft, nLeft + nWidth, 0);
-    }
-    return GUI_OK;
-}
-
-int Gui_DrawLogo(const unsigned char *psLogo, int x, int y) {
-	print_string("Gui_DrawLogo()\n");
-	
-    // verify parameters
-    if (!psLogo || x > sg_nScrWidth || y > sg_nScrHeight) {
-        return GUI_ERR_INVALIDPARAM;
-    }
-
-    GuiStaticDrawLogo((void *) psLogo, y, x);
-    return GUI_OK;
-}
-
-int Gui_DrawImage(const unsigned char *pszImagePath, unsigned int x_percent, unsigned int y_percent) {
-    print_string("Gui_DrawImage()\n");
-
-    if (!sg_isColorScreen) {
-        return GUI_ERR_UNSUPPORTED;
-    }
-
-    // verify parameters
-    if (!pszImagePath || x_percent > 100 || y_percent > 100) {
-        return GUI_ERR_INVALIDPARAM;
-    }
-    
-    // Added By Kim 2015-03-18 bug667
-    if(NULL == strstr(pszImagePath, ".bmp") && NULL == strstr(pszImagePath, ".BMP") &&
-		NULL == strstr(pszImagePath, ".png") && NULL == strstr(pszImagePath, ".PNG")){
-        return GUI_ERR_INVALIDPARAM;
-    }
-
-    GuiStaticDrawImage((void *) pszImagePath, y_percent * sg_nScrHeight / 100, x_percent * sg_nScrWidth / 100);
-    return GUI_OK;
-}
-
-// Modified By Kim 2015-03-18 bug 669
-int Gui_ShowMsgBox(const unsigned char *pszTitle, GUI_TEXT_ATTR stTitleAttr, const unsigned char *pszContent, 
-	GUI_TEXT_ATTR stContentAttr, enum MSGBOXTYPE eType, int timeoutSec, int *pucKeyValue) {
-    
-	print_string("Gui_ShowMsgBox()\n");
-	
-	GUI_TEXT_ATTR stButtonAttr;
-    unsigned char bChkTimer;
-    int iRet = GUI_ERR_TIMEOUT;
-    int iKey = NOKEY;
-    RectMap stRectMap[1];
-
-	if(sg_isCalled)
-		return GUI_ERR_CANTCALLFROMCALLBACK;
-
-	sg_isCalled = 1;
-
-// verify parameter
-    if (pszTitle && (!IsValid(stTitleAttr.eAlign, GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT) || !IsValid(stTitleAttr.eFontSize, GUI_FONT_SMALL, GUI_FONT_LARGE))) {
-        return GUI_ERR_INVALIDPARAM;
-    }
-    if (pszContent && (!IsValid(stContentAttr.eAlign, GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT) || !IsValid(stContentAttr.eFontSize, GUI_FONT_SMALL, GUI_FONT_LARGE))) {
-        return GUI_ERR_INVALIDPARAM;
-    }
-    if (!IsValid(eType, GUI_BUTTON_NONE, GUI_BUTTON_YandN)) {
-        return GUI_ERR_INVALIDPARAM;
-    }
-
-    //title
-    if (pszTitle) {
-		GuiStaticDrawText((void *) pszTitle, (void *) &stTitleAttr, sgTitleArea.top, sgTitleArea.bottom, sgTitleArea.left, sgTitleArea.right, 0);
-    }
-
-    if (pszContent) {
-		GuiStaticDrawText((void *) pszContent, (void *) &stContentAttr, sgMsgContentArea.top, sgMsgContentArea.bottom, sgMsgContentArea.left, sgMsgContentArea.right, 0);
-    }
-
-    stButtonAttr.eFontSize = GUI_FONT_SMALL;
-    stButtonAttr.eStyle = stContentAttr.eStyle;
-    stButtonAttr.eAlign = GUI_ALIGN_CENTER;
-
-	memset(stRectMap, 0, sizeof(stRectMap));
-
-    switch (eType) {
-        case GUI_BUTTON_OK: 
-			GuiStaticDrawBgBox(sgMsgBoxButtons[2].left, sgMsgBoxButtons[2].top, sgMsgBoxButtons[2].right, sgMsgBoxButtons[2].bottom, sg_nDefBg);
-			GuiStaticDrawText((void *) GetKeyValuebyIndex(KEYENTER), (void *) &stButtonAttr, sgMsgBoxButtons[2].top, sgMsgBoxButtons[2].bottom, sgMsgBoxButtons[2].left, sgMsgBoxButtons[2].right, 1);
-			sgMsgBoxButtons[2].nValue = KEYENTER;
-			stRectMap[0].pRect = &sgMsgBoxButtons[2];
-			stRectMap[0].no = 1;
-            break;
-        case GUI_BUTTON_CANCEL: 
-			GuiStaticDrawBgBox(sgMsgBoxButtons[2].left, sgMsgBoxButtons[2].top, sgMsgBoxButtons[2].right, sgMsgBoxButtons[2].bottom, sg_nDefBg);
-			GuiStaticDrawText((void *) GetKeyValuebyIndex(KEYCANCEL), (void *) &stButtonAttr, sgMsgBoxButtons[2].top, sgMsgBoxButtons[2].bottom, sgMsgBoxButtons[2].left, sgMsgBoxButtons[2].right, 1);
-			sgMsgBoxButtons[2].nValue = KEYCANCEL;		
-			stRectMap[0].pRect = &sgMsgBoxButtons[2];
-			stRectMap[0].no = 1;
-            break;
-        case GUI_BUTTON_YandN: 
-			GuiStaticDrawBgBox(sgMsgBoxButtons[0].left, sgMsgBoxButtons[0].top, sgMsgBoxButtons[0].right, sgMsgBoxButtons[0].bottom, sg_nDefBg);
-			GuiStaticDrawText((void *) GetKeyValuebyIndex(KEYCANCEL), (void *) &stButtonAttr, sgMsgBoxButtons[0].top, sgMsgBoxButtons[0].bottom, sgMsgBoxButtons[0].left, sgMsgBoxButtons[0].right, 1);
-
-			GuiStaticDrawBgBox(sgMsgBoxButtons[1].left, sgMsgBoxButtons[1].top, sgMsgBoxButtons[1].right, sgMsgBoxButtons[1].bottom, sg_nDefBg);
-			GuiStaticDrawText((void *) GetKeyValuebyIndex(KEYENTER), (void *) &stButtonAttr, sgMsgBoxButtons[1].top, sgMsgBoxButtons[1].bottom, sgMsgBoxButtons[1].left, sgMsgBoxButtons[1].right, 1);
-
-			stRectMap[0].pRect = &sgMsgBoxButtons[0];
-			stRectMap[0].no = 2;
-            break;
-        default:
-            break;
-    }
-
-    // get key
-    if (timeoutSec >= 0) {
-        bChkTimer = TRUE;
-        TimerSet(GUI_TIMER_INDEX, (short) (timeoutSec * 10));
-    }
-    else {
-        bChkTimer = FALSE;
-    }
-
-	print_string("Gui_ShowMsgBox(): Wait key pressed\n");
-    while (1) {
-		int iTouchStatus = 0;
-		GUI_CALLBACK vFunc= NULL;
-		if((vFunc = GetCallbackEvent(GUI_CALLBACK_LISTEN_EVENT))){
-			int callbackLen = 0;
-			iRet = vFunc(GUI_CALLBACK_LISTEN_EVENT, NULL, &callbackLen);
-			if(iRet != GUI_OK)
-				break;
-		}
-        iTouchStatus = GetVirtualKey(stRectMap, sizeof(stRectMap)/sizeof(stRectMap[0]));
-        iKey = 0;
-
-        if (0 == kbhit()) {
-            iKey = getkey();
-            TimerSet(GUI_TIMER_INDEX, (short) (timeoutSec * 10));
-        }
-        else if(iTouchStatus > 0) {
-            TimerSet(GUI_TIMER_INDEX, (short)(timeoutSec*10));
-			iKey = iTouchStatus;
-        }
-        else if (bChkTimer && 0 == TimerCheck(GUI_TIMER_INDEX)) {
-            iRet = GUI_ERR_TIMEOUT;
-            iKey = NOKEY;
-            break;
-        }
-		print_string("Gui_ShowMsgBox(): while\n");
-		delay(1024*1024);
-		iKey = KEYENTER;
-        if (iKey != 0) {
-            if (GUI_BUTTON_NONE == eType) {
-                // Added by Kim_LinHB 20140916 v0.8 bug517
-                if (KEYCANCEL == iKey) {
-                    iRet = GUI_ERR_USERCANCELLED;
-                    break;
-                }
-                iRet = GUI_OK;
-                break;
-            }
-            else if (GUI_BUTTON_CANCEL == eType) {
-                if (KEYCANCEL == iKey) {
-                    iRet = GUI_ERR_USERCANCELLED;
-                    break;
-                }
-            }
-            else if (GUI_BUTTON_OK == eType) {
-                if (KEYENTER == iKey) {
-                    iRet = GUI_OK;
-                    break;
-                }
-            }
-            else if (GUI_BUTTON_YandN == eType) {
-                if (KEYCANCEL == iKey) {
-                    iRet = GUI_ERR_USERCANCELLED;
-                    break;
-                }
-                else if (KEYENTER == iKey) {
-                    iRet = GUI_OK;
-                    break;
-                }
-            }
-			if((vFunc = GetCallbackEvent(GUI_CALLBACK_LISTEN_EVENT))){
-				int callbackLen = sizeof(int);
-				iRet = vFunc(GUI_CALLBACK_LISTEN_EVENT, &iKey, &callbackLen);
-				if(iRet != GUI_OK){
-					break;
-				}
-			}
-			
-			print_string("Gui_ShowMsgBox(): Dead while\n");
-        }
-    }
-
-    if (pucKeyValue) {
-        *pucKeyValue = iKey;
-    }
-	sg_isCalled = 0;
-	
-	print_string("Gui_ShowMsgBox() Success\n");
-	
-    return iRet;
-}
-
-int Gui_ShowInputBox(const unsigned char *pszTitle, GUI_TEXT_ATTR stTitleAttr, const unsigned char *pszPrompt, GUI_TEXT_ATTR stPromptAttr, unsigned char *pszContent, GUI_TEXT_ATTR stContentAttr, const GUI_INPUTBOX_ATTR *pstAttr, int timeoutSec) {
-    print_string("Gui_ShowInputBox()\n");
-	
-	GUI_TEXT_ATTR stButtonAttr;
-	
-    int iRet = GUI_ERR_TIMEOUT;
-
-	if(sg_isCalled)
-		return GUI_ERR_CANTCALLFROMCALLBACK;
-
-	sg_isCalled = 1;
-
-    if (!pstAttr)
-        return GUI_ERR_INVALIDPARAM;
-
-    // verify parameter
-    if (pszTitle && (!IsValid(stTitleAttr.eAlign, GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT) || !IsValid(stTitleAttr.eFontSize, GUI_FONT_SMALL, GUI_FONT_LARGE))) {
-        return GUI_ERR_INVALIDPARAM;
-    }
-    if (pszPrompt && (!IsValid(stPromptAttr.eAlign, GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT) || !IsValid(stPromptAttr.eFontSize, GUI_FONT_SMALL, GUI_FONT_LARGE))) {
-        return GUI_ERR_INVALIDPARAM;
-    }
-    if (!IsValid(stContentAttr.eAlign, GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT) || !IsValid(stContentAttr.eFontSize, GUI_FONT_SMALL, GUI_FONT_LARGE) || !IsValid(pstAttr->eType, GUI_INPUT_NUM, GUI_INPUT_MIX) || pstAttr->nMinLen > pstAttr->nMaxLen) {
-        return GUI_ERR_INVALIDPARAM;
-    }
-
-    stButtonAttr.eStyle = stContentAttr.eStyle;
-    stButtonAttr.eAlign = GUI_ALIGN_CENTER;
-
-    if (pszTitle) {
-        GuiStaticDrawText((void *) pszTitle, (void *) &stTitleAttr, sgTitleArea.top, sgTitleArea.bottom, sgTitleArea.left, sgTitleArea.right, 0);
-    }
-
-	stButtonAttr.eFontSize = GUI_FONT_SMALL;
-    if(sg_hasTouchScreen && sg_nScrHeight > sg_nScrWidth) {
-        iRet = GetInput(pszPrompt, stPromptAttr, sgInputPromptArea, pszContent, stContentAttr, sgInputContentArea, pstAttr, sgKeypad, stButtonAttr, 16, timeoutSec);
-    }
-    else {
-        iRet = GetInput(pszPrompt, stPromptAttr, sgInputPromptArea, pszContent, stContentAttr, sgInputContentArea, pstAttr, sgInputBoxButtons, stButtonAttr, 2, timeoutSec);
-    }
-
-	sg_isCalled = 0;
-    return iRet;
-}
-
-int Gui_ShowTimeBox(const unsigned char *pszTitle, GUI_TEXT_ATTR stTitleAttr, unsigned char *pszTime, GUI_TEXT_ATTR stContentAttr, unsigned char isTime, int timeoutSec) {
-    print_string("Gui_ShowTimeBox()\n");
-	
-	GUI_TEXT_ATTR stButtonAttr;
-
-    int iRet = GUI_ERR_TIMEOUT;
-
-	if(sg_isCalled)
-		return GUI_ERR_CANTCALLFROMCALLBACK;
-
-	sg_isCalled = 1;
-
-    // verify parameters
-    if (pszTitle && (!IsValid(stTitleAttr.eAlign, GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT) || !IsValid(stTitleAttr.eFontSize, GUI_FONT_SMALL, GUI_FONT_LARGE))) {
-        return GUI_ERR_INVALIDPARAM;
-    }
-    if (!IsValid(stContentAttr.eAlign, GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT) || !IsValid(stContentAttr.eFontSize, GUI_FONT_SMALL, GUI_FONT_LARGE)) {
-        return GUI_ERR_INVALIDPARAM;
-    }
-
-    stButtonAttr.eStyle = stContentAttr.eStyle;
-    stButtonAttr.eAlign = GUI_ALIGN_CENTER;
-
-    if (pszTitle) {
-        GuiStaticDrawText((void *) pszTitle, (void *) &stTitleAttr, sgTitleArea.top, sgTitleArea.bottom, sgTitleArea.left, sgTitleArea.right, 0);
-    }
-
-	stButtonAttr.eFontSize = GUI_FONT_SMALL;
-    if(sg_hasTouchScreen && sg_nScrHeight > sg_nScrWidth) {
-        iRet = GetInputTime(sgCurrTimeArea, isTime?sgTimeArea:sgDateArea, stContentAttr, pszTime,sgKeypad, 16, stButtonAttr, isTime, timeoutSec);
-    }
-    else{
-        iRet = GetInputTime(sgCurrTimeArea, isTime?sgTimeArea:sgDateArea, stContentAttr, pszTime, sgTimeBoxButtons, 2, stButtonAttr, isTime, timeoutSec);
-    }
-
-	sg_isCalled = 0;
-    return iRet;
-}
-
-int Gui_BindMenu(const unsigned char *psztitle, GUI_TEXT_ATTR stTitleAttr, GUI_TEXT_ATTR stTextAttr, const GUI_MENUITEM *pstMenuItem, GUI_MENU *pstMenu) {
-    print_string("Gui_BindMenu()\n");
-	
-	int i = 0;
-
-    // verify parameters
-    if (pstMenu == NULL || pstMenuItem == NULL) {
-        return GUI_ERR_INVALIDPARAM;
-    }
-
-    if (psztitle)
-        sprintf_string(pstMenu->szTitle, "%.*s", sizeof(pstMenu->szTitle), psztitle);
-    else
-        memset(pstMenu->szTitle, 0, sizeof(pstMenu->szTitle));
-    pstMenu->stTitleAttr = stTitleAttr;
-    pstMenu->stItemAttr = stTextAttr;
-
-    pstMenu->pstContent = (GUI_MENUITEM *) pstMenuItem;
-    pstMenu->nSize = 0;
-    while (1) {
-        if (strcmp(pstMenuItem[i].szText, "") == 0) {
-            break;
-        }
-        pstMenu->nSize = (i++) + 1;
-    }
-    return GUI_OK;
-}
-
-int Gui_ShowMenuList(const GUI_MENU *pstMenu, enum MENUSTYLE eMode, int timeoutSec, int *piSelValue) {
-    print_string("Gui_ShowMenuList()\n");
-	
-	int iRet = 0;
-
-    GUI_TEXT_ATTR stButtonAttr;
-
-	if(sg_isCalled)
-		return GUI_ERR_CANTCALLFROMCALLBACK;
-
-	sg_isCalled = 1;
-
-    // verify parameters
-    if (!pstMenu) {
-        return GUI_ERR_INVALIDPARAM;
-    }
-
-    if (!IsValid(pstMenu->stItemAttr.eAlign, GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT) || !IsValid(pstMenu->stItemAttr.eFontSize, GUI_FONT_SMALL, GUI_FONT_LARGE)) {
-        return GUI_ERR_INVALIDPARAM;
-    }
-
-	stButtonAttr.eFontSize = GUI_FONT_SMALL;
-    stButtonAttr.eStyle = 0;
-    stButtonAttr.eAlign = GUI_ALIGN_CENTER;
-
-    if (piSelValue && (*piSelValue > (int) pstMenu->nSize || *piSelValue < 0))
-        *piSelValue = 0;
-
-	iRet = GetMenuItem(pstMenu, eMode, sgMenuListArea, sgMenuButtons, 4, &stButtonAttr, timeoutSec, piSelValue);
-	sg_isCalled = 0;
-    return iRet;
-}
-
-int Gui_ShowAlternative(const unsigned char *pszTitle, GUI_TEXT_ATTR stTitleAttr, const unsigned char *pszPrompt, GUI_TEXT_ATTR stContentAttr, const unsigned char *pszOption1, int iValue1, const unsigned char *pszOption2, int iValue2, int timeoutSec, int *piSelOption) {
-    print_string("Gui_ShowAlternative()\n");
-	GUI_TEXT_ATTR stButtonAttr;
-
-    unsigned char bChkTimer;
-    int iRet = GUI_ERR_TIMEOUT;
-    int iKey = NOKEY;
-    unsigned char szBuff[2][20];
-    int iSelected;
-
-    RectMap stRectMap[2];
-
-	if(sg_isCalled)
-		return GUI_ERR_CANTCALLFROMCALLBACK;
-
-	sg_isCalled = 1;
-
-    // verify parameter
-    if (pszTitle && (!IsValid(stTitleAttr.eAlign, GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT) || !IsValid(stTitleAttr.eFontSize, GUI_FONT_SMALL, GUI_FONT_LARGE))) {
-        return GUI_ERR_INVALIDPARAM;
-    }
-    if ((!IsValid(stContentAttr.eAlign, GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT) || !IsValid(stContentAttr.eFontSize, GUI_FONT_SMALL, GUI_FONT_LARGE))) {
-        return GUI_ERR_INVALIDPARAM;
-    }
-
-    if (!pszOption1 || !pszOption2 || !piSelOption || iValue1 == iValue2) {
-        return GUI_ERR_INVALIDPARAM;
-    }
-
-    if (*piSelOption != iValue1 && *piSelOption != iValue2) {
-        return GUI_ERR_INVALIDPARAM;
-    }
-
-    sprintf_string(szBuff[0], "%d.%s", iValue1, pszOption1);
-    sprintf_string(szBuff[1], "%d.%s", iValue2, pszOption2);
-
-    //title
-    if (pszTitle) {
-        GuiStaticDrawText((void *) pszTitle, (void *) &stTitleAttr, sgTitleArea.top, sgTitleArea.bottom, sgTitleArea.left, sgTitleArea.right, 0);
-    }
-
-    if (pszPrompt) {
-        GuiStaticDrawText((void *) pszPrompt, (void *) &stContentAttr, sgAlternativePrompt.top, sgAlternativePrompt.bottom, sgAlternativePrompt.left, sgAlternativePrompt.right, 0);
-    }
-
-    stButtonAttr.eFontSize = GUI_FONT_SMALL;
-    stButtonAttr.eStyle = stContentAttr.eStyle;
-    stButtonAttr.eAlign = GUI_ALIGN_CENTER;
-
-	GuiStaticDrawBgBox(sgAlternativeButtons[0].left, sgAlternativeButtons[0].top, sgAlternativeButtons[0].right, sgAlternativeButtons[0].bottom, sg_nDefBg);
-	GuiStaticDrawBgBox(sgAlternativeButtons[0].left, sgAlternativeButtons[0].top, sgAlternativeButtons[0].right, sgAlternativeButtons[0].bottom, sg_nDefBg);
-
-	GuiStaticDrawText((void *) GetKeyValuebyIndex(KEYCANCEL), (void *) &stButtonAttr, sgAlternativeButtons[0].top, sgAlternativeButtons[0].bottom, sgAlternativeButtons[0].left, sgAlternativeButtons[0].right, 1);
-	GuiStaticDrawText((void *) GetKeyValuebyIndex(KEYENTER), (void *) &stButtonAttr, sgAlternativeButtons[1].top, sgAlternativeButtons[1].bottom, sgAlternativeButtons[1].left, sgAlternativeButtons[1].right, 1);
-
-    sgAlternativeOptions[0].nValue = 1000 + iValue1;
-    sgAlternativeOptions[1].nValue = 1000 + iValue2;
-
-	iSelected = *piSelOption + 1000;
-
-    {
-        int j;
-        GUI_TEXT_ATTR stReversal = stButtonAttr;
-        if (stReversal.eStyle & GUI_FONT_REVERSAL) {
-            stReversal.eStyle &= ~GUI_FONT_REVERSAL;
-        }
-        else {
-            stReversal.eStyle |= (GUI_FONT_REVERSAL | GUI_FONT_OPAQUE);
-        }
-        for (j = 0; j < 2; ++j) { // just 2 options
-            if (sgAlternativeOptions[j].nValue == iSelected) {
-                GuiStaticDrawText((void *) szBuff[j], (void *) &stReversal, sgAlternativeOptions[j].top, sgAlternativeOptions[j].bottom, sgAlternativeOptions[j].left, sgAlternativeOptions[j].right, 1);
-            }
-            else {
-                GuiStaticDrawText((void *) szBuff[j], (void *) &stButtonAttr, sgAlternativeOptions[j].top, sgAlternativeOptions[j].bottom, sgAlternativeOptions[j].left, sgAlternativeOptions[j].right, 1);
-            }
-        }
-    }
-
-    if (timeoutSec >= 0) {
-        bChkTimer = TRUE;
-        TimerSet(GUI_TIMER_INDEX, (short) timeoutSec * 10);
-    }
-    else {
-        bChkTimer = FALSE;
-    }
-
-    memset(stRectMap, 0, sizeof(stRectMap));
-    stRectMap[0].pRect = sgAlternativeButtons;
-    stRectMap[0].no = 2;
-
-    stRectMap[1].pRect = sgAlternativeOptions;
-    stRectMap[1].no = 2;
-
-    while (1) {
-		int iTouchStatus = 0;
-		GUI_CALLBACK vFunc = NULL;
-		if((vFunc = GetCallbackEvent(GUI_CALLBACK_LISTEN_EVENT))){
-			int callbackLen = 0;
-			iRet = vFunc(GUI_CALLBACK_LISTEN_EVENT, NULL, &callbackLen);
-			if(iRet != GUI_OK)
-				break;
-		}
-        iTouchStatus = GetVirtualKey(stRectMap, sizeof(stRectMap)/sizeof(stRectMap[0]));
-        iKey = 0;
-
-        if (0 == kbhit()) {
-            TimerSet(GUI_TIMER_INDEX, (short) timeoutSec * 10);
-            iKey = getkey();
-        }
-        else if(iTouchStatus > 0) {
-            TimerSet(GUI_TIMER_INDEX, (short)(timeoutSec*10));
-			iKey = iTouchStatus;
-        }
-        else if (bChkTimer && 0 == TimerCheck(GUI_TIMER_INDEX)) {
-            iKey = GUI_ERR_TIMEOUT;
-        }
-        else {
-            continue;
-        }
-
-        if (KEYCANCEL == iKey) {
-            iRet = GUI_ERR_USERCANCELLED;
-            break;
-        }
-        else if (GUI_ERR_TIMEOUT == iKey) {
-            iRet = GUI_ERR_TIMEOUT;
-            break;
-        }
-        else if (KEYENTER == iKey) {
-            iRet = GUI_OK;
-            break;
-        }
-		else if (KEYALPHA == iKey) {
-			iSelected = (iSelected == sgAlternativeOptions[0].nValue ? sgAlternativeOptions[1].nValue : sgAlternativeOptions[0].nValue);
-		}
-		else if (sgAlternativeOptions[0].nValue == iKey || sgAlternativeOptions[1].nValue == iKey){
-			iSelected = iKey;
-		}
-
-        //GuiStaticClearScr(&pstTimeRect[ucSelected]);
-
-        {
-            int j;
-            GUI_TEXT_ATTR stReversal = stButtonAttr;
-            if (stReversal.eStyle & GUI_FONT_REVERSAL) {
-                stReversal.eStyle &= ~GUI_FONT_REVERSAL;
-            }
-            else {
-                stReversal.eStyle |= (GUI_FONT_REVERSAL | GUI_FONT_OPAQUE);
-            }
-            for (j = 0; j < 2; ++j) {
-                if (sgAlternativeOptions[j].nValue == iSelected) {
-                    GuiStaticDrawText((void *) szBuff[j], (void *) &stReversal, sgAlternativeOptions[j].top, sgAlternativeOptions[j].bottom, sgAlternativeOptions[j].left, sgAlternativeOptions[j].right, 1);
-                }
-                else {
-					GuiStaticClearScr(&sgAlternativeOptions[j], 1);
-					GuiStaticDrawBgBox(sgAlternativeOptions[j].left, sgAlternativeOptions[j].top, sgAlternativeOptions[j].right, sgAlternativeOptions[j].bottom, sg_nDefBg);
-                    GuiStaticDrawText((void *) szBuff[j], (void *) &stButtonAttr, sgAlternativeOptions[j].top, sgAlternativeOptions[j].bottom, sgAlternativeOptions[j].left, sgAlternativeOptions[j].right, 1);
-                }
-            }
-        }
-    }
-
-    if (GUI_OK == iRet)
-        *piSelOption = iSelected - 1000;
-	sg_isCalled = 0;
-    return iRet;
-}
-
-int Gui_ShowInfoPage(const GUI_PAGE *pstPage, unsigned char isMultiChapters, int timeoutSec) {
-    print_string("Gui_ShowInfoPage()\n");
-	unsigned int i;
-    int iRet = 0;
-
-    GUI_TEXT_ATTR stButtonAttr;
-
-	if(sg_isCalled)
-		return GUI_ERR_CANTCALLFROMCALLBACK;
-
-	sg_isCalled = 1;
-
-    // verify parameters
-    if (!pstPage) {
-        return GUI_ERR_INVALIDPARAM;
-    }
-    if (pstPage->szTitle[0] != 0 && (!IsValid(pstPage->stTitleAttr.eAlign , GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT) || !IsValid(pstPage->stTitleAttr.eFontSize, GUI_FONT_SMALL, GUI_FONT_LARGE))) {
-        return GUI_ERR_INVALIDPARAM;
-    }
-    for (i = 0; i < pstPage->nLine; ++i) {
-        if (!IsValid(pstPage->pstContent[i].stLineAttr.eAlign, GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT) || !IsValid(pstPage->pstContent[i].stLineAttr.eFontSize, GUI_FONT_SMALL, GUI_FONT_LARGE)) {
-            return GUI_ERR_INVALIDPARAM;
-        }
-    }
-
-    stButtonAttr.eFontSize = GUI_FONT_SMALL;
-    stButtonAttr.eStyle = 0;
-    stButtonAttr.eAlign = GUI_ALIGN_CENTER;
-
-    iRet = GetInfoPage(pstPage, sgInfoPageArea, sgInfoPageButtons, 4, &stButtonAttr, isMultiChapters, timeoutSec);
-
-	sg_isCalled = 0;
-    return iRet;
-}
-
-int Gui_CreateInfoPage(const unsigned char *pszTitle, GUI_TEXT_ATTR stTitleAttr, const GUI_PAGELINE *pstContent, unsigned int nLine, GUI_PAGE *pstPage) {
-    print_string("Gui_CreateInfoPage()\n");
-	if (!pstPage) {
-        return GUI_ERR_INVALIDPARAM;
-    }
-
-    if (pszTitle)
-        sprintf_string(pstPage->szTitle, "%.*s", sizeof(pstPage->stTitleAttr), pszTitle);
-    else
-        pstPage->szTitle[0] = 0;
-    pstPage->stTitleAttr = stTitleAttr;
-    pstPage->nLine = nLine;
-
-    pstPage->pstContent = (GUI_PAGELINE *) pstContent;
-    return GUI_OK;
-}
-
-int Gui_ShowSignatureBoard(const unsigned char *pszTitle, GUI_TEXT_ATTR stTitleAttr,
-	const unsigned char *pszOutputFile,
-	char nMode, int timeoutSec){
-	
-	print_string("Gui_ShowSignatureBoard()\n");
-		
-	GUI_TEXT_ATTR stButtonAttr;
-	unsigned char bChkTimer;
-	int iRet = GUI_ERR_TIMEOUT;
-	int iKey = NOKEY;
-	RectMap stRectMap[1];
-	int i;
-	TS_ATTR_T signMode = {1};
-	TS_ATTR_T normalMode = {0};
-
-	if (!sg_hasTouchScreen) {
-		return GUI_ERR_UNSUPPORTED;
-	}
-
-	// verify parameter
-	if (pszTitle && (!IsValid(stTitleAttr.eAlign, GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT))) {
-		return GUI_ERR_INVALIDPARAM;
-	}
-	if(!pszOutputFile){// || (nMode != 0 && nMode != 1)){
-		return GUI_ERR_INVALIDPARAM;
-	}
-
-	//Prepare Resources
-
-	if(sg_isCalled)
-		return GUI_ERR_CANTCALLFROMCALLBACK;
-
-	sg_isCalled = 1;
-
-	//title
-	if(pszTitle)
-	GuiStaticDrawText((void *) pszTitle, (void *) &stTitleAttr, sgTitleArea.top, sgTitleArea.bottom, sgTitleArea.left, sgTitleArea.right, 0);
-
-	stButtonAttr.eFontSize = GUI_FONT_SMALL;
-	stButtonAttr.eStyle = GUI_FONT_STD;
-	stButtonAttr.eAlign = GUI_ALIGN_CENTER;
-
-	for (i = 0; i < sizeof(sgSignatureButtons) / sizeof(sgSignatureButtons[0]); ++i) { // total buttons on screen, 3 or 16
-		GuiStaticDrawBgBox(sgSignatureButtons[i].left, sgSignatureButtons[i].top, sgSignatureButtons[i].right, sgSignatureButtons[i].bottom, sg_nDefBg);
-
-		if(sgSignatureButtons[i].nValue != 0) {
-			GuiStaticDrawRect(sgSignatureButtons[i].left, sgSignatureButtons[i].top, sgSignatureButtons[i].right, sgSignatureButtons[i].bottom, sg_nDefColor);
-			GuiStaticDrawRect(sgSignatureButtons[i].left+ 1, sgSignatureButtons[i].top+ 1, sgSignatureButtons[i].right-1, sgSignatureButtons[i].bottom-1, sg_nDefColor);
-		}
-
-		switch (sgSignatureButtons[i].nValue) {
-		case KEYENTER:
-			GuiStaticDrawText((void *) GetKeyValuebyIndex(KEYENTER), (void *) &stButtonAttr, sgSignatureButtons[i].top, sgSignatureButtons[i].bottom, sgSignatureButtons[i].left, sgSignatureButtons[i].right, 1);
-			break;
-		case KEYCANCEL:
-			GuiStaticDrawText((void *) GetKeyValuebyIndex(KEYCANCEL), (void *) &stButtonAttr, sgSignatureButtons[i].top, sgSignatureButtons[i].bottom, sgSignatureButtons[i].left, sgSignatureButtons[i].right, 1);
-			break;
-		case KEYCLEAR:
-			GuiStaticDrawText((void *) GetKeyValuebyIndex(KEYCLEAR), (void *) &stButtonAttr, sgSignatureButtons[i].top, sgSignatureButtons[i].bottom, sgSignatureButtons[i].left, sgSignatureButtons[i].right, 1);
-			break;
-		}
-	}
-
-	GuiStaticDrawBgBox(sgSignatureArea.left, sgSignatureArea.top, sgSignatureArea.right, sgSignatureArea.bottom, sg_nDefBg);
-	GuiStaticDrawRect(sgSignatureArea.left-1, sgSignatureArea.top-1, sgSignatureArea.right+1, sgSignatureArea.bottom+1, sg_nDefColor);
-
-	if (timeoutSec >= 0) {
-		bChkTimer = TRUE;
-		TimerSet(GUI_TIMER_INDEX, (short) (timeoutSec * 10));
-	}
-	else {
-		bChkTimer = FALSE;
-	}
-
-	memset(&sgSignData, 0, sizeof(SignData));
-
-	memset(stRectMap, 0, sizeof(stRectMap));
-
-	stRectMap[0].pRect = sgSignatureButtons;
-	stRectMap[0].no = 3;
-
-	TouchScreenAttrSet(&signMode);
-	
-	while (1) {
-		int iTouchStatus = 0;
-
-		GUI_CALLBACK vFunc= NULL;
-		if((vFunc = GetCallbackEvent(GUI_CALLBACK_LISTEN_EVENT))){
-			int callbackLen = 0;
-			iRet = vFunc(GUI_CALLBACK_LISTEN_EVENT, NULL, &callbackLen);
-			if(iRet != GUI_OK)
-				break;
-		}
-
-		iKey = 0;
-		iTouchStatus = GetVirtualKey(stRectMap, sizeof(stRectMap)/sizeof(stRectMap[0]));
-		GuiStaticDrawSign(&sgSignatureArea);
-
-		if (0 == kbhit()) {
-			iKey = getkey();
-			TimerSet(GUI_TIMER_INDEX, (short) (timeoutSec * 10));
-		}
-		else if(iTouchStatus > 0) {
-			TimerSet(GUI_TIMER_INDEX, (short)(timeoutSec*10));
-			iKey = iTouchStatus;
-		}
-		else if (bChkTimer && 0 == TimerCheck(GUI_TIMER_INDEX)) {
-			iRet = GUI_ERR_TIMEOUT;
-			iKey = NOKEY;
-			break;
-		}
-
-		if (iKey != 0) {
-			if (KEYCANCEL == iKey) {
-				iRet = GUI_ERR_USERCANCELLED;
-				break;
-			}
-			else if (KEYENTER == iKey) {
-				if(0 == nMode) {
-					iRet = SaveSignImg(&sgSignatureArea, pszOutputFile);
-				}
-				else if(1 == nMode){
-					iRet = SaveSignRoute(&sgSignatureArea, &sgSignData, pszOutputFile);
-				}
-				break;
-			}
-			else if (KEYCLEAR == iKey){
-				TimerSet(GUI_TIMER_INDEX, (short)(timeoutSec*10));
-				//XuiSigBoardSetStat(sg_sign_area.pSignatureBoard, &sg_sign_area.stAttr);
-				GuiStaticClearScr(&sgSignatureArea, 0);
-				memset(&sgSignData, 0, sizeof(SignData));
-				continue;
-			}
-		}
-	}
-	TouchScreenAttrSet(&normalMode);
-	sg_isCalled = 0;
-
-	return iRet;
-}
-
-int Gui_GetImageSize(const unsigned char *File, unsigned int *pWidth, unsigned int *pHeight) {
-    int fd;
-	
-	print_string("Gui_GetImageSize()\n");
-
-    if (!pHeight && !pWidth) {
-        return GUI_ERR_INVALIDPARAM;
-    }
-
-    fd = open((char *) File, O_RDWR);
-    if (fd < 0) {
-        return GUI_ERR_INVALIDPARAM;
-    }
-
-    if (strstr(File, ".bmp") || strstr(File, ".BMP")) {
-        unsigned char wtmp[4] = { '0' };
-        unsigned char htmp[4] = { '0' };
-
-        seek(fd, 0x12, SEEK_SET);
-        read(fd, wtmp, 4);
-        read(fd, htmp, 4);
-        close(fd);
-
-        //modified by Kim 2014-8-14 v0.3
-        *pWidth = (unsigned int) ((unsigned int) (wtmp[0] << 24) + (wtmp[1] << 16) + (wtmp[2] << 8) + wtmp[3]);
-        *pHeight = (unsigned int) ((unsigned int) (htmp[0] << 24) + (htmp[1] << 16) + (htmp[2] << 8) + htmp[3]);
-    }
-    else if (strstr(File, ".png") || strstr(File, ".PNG")) {
-        unsigned char wtmp[4] = { '0' };
-        unsigned char htmp[4] = { '0' };
-
-        seek(fd, 0x10, SEEK_SET);
-        read(fd, wtmp, 4);
-        read(fd, htmp, 4);
-        close(fd);
-
-        //modified by Kim 2014-8-14 v0.3
-        *pWidth = (unsigned int) ((unsigned int) (wtmp[0] << 24) + (wtmp[1] << 16) + (wtmp[2] << 8) + wtmp[3]);
-        *pHeight = (unsigned int) ((unsigned int) (htmp[0] << 24) + (htmp[1] << 16) + (htmp[2] << 8) + htmp[3]);
-    }
-    return GUI_OK;
-}
-
-int Gui_GetScrWidth(void){
-	print_string("Gui_GetScrWidth()\n");
-
-	return sg_nScrWidth;
-}
-
-int Gui_GetScrHeight(void){
-	print_string("Gui_GetScrHeight()\n");
-
-	return sg_nScrHeight;
-}
-
-
-int Gui_RegCallback(gui_callbacktype_t type, GUI_CALLBACK func){
-	print_string("Gui_RegCallback()\n");
-
-	return SetCallbackEvent(type, func);
-}
-
-
-int Gui_UpdateTitle(const char *pszTitle, GUI_TEXT_ATTR stTitleAttr){
-	print_string("Gui_UpdateTitle\n");
-
-// verify parameters
-    if (pszTitle && (!IsValid(stTitleAttr.eAlign, GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT))) {
-        return GUI_ERR_INVALIDPARAM;
-    }
-	GuiStaticDrawText(pszTitle, &stTitleAttr, 0, sg_nRow, 0, sg_nScrWidth, 0);
-	return GUI_OK;
-}
-
-int Gui_UpdateKey(int index, const char* text){
-	print_string("Gui_UpdateKey\n");
-	
-	int iRet;
-
-	iRet = SetKeybyIndex(index, text);
-	return iRet;
-}
-
-///////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////
+//Static Functions
 
 static int GetInput(const unsigned char *pszPrompt, GUI_TEXT_ATTR stPromptAttr, Rect stPromptRect, unsigned char *pszContent, GUI_TEXT_ATTR stContentAttr, Rect stContentRect, const GUI_INPUTBOX_ATTR *pstType, const Rect *pstButtonRect, GUI_TEXT_ATTR stButtonAttr, int nButtonNo, int timeoutSec) {
     unsigned char szWorkBuff[255];
@@ -1731,15 +780,10 @@ static void GuiStaticClearScr(const Rect *rect, char IsClearBg) {
 }
 
 static void GuiStaticUpdateCanvasSize() {
-    if(sg_isColorScreen) {
-        ST_LCD_INFO stLcdInfo;
-        CLcdGetInfo (&stLcdInfo);
-        sg_nScrWidth = stLcdInfo.width;
-        sg_nScrHeight = stLcdInfo.height;
-    }
-	else{
-		ScrGetLcdSize(&sg_nScrWidth, &sg_nScrHeight);
-	}
+	ST_LCD_INFO stLcdInfo;
+	CLcdGetInfo (&stLcdInfo);
+	sg_nScrWidth = stLcdInfo.width;
+	sg_nScrHeight = stLcdInfo.height;
 }
 
 static void GuiStaticDrawText(const void *vRes, const void *vAttr, int top, int bottom, int left, int right, char isButton) {
@@ -1845,44 +889,35 @@ static void GuiStaticDrawText(const void *vRes, const void *vAttr, int top, int 
 	CLcdSetFgColor(sg_nDefColor);
 }
 static void GuiStaticDrawLogo(const void *vRes, int top, int left) {
-    if (sg_isColorScreen) {
-        CLcdSetFgColor(sg_nDefColor);
-    }
+	CLcdSetFgColor(sg_nDefColor);
     ScrGotoxyEx(left, top);
     ScrDrLogo((unsigned char *) vRes);
 }
 
 static void GuiStaticDrawImage(const void *vRes, int top, int left) {
-    if (sg_isColorScreen) {
-        CLcdBgDrawImg(left, top, (char *)vRes);
-    }
+    CLcdBgDrawImg(left, top, (char *)vRes);
 }
 
-static void GuiStaticDrawBgBox(unsigned int left, unsigned int top, unsigned int right, unsigned int bottom, unsigned int color) {
-    if (sg_isColorScreen) {
-        if (right >= (unsigned int) sg_nScrWidth)
-            right = sg_nScrWidth - 1;
+static void GuiStaticDrawBgBox(unsigned int left, unsigned int top, unsigned int right, 
+	unsigned int bottom, unsigned int color) {
+	if (right >= (unsigned int) sg_nScrWidth)
+		right = sg_nScrWidth - 1;
 
-        if (bottom >= (unsigned int) sg_nScrHeight)
-            bottom = sg_nScrHeight - 1;
+	if (bottom >= (unsigned int) sg_nScrHeight)
+		bottom = sg_nScrHeight - 1;
 
-        CLcdBgDrawBox(left, top, right, bottom, color);
-    }
+	CLcdBgDrawBox(left, top, right, bottom, color);
 }
 
-static void GuiStaticDrawRect(unsigned int left, unsigned int top, unsigned int right, unsigned int bottom, unsigned int color) {
+static void GuiStaticDrawRect(unsigned int left, unsigned int top, unsigned int right, 
+	unsigned int bottom, unsigned int color) {
     if (right >= (unsigned int) sg_nScrWidth)
         right = sg_nScrWidth - 1;
 
     if (bottom >= (unsigned int) sg_nScrHeight)
         bottom = sg_nScrHeight - 1;
 
-    if (sg_isColorScreen) {
-        CLcdDrawRect(left, top, right, bottom, color);
-    }
-    else {
-        ScrDrawRect(left, top, right, bottom);
-    }
+    CLcdDrawRect(left, top, right, bottom, color);
 }
 
 static void GuiStaticDrawSign(const Rect *area){
@@ -2185,10 +1220,6 @@ static int GetVirtualKey(const RectMap *pRectMap, unsigned int nMapSize)
 				sg_pt_state = 0;
 			}
     }
-	
-//for test
-//ScrPrint(0,0,0, "%d:[%d,%d]-%d", sg_pt_state, sg_pt.x, sg_pt.y, sg_pt.pressure);
-//ScrPrint(0,2,0, "%d:%d:%d:%d", sg_rect_bak.top, sg_rect_bak.bottom, sg_rect_bak.left, sg_rect_bak.right);
 
 	return 0;
 }
@@ -3574,5 +2605,892 @@ static const Rect *FindMatchedButton(const TS_POINT_T *pPt, const Rect *pButtons
     }
     return NULL;
 }
+
+
+
+//Global functions
+
+
+// initialize Gui, clear the whole layout.
+int Gui_Init(unsigned int nBgColor, unsigned int nColor) {
+	print_string("Gui_Init()\n");
+	
+	unsigned char sTerminalInfo[32];
+
+	GetTermInfo(sTerminalInfo);
+
+	GuiStaticUpdateCanvasSize(); // bug on 1.02.0001_20160517
+	if(OpenTouchScreen() && sg_nScrHeight > sg_nScrWidth) {
+		sg_nRow = 7;
+	}
+	else{
+		sg_nRow = 4;
+	}
+	sg_nHeightOfALine = sg_nScrHeight / sg_nRow;
+	SetKeybyIndex(KEYCANCEL, "CANCEL");
+	SetKeybyIndex(KEYCLEAR, "CLEAR");
+	SetKeybyIndex(KEYENTER, "ENTER");
+	SetKeybyIndex(KEYMENU, "MENU");
+	SetKeybyIndex(KEYFN, "FUNC");
+	SetKeybyIndex(KEYALPHA, "ALPHA");
+	SetKeybyIndex(KEYUP, "UP");
+	SetKeybyIndex(KEYDOWN, "DN");
+	SetKeybyIndex(GUI_KEYPREV, "1.PREV");
+	SetKeybyIndex(GUI_KEYNEXT, "2.NEXT");
+	
+	PrepareRes();
+
+    sg_nDefBg = nBgColor;
+	
+
+	sg_nDefColor = nColor;
+	CLcdSetBgColor(sg_nDefBg);
+	CLcdSetFgColor(sg_nDefColor);
+
+	CLcdInit();
+	
+    GuiStaticClearScr(NULL, 1);
+
+    GuiStaticUpdateCanvasSize();
+	
+	print_string("Gui_Init() Success\n");
+
+    return GUI_OK;
+}
+
+int Gui_ClearScr() {
+	print_string("Gui_ClearScr()\n");
+    
+	GuiStaticClearScr(NULL, 1);
+    
+	return GUI_OK;
+}
+
+int Gui_LoadFont(enum FONTSIZE eFontSize, const ST_FONT *pSingleCodeFont, const ST_FONT *pMultiCodeFont) {
+	print_string("Gui_LoadFont()\n");
+
+    return GUI_OK;
+}
+
+int Gui_DrawText(const unsigned char *pszText, const GUI_TEXT_ATTR stTextAttr, unsigned int x_percent, unsigned int y_percent) {
+    print_string("Gui_DrawText()\n");
+
+    // verify parameters
+    if (!pszText || !IsValid(stTextAttr.eAlign, GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT) 
+		|| !IsValid(stTextAttr.eFontSize, GUI_FONT_SMALL, GUI_FONT_LARGE) || x_percent > 100 || y_percent > 100) {
+        
+		return GUI_ERR_INVALIDPARAM;
+    }
+
+    {
+        // for getting background box
+        int nWidth;
+        int nHeight;
+        int nLeft = x_percent * sg_nScrWidth / 100, nLeftBak = nLeft;
+
+        nWidth = GetStrPix(pszText, &sgFontS[stTextAttr.eFontSize], &sgFontM[stTextAttr.eFontSize], 1);
+        nHeight = GetFontHeight(sgFontS[stTextAttr.eFontSize], sgFontM[stTextAttr.eFontSize]);
+
+        switch (stTextAttr.eAlign) {
+            case GUI_ALIGN_RIGHT:
+                nLeft = sg_nScrWidth - nWidth;
+                break;
+            case GUI_ALIGN_CENTER:
+                nLeft += (sg_nScrWidth - nLeft - nWidth) / 2;
+                break;
+        }
+        if (nLeft < nLeftBak)
+            nLeft = nLeftBak;
+        GuiStaticDrawText((void*) pszText, (void*) &stTextAttr, y_percent * sg_nScrHeight / 100, y_percent * sg_nScrHeight / 100 + nHeight, nLeft, nLeft + nWidth, 0);
+    }
+    return GUI_OK;
+}
+
+int Gui_DrawLogo(const unsigned char *psLogo, int x, int y) {
+	print_string("Gui_DrawLogo()\n");
+	
+    // verify parameters
+    if (!psLogo || x > sg_nScrWidth || y > sg_nScrHeight) {
+        return GUI_ERR_INVALIDPARAM;
+    }
+
+    GuiStaticDrawLogo((void *) psLogo, y, x);
+    return GUI_OK;
+}
+
+int Gui_DrawImage(const unsigned char *pszImagePath, unsigned int x_percent, unsigned int y_percent) {
+    print_string("Gui_DrawImage()\n");
+
+    // verify parameters
+    if (!pszImagePath || x_percent > 100 || y_percent > 100) {
+        return GUI_ERR_INVALIDPARAM;
+    }
+    
+    // Added By Kim 2015-03-18 bug667
+    if(NULL == strstr(pszImagePath, ".bmp") && NULL == strstr(pszImagePath, ".BMP") &&
+		NULL == strstr(pszImagePath, ".png") && NULL == strstr(pszImagePath, ".PNG")){
+        return GUI_ERR_INVALIDPARAM;
+    }
+
+    GuiStaticDrawImage((void *) pszImagePath, y_percent * sg_nScrHeight / 100, x_percent * sg_nScrWidth / 100);
+    return GUI_OK;
+}
+
+// Modified By Kim 2015-03-18 bug 669
+int Gui_ShowMsgBox(const unsigned char *pszTitle, GUI_TEXT_ATTR stTitleAttr, const unsigned char *pszContent, 
+	GUI_TEXT_ATTR stContentAttr, enum MSGBOXTYPE eType, int timeoutSec, int *pucKeyValue) {
+    
+	print_string("Gui_ShowMsgBox()\n");
+	
+	GUI_TEXT_ATTR stButtonAttr;
+    unsigned char bChkTimer;
+    int iRet = GUI_ERR_TIMEOUT;
+    int iKey = NOKEY;
+    RectMap stRectMap[1];
+
+	if(sg_isCalled)
+		return GUI_ERR_CANTCALLFROMCALLBACK;
+
+	sg_isCalled = 1;
+
+// verify parameter
+    if (pszTitle && (!IsValid(stTitleAttr.eAlign, GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT) || !IsValid(stTitleAttr.eFontSize, GUI_FONT_SMALL, GUI_FONT_LARGE))) {
+        return GUI_ERR_INVALIDPARAM;
+    }
+    if (pszContent && (!IsValid(stContentAttr.eAlign, GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT) || !IsValid(stContentAttr.eFontSize, GUI_FONT_SMALL, GUI_FONT_LARGE))) {
+        return GUI_ERR_INVALIDPARAM;
+    }
+    if (!IsValid(eType, GUI_BUTTON_NONE, GUI_BUTTON_YandN)) {
+        return GUI_ERR_INVALIDPARAM;
+    }
+
+    //title
+    if (pszTitle) {
+		GuiStaticDrawText((void *) pszTitle, (void *) &stTitleAttr, sgTitleArea.top, sgTitleArea.bottom, sgTitleArea.left, sgTitleArea.right, 0);
+    }
+
+    if (pszContent) {
+		GuiStaticDrawText((void *) pszContent, (void *) &stContentAttr, sgMsgContentArea.top, sgMsgContentArea.bottom, sgMsgContentArea.left, sgMsgContentArea.right, 0);
+    }
+
+    stButtonAttr.eFontSize = GUI_FONT_SMALL;
+    stButtonAttr.eStyle = stContentAttr.eStyle;
+    stButtonAttr.eAlign = GUI_ALIGN_CENTER;
+
+	memset(stRectMap, 0, sizeof(stRectMap));
+
+    switch (eType) {
+        case GUI_BUTTON_OK: 
+			GuiStaticDrawBgBox(sgMsgBoxButtons[2].left, sgMsgBoxButtons[2].top, sgMsgBoxButtons[2].right, sgMsgBoxButtons[2].bottom, sg_nDefBg);
+			GuiStaticDrawText((void *) GetKeyValuebyIndex(KEYENTER), (void *) &stButtonAttr, sgMsgBoxButtons[2].top, sgMsgBoxButtons[2].bottom, sgMsgBoxButtons[2].left, sgMsgBoxButtons[2].right, 1);
+			sgMsgBoxButtons[2].nValue = KEYENTER;
+			stRectMap[0].pRect = &sgMsgBoxButtons[2];
+			stRectMap[0].no = 1;
+            break;
+        case GUI_BUTTON_CANCEL: 
+			GuiStaticDrawBgBox(sgMsgBoxButtons[2].left, sgMsgBoxButtons[2].top, sgMsgBoxButtons[2].right, sgMsgBoxButtons[2].bottom, sg_nDefBg);
+			GuiStaticDrawText((void *) GetKeyValuebyIndex(KEYCANCEL), (void *) &stButtonAttr, sgMsgBoxButtons[2].top, sgMsgBoxButtons[2].bottom, sgMsgBoxButtons[2].left, sgMsgBoxButtons[2].right, 1);
+			sgMsgBoxButtons[2].nValue = KEYCANCEL;		
+			stRectMap[0].pRect = &sgMsgBoxButtons[2];
+			stRectMap[0].no = 1;
+            break;
+        case GUI_BUTTON_YandN: 
+			GuiStaticDrawBgBox(sgMsgBoxButtons[0].left, sgMsgBoxButtons[0].top, sgMsgBoxButtons[0].right, sgMsgBoxButtons[0].bottom, sg_nDefBg);
+			GuiStaticDrawText((void *) GetKeyValuebyIndex(KEYCANCEL), (void *) &stButtonAttr, sgMsgBoxButtons[0].top, sgMsgBoxButtons[0].bottom, sgMsgBoxButtons[0].left, sgMsgBoxButtons[0].right, 1);
+
+			GuiStaticDrawBgBox(sgMsgBoxButtons[1].left, sgMsgBoxButtons[1].top, sgMsgBoxButtons[1].right, sgMsgBoxButtons[1].bottom, sg_nDefBg);
+			GuiStaticDrawText((void *) GetKeyValuebyIndex(KEYENTER), (void *) &stButtonAttr, sgMsgBoxButtons[1].top, sgMsgBoxButtons[1].bottom, sgMsgBoxButtons[1].left, sgMsgBoxButtons[1].right, 1);
+
+			stRectMap[0].pRect = &sgMsgBoxButtons[0];
+			stRectMap[0].no = 2;
+            break;
+        default:
+            break;
+    }
+
+    // get key
+    if (timeoutSec >= 0) {
+        bChkTimer = TRUE;
+        TimerSet(GUI_TIMER_INDEX, (short) (timeoutSec * 10));
+    }
+    else {
+        bChkTimer = FALSE;
+    }
+
+	print_string("Gui_ShowMsgBox(): Wait key pressed\n");
+    while (1) {
+		int iTouchStatus = 0;
+		GUI_CALLBACK vFunc= NULL;
+		if((vFunc = GetCallbackEvent(GUI_CALLBACK_LISTEN_EVENT))){
+			int callbackLen = 0;
+			iRet = vFunc(GUI_CALLBACK_LISTEN_EVENT, NULL, &callbackLen);
+			if(iRet != GUI_OK)
+				break;
+		}
+        iTouchStatus = GetVirtualKey(stRectMap, sizeof(stRectMap)/sizeof(stRectMap[0]));
+        iKey = 0;
+
+        if (0 == kbhit()) {
+            iKey = getkey();
+            TimerSet(GUI_TIMER_INDEX, (short) (timeoutSec * 10));
+        }
+        else if(iTouchStatus > 0) {
+            TimerSet(GUI_TIMER_INDEX, (short)(timeoutSec*10));
+			iKey = iTouchStatus;
+        }
+        else if (bChkTimer && 0 == TimerCheck(GUI_TIMER_INDEX)) {
+            iRet = GUI_ERR_TIMEOUT;
+            iKey = NOKEY;
+            break;
+        }
+		print_string("Gui_ShowMsgBox(): while\n");
+		delay(1024*1024);
+		iKey = KEYENTER;
+        if (iKey != 0) {
+            if (GUI_BUTTON_NONE == eType) {
+                // Added by Kim_LinHB 20140916 v0.8 bug517
+                if (KEYCANCEL == iKey) {
+                    iRet = GUI_ERR_USERCANCELLED;
+                    break;
+                }
+                iRet = GUI_OK;
+                break;
+            }
+            else if (GUI_BUTTON_CANCEL == eType) {
+                if (KEYCANCEL == iKey) {
+                    iRet = GUI_ERR_USERCANCELLED;
+                    break;
+                }
+            }
+            else if (GUI_BUTTON_OK == eType) {
+                if (KEYENTER == iKey) {
+                    iRet = GUI_OK;
+                    break;
+                }
+            }
+            else if (GUI_BUTTON_YandN == eType) {
+                if (KEYCANCEL == iKey) {
+                    iRet = GUI_ERR_USERCANCELLED;
+                    break;
+                }
+                else if (KEYENTER == iKey) {
+                    iRet = GUI_OK;
+                    break;
+                }
+            }
+			if((vFunc = GetCallbackEvent(GUI_CALLBACK_LISTEN_EVENT))){
+				int callbackLen = sizeof(int);
+				iRet = vFunc(GUI_CALLBACK_LISTEN_EVENT, &iKey, &callbackLen);
+				if(iRet != GUI_OK){
+					break;
+				}
+			}
+			
+			print_string("Gui_ShowMsgBox(): Dead while\n");
+        }
+    }
+
+    if (pucKeyValue) {
+        *pucKeyValue = iKey;
+    }
+	sg_isCalled = 0;
+	
+	print_string("Gui_ShowMsgBox() Success\n");
+	
+    return iRet;
+}
+
+int Gui_ShowInputBox(const unsigned char *pszTitle, GUI_TEXT_ATTR stTitleAttr, const unsigned char *pszPrompt, GUI_TEXT_ATTR stPromptAttr, unsigned char *pszContent, GUI_TEXT_ATTR stContentAttr, const GUI_INPUTBOX_ATTR *pstAttr, int timeoutSec) {
+    print_string("Gui_ShowInputBox()\n");
+	
+	GUI_TEXT_ATTR stButtonAttr;
+	
+    int iRet = GUI_ERR_TIMEOUT;
+
+	if(sg_isCalled)
+		return GUI_ERR_CANTCALLFROMCALLBACK;
+
+	sg_isCalled = 1;
+
+    if (!pstAttr)
+        return GUI_ERR_INVALIDPARAM;
+
+    // verify parameter
+    if (pszTitle && (!IsValid(stTitleAttr.eAlign, GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT) || !IsValid(stTitleAttr.eFontSize, GUI_FONT_SMALL, GUI_FONT_LARGE))) {
+        return GUI_ERR_INVALIDPARAM;
+    }
+    if (pszPrompt && (!IsValid(stPromptAttr.eAlign, GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT) || !IsValid(stPromptAttr.eFontSize, GUI_FONT_SMALL, GUI_FONT_LARGE))) {
+        return GUI_ERR_INVALIDPARAM;
+    }
+    if (!IsValid(stContentAttr.eAlign, GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT) || !IsValid(stContentAttr.eFontSize, GUI_FONT_SMALL, GUI_FONT_LARGE) || !IsValid(pstAttr->eType, GUI_INPUT_NUM, GUI_INPUT_MIX) || pstAttr->nMinLen > pstAttr->nMaxLen) {
+        return GUI_ERR_INVALIDPARAM;
+    }
+
+    stButtonAttr.eStyle = stContentAttr.eStyle;
+    stButtonAttr.eAlign = GUI_ALIGN_CENTER;
+
+    if (pszTitle) {
+        GuiStaticDrawText((void *) pszTitle, (void *) &stTitleAttr, sgTitleArea.top, sgTitleArea.bottom, sgTitleArea.left, sgTitleArea.right, 0);
+    }
+
+	stButtonAttr.eFontSize = GUI_FONT_SMALL;
+    if(sg_hasTouchScreen && sg_nScrHeight > sg_nScrWidth) {
+        iRet = GetInput(pszPrompt, stPromptAttr, sgInputPromptArea, pszContent, stContentAttr, sgInputContentArea, pstAttr, sgKeypad, stButtonAttr, 16, timeoutSec);
+    }
+    else {
+        iRet = GetInput(pszPrompt, stPromptAttr, sgInputPromptArea, pszContent, stContentAttr, sgInputContentArea, pstAttr, sgInputBoxButtons, stButtonAttr, 2, timeoutSec);
+    }
+
+	sg_isCalled = 0;
+    return iRet;
+}
+
+int Gui_ShowTimeBox(const unsigned char *pszTitle, GUI_TEXT_ATTR stTitleAttr, unsigned char *pszTime, GUI_TEXT_ATTR stContentAttr, unsigned char isTime, int timeoutSec) {
+    print_string("Gui_ShowTimeBox()\n");
+	
+	GUI_TEXT_ATTR stButtonAttr;
+
+    int iRet = GUI_ERR_TIMEOUT;
+
+	if(sg_isCalled)
+		return GUI_ERR_CANTCALLFROMCALLBACK;
+
+	sg_isCalled = 1;
+
+    // verify parameters
+    if (pszTitle && (!IsValid(stTitleAttr.eAlign, GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT) || !IsValid(stTitleAttr.eFontSize, GUI_FONT_SMALL, GUI_FONT_LARGE))) {
+        return GUI_ERR_INVALIDPARAM;
+    }
+    if (!IsValid(stContentAttr.eAlign, GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT) || !IsValid(stContentAttr.eFontSize, GUI_FONT_SMALL, GUI_FONT_LARGE)) {
+        return GUI_ERR_INVALIDPARAM;
+    }
+
+    stButtonAttr.eStyle = stContentAttr.eStyle;
+    stButtonAttr.eAlign = GUI_ALIGN_CENTER;
+
+    if (pszTitle) {
+        GuiStaticDrawText((void *) pszTitle, (void *) &stTitleAttr, sgTitleArea.top, sgTitleArea.bottom, sgTitleArea.left, sgTitleArea.right, 0);
+    }
+
+	stButtonAttr.eFontSize = GUI_FONT_SMALL;
+    if(sg_hasTouchScreen && sg_nScrHeight > sg_nScrWidth) {
+        iRet = GetInputTime(sgCurrTimeArea, isTime?sgTimeArea:sgDateArea, stContentAttr, pszTime,sgKeypad, 16, stButtonAttr, isTime, timeoutSec);
+    }
+    else{
+        iRet = GetInputTime(sgCurrTimeArea, isTime?sgTimeArea:sgDateArea, stContentAttr, pszTime, sgTimeBoxButtons, 2, stButtonAttr, isTime, timeoutSec);
+    }
+
+	sg_isCalled = 0;
+    return iRet;
+}
+
+int Gui_BindMenu(const unsigned char *psztitle, GUI_TEXT_ATTR stTitleAttr, GUI_TEXT_ATTR stTextAttr, const GUI_MENUITEM *pstMenuItem, GUI_MENU *pstMenu) {
+    print_string("Gui_BindMenu()\n");
+	
+	int i = 0;
+
+    // verify parameters
+    if (pstMenu == NULL || pstMenuItem == NULL) {
+        return GUI_ERR_INVALIDPARAM;
+    }
+
+    if (psztitle)
+        sprintf_string(pstMenu->szTitle, "%.*s", sizeof(pstMenu->szTitle), psztitle);
+    else
+        memset(pstMenu->szTitle, 0, sizeof(pstMenu->szTitle));
+    pstMenu->stTitleAttr = stTitleAttr;
+    pstMenu->stItemAttr = stTextAttr;
+
+    pstMenu->pstContent = (GUI_MENUITEM *) pstMenuItem;
+    pstMenu->nSize = 0;
+    while (1) {
+        if (strcmp(pstMenuItem[i].szText, "") == 0) {
+            break;
+        }
+        pstMenu->nSize = (i++) + 1;
+    }
+    return GUI_OK;
+}
+
+int Gui_ShowMenuList(const GUI_MENU *pstMenu, enum MENUSTYLE eMode, int timeoutSec, int *piSelValue) {
+    print_string("Gui_ShowMenuList()\n");
+	
+	int iRet = 0;
+
+    GUI_TEXT_ATTR stButtonAttr;
+
+	if(sg_isCalled)
+		return GUI_ERR_CANTCALLFROMCALLBACK;
+
+	sg_isCalled = 1;
+
+    // verify parameters
+    if (!pstMenu) {
+        return GUI_ERR_INVALIDPARAM;
+    }
+
+    if (!IsValid(pstMenu->stItemAttr.eAlign, GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT) || !IsValid(pstMenu->stItemAttr.eFontSize, GUI_FONT_SMALL, GUI_FONT_LARGE)) {
+        return GUI_ERR_INVALIDPARAM;
+    }
+
+	stButtonAttr.eFontSize = GUI_FONT_SMALL;
+    stButtonAttr.eStyle = 0;
+    stButtonAttr.eAlign = GUI_ALIGN_CENTER;
+
+    if (piSelValue && (*piSelValue > (int) pstMenu->nSize || *piSelValue < 0))
+        *piSelValue = 0;
+
+	iRet = GetMenuItem(pstMenu, eMode, sgMenuListArea, sgMenuButtons, 4, &stButtonAttr, timeoutSec, piSelValue);
+	sg_isCalled = 0;
+    return iRet;
+}
+
+int Gui_ShowAlternative(const unsigned char *pszTitle, GUI_TEXT_ATTR stTitleAttr, const unsigned char *pszPrompt, GUI_TEXT_ATTR stContentAttr, const unsigned char *pszOption1, int iValue1, const unsigned char *pszOption2, int iValue2, int timeoutSec, int *piSelOption) {
+    print_string("Gui_ShowAlternative()\n");
+	GUI_TEXT_ATTR stButtonAttr;
+
+    unsigned char bChkTimer;
+    int iRet = GUI_ERR_TIMEOUT;
+    int iKey = NOKEY;
+    unsigned char szBuff[2][20];
+    int iSelected;
+
+    RectMap stRectMap[2];
+
+	if(sg_isCalled)
+		return GUI_ERR_CANTCALLFROMCALLBACK;
+
+	sg_isCalled = 1;
+
+    // verify parameter
+    if (pszTitle && (!IsValid(stTitleAttr.eAlign, GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT) || !IsValid(stTitleAttr.eFontSize, GUI_FONT_SMALL, GUI_FONT_LARGE))) {
+        return GUI_ERR_INVALIDPARAM;
+    }
+    if ((!IsValid(stContentAttr.eAlign, GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT) || !IsValid(stContentAttr.eFontSize, GUI_FONT_SMALL, GUI_FONT_LARGE))) {
+        return GUI_ERR_INVALIDPARAM;
+    }
+
+    if (!pszOption1 || !pszOption2 || !piSelOption || iValue1 == iValue2) {
+        return GUI_ERR_INVALIDPARAM;
+    }
+
+    if (*piSelOption != iValue1 && *piSelOption != iValue2) {
+        return GUI_ERR_INVALIDPARAM;
+    }
+
+    sprintf_string(szBuff[0], "%d.%s", iValue1, pszOption1);
+    sprintf_string(szBuff[1], "%d.%s", iValue2, pszOption2);
+
+    //title
+    if (pszTitle) {
+        GuiStaticDrawText((void *) pszTitle, (void *) &stTitleAttr, sgTitleArea.top, sgTitleArea.bottom, sgTitleArea.left, sgTitleArea.right, 0);
+    }
+
+    if (pszPrompt) {
+        GuiStaticDrawText((void *) pszPrompt, (void *) &stContentAttr, sgAlternativePrompt.top, sgAlternativePrompt.bottom, sgAlternativePrompt.left, sgAlternativePrompt.right, 0);
+    }
+
+    stButtonAttr.eFontSize = GUI_FONT_SMALL;
+    stButtonAttr.eStyle = stContentAttr.eStyle;
+    stButtonAttr.eAlign = GUI_ALIGN_CENTER;
+
+	GuiStaticDrawBgBox(sgAlternativeButtons[0].left, sgAlternativeButtons[0].top, sgAlternativeButtons[0].right, sgAlternativeButtons[0].bottom, sg_nDefBg);
+	GuiStaticDrawBgBox(sgAlternativeButtons[0].left, sgAlternativeButtons[0].top, sgAlternativeButtons[0].right, sgAlternativeButtons[0].bottom, sg_nDefBg);
+
+	GuiStaticDrawText((void *) GetKeyValuebyIndex(KEYCANCEL), (void *) &stButtonAttr, sgAlternativeButtons[0].top, sgAlternativeButtons[0].bottom, sgAlternativeButtons[0].left, sgAlternativeButtons[0].right, 1);
+	GuiStaticDrawText((void *) GetKeyValuebyIndex(KEYENTER), (void *) &stButtonAttr, sgAlternativeButtons[1].top, sgAlternativeButtons[1].bottom, sgAlternativeButtons[1].left, sgAlternativeButtons[1].right, 1);
+
+    sgAlternativeOptions[0].nValue = 1000 + iValue1;
+    sgAlternativeOptions[1].nValue = 1000 + iValue2;
+
+	iSelected = *piSelOption + 1000;
+
+    {
+        int j;
+        GUI_TEXT_ATTR stReversal = stButtonAttr;
+        if (stReversal.eStyle & GUI_FONT_REVERSAL) {
+            stReversal.eStyle &= ~GUI_FONT_REVERSAL;
+        }
+        else {
+            stReversal.eStyle |= (GUI_FONT_REVERSAL | GUI_FONT_OPAQUE);
+        }
+        for (j = 0; j < 2; ++j) { // just 2 options
+            if (sgAlternativeOptions[j].nValue == iSelected) {
+                GuiStaticDrawText((void *) szBuff[j], (void *) &stReversal, sgAlternativeOptions[j].top, sgAlternativeOptions[j].bottom, sgAlternativeOptions[j].left, sgAlternativeOptions[j].right, 1);
+            }
+            else {
+                GuiStaticDrawText((void *) szBuff[j], (void *) &stButtonAttr, sgAlternativeOptions[j].top, sgAlternativeOptions[j].bottom, sgAlternativeOptions[j].left, sgAlternativeOptions[j].right, 1);
+            }
+        }
+    }
+
+    if (timeoutSec >= 0) {
+        bChkTimer = TRUE;
+        TimerSet(GUI_TIMER_INDEX, (short) timeoutSec * 10);
+    }
+    else {
+        bChkTimer = FALSE;
+    }
+
+    memset(stRectMap, 0, sizeof(stRectMap));
+    stRectMap[0].pRect = sgAlternativeButtons;
+    stRectMap[0].no = 2;
+
+    stRectMap[1].pRect = sgAlternativeOptions;
+    stRectMap[1].no = 2;
+
+    while (1) {
+		int iTouchStatus = 0;
+		GUI_CALLBACK vFunc = NULL;
+		if((vFunc = GetCallbackEvent(GUI_CALLBACK_LISTEN_EVENT))){
+			int callbackLen = 0;
+			iRet = vFunc(GUI_CALLBACK_LISTEN_EVENT, NULL, &callbackLen);
+			if(iRet != GUI_OK)
+				break;
+		}
+        iTouchStatus = GetVirtualKey(stRectMap, sizeof(stRectMap)/sizeof(stRectMap[0]));
+        iKey = 0;
+
+        if (0 == kbhit()) {
+            TimerSet(GUI_TIMER_INDEX, (short) timeoutSec * 10);
+            iKey = getkey();
+        }
+        else if(iTouchStatus > 0) {
+            TimerSet(GUI_TIMER_INDEX, (short)(timeoutSec*10));
+			iKey = iTouchStatus;
+        }
+        else if (bChkTimer && 0 == TimerCheck(GUI_TIMER_INDEX)) {
+            iKey = GUI_ERR_TIMEOUT;
+        }
+        else {
+            continue;
+        }
+
+        if (KEYCANCEL == iKey) {
+            iRet = GUI_ERR_USERCANCELLED;
+            break;
+        }
+        else if (GUI_ERR_TIMEOUT == iKey) {
+            iRet = GUI_ERR_TIMEOUT;
+            break;
+        }
+        else if (KEYENTER == iKey) {
+            iRet = GUI_OK;
+            break;
+        }
+		else if (KEYALPHA == iKey) {
+			iSelected = (iSelected == sgAlternativeOptions[0].nValue ? sgAlternativeOptions[1].nValue : sgAlternativeOptions[0].nValue);
+		}
+		else if (sgAlternativeOptions[0].nValue == iKey || sgAlternativeOptions[1].nValue == iKey){
+			iSelected = iKey;
+		}
+
+        //GuiStaticClearScr(&pstTimeRect[ucSelected]);
+
+        {
+            int j;
+            GUI_TEXT_ATTR stReversal = stButtonAttr;
+            if (stReversal.eStyle & GUI_FONT_REVERSAL) {
+                stReversal.eStyle &= ~GUI_FONT_REVERSAL;
+            }
+            else {
+                stReversal.eStyle |= (GUI_FONT_REVERSAL | GUI_FONT_OPAQUE);
+            }
+            for (j = 0; j < 2; ++j) {
+                if (sgAlternativeOptions[j].nValue == iSelected) {
+                    GuiStaticDrawText((void *) szBuff[j], (void *) &stReversal, sgAlternativeOptions[j].top, sgAlternativeOptions[j].bottom, sgAlternativeOptions[j].left, sgAlternativeOptions[j].right, 1);
+                }
+                else {
+					GuiStaticClearScr(&sgAlternativeOptions[j], 1);
+					GuiStaticDrawBgBox(sgAlternativeOptions[j].left, sgAlternativeOptions[j].top, sgAlternativeOptions[j].right, sgAlternativeOptions[j].bottom, sg_nDefBg);
+                    GuiStaticDrawText((void *) szBuff[j], (void *) &stButtonAttr, sgAlternativeOptions[j].top, sgAlternativeOptions[j].bottom, sgAlternativeOptions[j].left, sgAlternativeOptions[j].right, 1);
+                }
+            }
+        }
+    }
+
+    if (GUI_OK == iRet)
+        *piSelOption = iSelected - 1000;
+	sg_isCalled = 0;
+    return iRet;
+}
+
+int Gui_ShowInfoPage(const GUI_PAGE *pstPage, unsigned char isMultiChapters, int timeoutSec) {
+    print_string("Gui_ShowInfoPage()\n");
+	unsigned int i;
+    int iRet = 0;
+
+    GUI_TEXT_ATTR stButtonAttr;
+
+	if(sg_isCalled)
+		return GUI_ERR_CANTCALLFROMCALLBACK;
+
+	sg_isCalled = 1;
+
+    // verify parameters
+    if (!pstPage) {
+        return GUI_ERR_INVALIDPARAM;
+    }
+    if (pstPage->szTitle[0] != 0 && (!IsValid(pstPage->stTitleAttr.eAlign , GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT) || !IsValid(pstPage->stTitleAttr.eFontSize, GUI_FONT_SMALL, GUI_FONT_LARGE))) {
+        return GUI_ERR_INVALIDPARAM;
+    }
+    for (i = 0; i < pstPage->nLine; ++i) {
+        if (!IsValid(pstPage->pstContent[i].stLineAttr.eAlign, GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT) || !IsValid(pstPage->pstContent[i].stLineAttr.eFontSize, GUI_FONT_SMALL, GUI_FONT_LARGE)) {
+            return GUI_ERR_INVALIDPARAM;
+        }
+    }
+
+    stButtonAttr.eFontSize = GUI_FONT_SMALL;
+    stButtonAttr.eStyle = 0;
+    stButtonAttr.eAlign = GUI_ALIGN_CENTER;
+
+    iRet = GetInfoPage(pstPage, sgInfoPageArea, sgInfoPageButtons, 4, &stButtonAttr, isMultiChapters, timeoutSec);
+
+	sg_isCalled = 0;
+    return iRet;
+}
+
+int Gui_CreateInfoPage(const unsigned char *pszTitle, GUI_TEXT_ATTR stTitleAttr, const GUI_PAGELINE *pstContent, unsigned int nLine, GUI_PAGE *pstPage) {
+    print_string("Gui_CreateInfoPage()\n");
+	if (!pstPage) {
+        return GUI_ERR_INVALIDPARAM;
+    }
+
+    if (pszTitle)
+        sprintf_string(pstPage->szTitle, "%.*s", sizeof(pstPage->stTitleAttr), pszTitle);
+    else
+        pstPage->szTitle[0] = 0;
+    pstPage->stTitleAttr = stTitleAttr;
+    pstPage->nLine = nLine;
+
+    pstPage->pstContent = (GUI_PAGELINE *) pstContent;
+    return GUI_OK;
+}
+
+int Gui_ShowSignatureBoard(const unsigned char *pszTitle, GUI_TEXT_ATTR stTitleAttr,
+	const unsigned char *pszOutputFile,
+	char nMode, int timeoutSec){
+	
+	print_string("Gui_ShowSignatureBoard()\n");
+		
+	GUI_TEXT_ATTR stButtonAttr;
+	unsigned char bChkTimer;
+	int iRet = GUI_ERR_TIMEOUT;
+	int iKey = NOKEY;
+	RectMap stRectMap[1];
+	int i;
+	TS_ATTR_T signMode = {1};
+	TS_ATTR_T normalMode = {0};
+
+	if (!sg_hasTouchScreen) {
+		return GUI_ERR_UNSUPPORTED;
+	}
+
+	// verify parameter
+	if (pszTitle && (!IsValid(stTitleAttr.eAlign, GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT))) {
+		return GUI_ERR_INVALIDPARAM;
+	}
+	if(!pszOutputFile){// || (nMode != 0 && nMode != 1)){
+		return GUI_ERR_INVALIDPARAM;
+	}
+
+	//Prepare Resources
+
+	if(sg_isCalled)
+		return GUI_ERR_CANTCALLFROMCALLBACK;
+
+	sg_isCalled = 1;
+
+	//title
+	if(pszTitle)
+	GuiStaticDrawText((void *) pszTitle, (void *) &stTitleAttr, sgTitleArea.top, sgTitleArea.bottom, sgTitleArea.left, sgTitleArea.right, 0);
+
+	stButtonAttr.eFontSize = GUI_FONT_SMALL;
+	stButtonAttr.eStyle = GUI_FONT_STD;
+	stButtonAttr.eAlign = GUI_ALIGN_CENTER;
+
+	for (i = 0; i < sizeof(sgSignatureButtons) / sizeof(sgSignatureButtons[0]); ++i) { // total buttons on screen, 3 or 16
+		GuiStaticDrawBgBox(sgSignatureButtons[i].left, sgSignatureButtons[i].top, sgSignatureButtons[i].right, sgSignatureButtons[i].bottom, sg_nDefBg);
+
+		if(sgSignatureButtons[i].nValue != 0) {
+			GuiStaticDrawRect(sgSignatureButtons[i].left, sgSignatureButtons[i].top, sgSignatureButtons[i].right, sgSignatureButtons[i].bottom, sg_nDefColor);
+			GuiStaticDrawRect(sgSignatureButtons[i].left+ 1, sgSignatureButtons[i].top+ 1, sgSignatureButtons[i].right-1, sgSignatureButtons[i].bottom-1, sg_nDefColor);
+		}
+
+		switch (sgSignatureButtons[i].nValue) {
+		case KEYENTER:
+			GuiStaticDrawText((void *) GetKeyValuebyIndex(KEYENTER), (void *) &stButtonAttr, sgSignatureButtons[i].top, sgSignatureButtons[i].bottom, sgSignatureButtons[i].left, sgSignatureButtons[i].right, 1);
+			break;
+		case KEYCANCEL:
+			GuiStaticDrawText((void *) GetKeyValuebyIndex(KEYCANCEL), (void *) &stButtonAttr, sgSignatureButtons[i].top, sgSignatureButtons[i].bottom, sgSignatureButtons[i].left, sgSignatureButtons[i].right, 1);
+			break;
+		case KEYCLEAR:
+			GuiStaticDrawText((void *) GetKeyValuebyIndex(KEYCLEAR), (void *) &stButtonAttr, sgSignatureButtons[i].top, sgSignatureButtons[i].bottom, sgSignatureButtons[i].left, sgSignatureButtons[i].right, 1);
+			break;
+		}
+	}
+
+	GuiStaticDrawBgBox(sgSignatureArea.left, sgSignatureArea.top, sgSignatureArea.right, sgSignatureArea.bottom, sg_nDefBg);
+	GuiStaticDrawRect(sgSignatureArea.left-1, sgSignatureArea.top-1, sgSignatureArea.right+1, sgSignatureArea.bottom+1, sg_nDefColor);
+
+	if (timeoutSec >= 0) {
+		bChkTimer = TRUE;
+		TimerSet(GUI_TIMER_INDEX, (short) (timeoutSec * 10));
+	}
+	else {
+		bChkTimer = FALSE;
+	}
+
+	memset(&sgSignData, 0, sizeof(SignData));
+
+	memset(stRectMap, 0, sizeof(stRectMap));
+
+	stRectMap[0].pRect = sgSignatureButtons;
+	stRectMap[0].no = 3;
+
+	TouchScreenAttrSet(&signMode);
+	
+	while (1) {
+		int iTouchStatus = 0;
+
+		GUI_CALLBACK vFunc= NULL;
+		if((vFunc = GetCallbackEvent(GUI_CALLBACK_LISTEN_EVENT))){
+			int callbackLen = 0;
+			iRet = vFunc(GUI_CALLBACK_LISTEN_EVENT, NULL, &callbackLen);
+			if(iRet != GUI_OK)
+				break;
+		}
+
+		iKey = 0;
+		iTouchStatus = GetVirtualKey(stRectMap, sizeof(stRectMap)/sizeof(stRectMap[0]));
+		GuiStaticDrawSign(&sgSignatureArea);
+
+		if (0 == kbhit()) {
+			iKey = getkey();
+			TimerSet(GUI_TIMER_INDEX, (short) (timeoutSec * 10));
+		}
+		else if(iTouchStatus > 0) {
+			TimerSet(GUI_TIMER_INDEX, (short)(timeoutSec*10));
+			iKey = iTouchStatus;
+		}
+		else if (bChkTimer && 0 == TimerCheck(GUI_TIMER_INDEX)) {
+			iRet = GUI_ERR_TIMEOUT;
+			iKey = NOKEY;
+			break;
+		}
+
+		if (iKey != 0) {
+			if (KEYCANCEL == iKey) {
+				iRet = GUI_ERR_USERCANCELLED;
+				break;
+			}
+			else if (KEYENTER == iKey) {
+				if(0 == nMode) {
+					iRet = SaveSignImg(&sgSignatureArea, pszOutputFile);
+				}
+				else if(1 == nMode){
+					iRet = SaveSignRoute(&sgSignatureArea, &sgSignData, pszOutputFile);
+				}
+				break;
+			}
+			else if (KEYCLEAR == iKey){
+				TimerSet(GUI_TIMER_INDEX, (short)(timeoutSec*10));
+				//XuiSigBoardSetStat(sg_sign_area.pSignatureBoard, &sg_sign_area.stAttr);
+				GuiStaticClearScr(&sgSignatureArea, 0);
+				memset(&sgSignData, 0, sizeof(SignData));
+				continue;
+			}
+		}
+	}
+	TouchScreenAttrSet(&normalMode);
+	sg_isCalled = 0;
+
+	return iRet;
+}
+
+int Gui_GetImageSize(const unsigned char *File, unsigned int *pWidth, unsigned int *pHeight) {
+    int fd;
+	
+	print_string("Gui_GetImageSize()\n");
+
+    if (!pHeight && !pWidth) {
+        return GUI_ERR_INVALIDPARAM;
+    }
+
+    fd = open((char *) File, O_RDWR);
+    if (fd < 0) {
+        return GUI_ERR_INVALIDPARAM;
+    }
+
+    if (strstr(File, ".bmp") || strstr(File, ".BMP")) {
+        unsigned char wtmp[4] = { '0' };
+        unsigned char htmp[4] = { '0' };
+
+        seek(fd, 0x12, SEEK_SET);
+        read(fd, wtmp, 4);
+        read(fd, htmp, 4);
+        close(fd);
+
+        //modified by Kim 2014-8-14 v0.3
+        *pWidth = (unsigned int) ((unsigned int) (wtmp[0] << 24) + (wtmp[1] << 16) + (wtmp[2] << 8) + wtmp[3]);
+        *pHeight = (unsigned int) ((unsigned int) (htmp[0] << 24) + (htmp[1] << 16) + (htmp[2] << 8) + htmp[3]);
+    }
+    else if (strstr(File, ".png") || strstr(File, ".PNG")) {
+        unsigned char wtmp[4] = { '0' };
+        unsigned char htmp[4] = { '0' };
+
+        seek(fd, 0x10, SEEK_SET);
+        read(fd, wtmp, 4);
+        read(fd, htmp, 4);
+        close(fd);
+
+        //modified by Kim 2014-8-14 v0.3
+        *pWidth = (unsigned int) ((unsigned int) (wtmp[0] << 24) + (wtmp[1] << 16) + (wtmp[2] << 8) + wtmp[3]);
+        *pHeight = (unsigned int) ((unsigned int) (htmp[0] << 24) + (htmp[1] << 16) + (htmp[2] << 8) + htmp[3]);
+    }
+    return GUI_OK;
+}
+
+int Gui_GetScrWidth(void){
+	print_string("Gui_GetScrWidth()\n");
+
+	return sg_nScrWidth;
+}
+
+int Gui_GetScrHeight(void){
+	print_string("Gui_GetScrHeight()\n");
+
+	return sg_nScrHeight;
+}
+
+
+int Gui_RegCallback(gui_callbacktype_t type, GUI_CALLBACK func){
+	print_string("Gui_RegCallback()\n");
+
+	return SetCallbackEvent(type, func);
+}
+
+
+int Gui_UpdateTitle(const char *pszTitle, GUI_TEXT_ATTR stTitleAttr){
+	print_string("Gui_UpdateTitle\n");
+
+// verify parameters
+    if (pszTitle && (!IsValid(stTitleAttr.eAlign, GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT))) {
+        return GUI_ERR_INVALIDPARAM;
+    }
+	GuiStaticDrawText(pszTitle, &stTitleAttr, 0, sg_nRow, 0, sg_nScrWidth, 0);
+	return GUI_OK;
+}
+
+int Gui_UpdateKey(int index, const char* text){
+	print_string("Gui_UpdateKey\n");
+	
+	int iRet;
+
+	iRet = SetKeybyIndex(index, text);
+	return iRet;
+}
+
+
 //end of file
 

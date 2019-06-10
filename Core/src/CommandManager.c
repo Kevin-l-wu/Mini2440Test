@@ -4,24 +4,30 @@
 
 #include "CommandManager.h"
 
-
 extern int Command_begin;
 extern int Command_end;
 
-
-void HandleEventCommond(char* commond, int argc, char(*argv)[MAX_COMMAND_LENGTH])
+void HandleEventCommond(int argc, char* const* argv)
 {
 	DiagsCommand* pDiagsCommand = NULL;
-	int compareResult = 0;
+	char* commond = NULL;
+	int i = 0;
 	
-	for(pDiagsCommand = (DiagsCommand*)&Command_begin; pDiagsCommand < (DiagsCommand*)&Command_end; pDiagsCommand++)
-	{	
-		compareResult = strcmp(commond, pDiagsCommand->commandString);
-		if(compareResult == 0)
-		{
-			pDiagsCommand->function(argc, argv);
-			break;
+	if((argv != NULL) && (argc > 0) )
+	{
+		int compareResult = 0;
+		commond = argv[0]; 
+		
+		for(pDiagsCommand = (DiagsCommand*)&Command_begin; pDiagsCommand < (DiagsCommand*)&Command_end; pDiagsCommand++)
+		{	
+			compareResult = strcmp(commond, pDiagsCommand->commandString);
+			if(compareResult == 0)
+			{
+				pDiagsCommand->function(argc, argv);
+				break;
+			}
 		}
+	
 	}
 }
 

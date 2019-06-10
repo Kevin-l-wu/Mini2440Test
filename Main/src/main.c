@@ -8,23 +8,33 @@
 #include "Interrupt.h"
 #include "String.h"
 #include "Framework.h"
-#include "GetoptTemp.h"
 #include "CommandManager.h"
+
+//#define DEBUG_ON 1
+
+char gArgvArray[MAX_COMMAND_NUMBER][MAX_COMMAND_LENGTH] = {'\0'};
+char* gArgv[MAX_COMMAND_NUMBER];
+int gArgc = 0;
 
 int raise(int a)
 {
 
 }
 
-char gArgv[MAX_COMMAND_NUMBER][MAX_COMMAND_LENGTH] = {'\0'};
-int gArgc = 0;
+void PreGenerateArgv()
+{
+	int i = 0;
+	
+	for(i = 0; i < MAX_COMMAND_NUMBER; i++)
+	{
+		gArgv[i] = gArgvArray[i];
+	}
+}
+
 
 int gboot_main()
 {
-	char receive_string[MAX_COMMAND_LENGTH * MAX_COMMAND_NUMBER] = {'\0'};
-	int a = 10;
-	int index = 0;
-	char get_data = 0;
+	char recvStr[MAX_COMMAND_LENGTH * MAX_COMMAND_NUMBER] = {'\0'};
 	
 	Uart0Init();
 	
@@ -39,24 +49,38 @@ int gboot_main()
 
 	while(1)
 	{
-		int index = 0;
-	
-		memset(receive_string, 0, MAX_COMMAND_LENGTH * MAX_COMMAND_NUMBER); 	// Clear command line buffer
-		uart0_recv_string(receive_string);										// Receive command string from terminal
+		memset(recvStr, 0, MAX_COMMAND_LENGTH * MAX_COMMAND_NUMBER); 	// Clear command line buffer
+		uart0_recv_string(recvStr);										// Receive command string from terminal
 		
-		print_string(receive_string);
+		print_string(recvStr);
 		print_string("\n");
-		GenerateArgv(&gArgc, &gArgv, receive_string);
+		
+		/* For generating gArgc and gArgv*/
+		PreGenerateArgv();
+		GenerateArgv(&gArgc, &gArgvArray, recvStr);
+		
 #ifdef DEBUG_ON
-		printf_string("\r\ngArgc = %d\r\n", gArgc);
+		int index = 0;
+		printf_string("\ngArgc = %d\n", gArgc);
 		
 		for(index = 0; index < gArgc; index++)
 		{
-			printf_string("gArgv[%d] = %s\r\n", index, gArgv[index]);
+			printf_string("gArgv[%d] = %s\n", index, gArgv[index]);
 		}
+
+		int i = 0;
+		
+		printf_string("gArgv = 0x%x\n", gArgv);
+		
+		for(i = 0; i < 32; i++)
+		{
+			printf_string("0x%x ", *(((char*)gArgv) + i));
+		}
+
+		printf_string("\n");	
 #endif
-//		handle_event_commond(receive_string, gArgc, gArgv);
-		HandleEventCommond(receive_string, gArgc, gArgv);
+//		handle_event_commond(recvStr, gArgc, gArgv);
+		HandleEventCommond(gArgc, gArgv);
 		
 		print_string(":-) ");
 	}

@@ -7,7 +7,11 @@
 #include "String.h"
 #include "Dm9000.h"
 
-#define CONFIG_DM9000_DEBUG
+#include "ModManager.h"
+#include "../Protocol/inc/DM9000Protocol.h"
+
+
+//#define CONFIG_DM9000_DEBUG
 
 #ifdef CONFIG_DM9000_DEBUG
 #define DM9000_DBG(fmt,args...) printf_string(fmt, ##args)
@@ -15,25 +19,25 @@
 #define DM9000_DBG(fmt,args...)
 #endif
 
-u8 dev_mac_addr[6] = {9, 8, 7, 6, 5, 4};
-
+extern u8 gLocalMacAddr[6];
+static u8 dm9000InitFlag = 0;
 
 #define ADJUST_ENDIAN(val) (((val) & 0x00ff) << 8 | ((val) & 0xff00) >> 8) 
 
-void DM9000_iow(u16 reg, u16 data)
+static void DM9000_iow(u16 reg, u16 data)
 {
 	DM_ADD = reg;
 	DM_DAT = data;
 }
 
-u8 DM9000_ior(u16 reg)
+static u8 DM9000_ior(u16 reg)
 {
 	DM_ADD = reg;
 	return DM_DAT;
 }
 
 #ifdef CONFIG_DM9000_DEBUG
-void dm9000_dump_register(void)
+static void dm9000_dump_register(void)
 {
 	DM9000_DBG("\n");
 	DM9000_DBG("NCR   (0x00): %x\n", DM9000_ior(0));
@@ -48,7 +52,7 @@ void dm9000_dump_register(void)
 }
 #endif
 
-void cs_init()
+static void DM9000CSInit()
 {
 	/* DM9000 data bus is connected to data bus, 16 bit */
 	/* Set bank4 data width = 16 bit, BWSCON[17:16] = 01 */
@@ -59,9 +63,9 @@ void cs_init()
 		| (B4_Tcoh << 6) | (B4_Tah << 4) | (B4_Tacp << 2) | (B4_PMC << 0);	
 }
 
-void dm9000_int_init()
+static void DM9000IntInit()
 {
-	print_string("dm9000_int_init\n");
+	print_string("DM9000IntInit\n");
 	
 	/* DM9000 INT is EINT7 -> GPF[7] */
 	/*Configure GPF[7] is EINT7*/
@@ -78,15 +82,18 @@ void dm9000_int_init()
 	/* Set EINTMASK */
 	EINTMASK = (EINTMASK) & (~(0x01 << 7));
 	
+	DM9000_iow(DM9000_ISR, IMR_PTM);/* Clear Tx bit in ISR */
+	DM9000_iow(DM9000_ISR, IMR_PRM);/* Clear Rx bit in ISR */
+	
 	/* Clear SRCPND and INTPND */
 	EINTPEND = (0x01 << 7);
 	SRCPND = (0x01 << 4);
 	INTPND = (0x01 << 4);
 }
 
-void dm9000_int_clear()
+static void DM9000IntClear()
 {
-	print_string("dm9000_int_init\n");
+	print_string("DM9000IntClear\n");
 	
 	/* DM9000 INT is EINT7 -> GPF[7] */
 	/*Configure GPF[7] is EINT7*/
@@ -105,12 +112,13 @@ void dm9000_int_clear()
 	EINTPEND = (0x01 << 7);
 	SRCPND = (0x01 << 4);
 	INTPND = (0x01 << 4);
+
 }
 
-void DM9000_reset()
+static void DM9000Reset()
 {
 	u8 status = 0;
-	print_string("DM9000_reset\n");
+	print_string("DM9000Reset\n");
 	
 	/* Make all GPIO0 outputs, all others inputs */
 	DM9000_iow(DM9000_GPCR, GPCR_GPIO0_OUT);
@@ -120,16 +128,26 @@ void DM9000_reset()
 	
 	/* Step 2: Software reset */
 	DM9000_iow(DM9000_NCR, (NCR_LBK_INT_MAC | NCR_RST));
-	DM9000_iow(DM9000_NCR, 0);
 	
-	DM9000_iow(DM9000_NCR, (NCR_LBK_INT_MAC | NCR_RST)); /* Issue a second reset */
+	do {
+		DM9000_DBG("resetting the DM9000, 1st reset\n");
+		delay(250); /* Wait at least 20 us */
+	} while (DM9000_ior(DM9000_NCR) & 1);
+	
+	
 	DM9000_iow(DM9000_NCR, 0);
+	DM9000_iow(DM9000_NCR, (NCR_LBK_INT_MAC | NCR_RST)); /* Issue a second reset */
+	
+	do {
+		DM9000_DBG("resetting the DM9000, 2nd reset\n");
+		delay(250); /* Wait at least 20 us */
+	} while (DM9000_ior(DM9000_NCR) & 1);
 	
 	status = DM9000_ior(DM9000_ISR);
 	printf_string("status = %x\n", status);
 }
 
-int DM9000_probe()
+static int DM9000Probe()
 {
 	u32 id_val = 0;
 	u32 chip_rev = 0;
@@ -159,23 +177,23 @@ int DM9000_probe()
 	}
 }
 
-int dm9000_init()
+static int DM9000Init()
 {
 	u32 i = 0;
 	u32 status = 0;
 	
-	print_string("---------------- dm9000_init -----------------\n");
+	print_string("---------------- DM9000Init -----------------\n");
 	/* 1. Select Dm9000 chip */
-	cs_init();
+	DM9000CSInit();
+		
+	/* 3. Reset device */
+	DM9000Reset();
 	
 	/* 2. Interrupt initialize */
-	dm9000_int_init();
-	
-	/* 3. Reset device */
-	DM9000_reset();
+//	DM9000IntInit();
 	
 	/* 4. Search Dm9000 */
-	DM9000_probe();
+	DM9000Probe();
 	
 	/* 5. Mac initialize */
 	/* Program operating register, only internal phy supported */
@@ -197,7 +215,7 @@ int dm9000_init()
 	
 	/* 6. Fill device MAC address */
 	for (i = 0; i < 6; i++)
-		DM9000_iow(DM9000_PAR + i, dev_mac_addr[i]);
+		DM9000_iow(DM9000_PAR + i, gLocalMacAddr[i]);
 	
 	/* 7. Active Dm9000 */
 	/* RX enable */
@@ -206,18 +224,72 @@ int dm9000_init()
 	/* Enable TX/RX interrupt mask */
 	DM9000_iow(DM9000_IMR, IMR_PAR);
 	
-	print_string("---------------- dm9000_init complete -----------------\n");
+	dm9000InitFlag = 1;	//Set the dm9000 init flag
+	
+	print_string("---------------- DM9000Init complete -----------------\n");
 	return 0;
 }
 
+
+/*
+   Write a word to phyxcer
+*/
+static void
+dm9000_phy_write(int reg, u16 value)
+{
+
+	/* Fill the phyxcer register into REG_0C */
+	DM9000_iow(DM9000_EPAR, DM9000_PHY | reg);
+
+	/* Fill the written data into REG_0D & REG_0E */
+	DM9000_iow(DM9000_EPDRL, (value & 0xff));
+	DM9000_iow(DM9000_EPDRH, ((value >> 8) & 0xff));
+	DM9000_iow(DM9000_EPCR, 0xa);	/* Issue phyxcer write command */
+	delay(5000);			/* Wait write complete */
+	DM9000_iow(DM9000_EPCR, 0x0);	/* Clear phyxcer write command */
+	DM9000_DBG("dm9000_phy_write(reg:0x%x, value:0x%x)\n", reg, value);
+}
+
+/*
+  Stop the interface.
+  The interface is stopped when it is brought.
+*/
+static void DM9000Halt()
+{
+	DM9000_DBG("%s\n", __func__);
+
+	/* RESET devie */
+	dm9000_phy_write(0, 0x8000);	/* PHY RESET */
+	DM9000_iow(DM9000_GPR, 0x01);	/* Power-Down PHY */
+	DM9000_iow(DM9000_IMR, 0x80);	/* Disable all interrupt */
+	DM9000_iow(DM9000_RCR, 0x00);	/* Disable RX */
+}
+
+static void DM9000DeInit()
+{
+	print_string("---------------- DM9000DeInit -----------------\n");
+	
+	DM9000Halt();
+	
+	dm9000InitFlag = 0;	//Clear the dm9000 init flag
+}
+
+
+static u8 DM9000CheckInit()
+{
+	return dm9000InitFlag;
+}
+
 /*After send finish, not interrupt, need mask send interrupt */
-void dm9000_send(u8* data, u32 length)
+static void DM9000Send(u8* data, u32 length)
 {
 	u32 i = 0;
 	u32 status = 0;
 	u8 isr_status = 0;
 	
-//	print_string("dm9000_send\n");
+//	print_string("DM9000Send\n");
+	
+	DM9000_iow(DM9000_ISR, IMR_PTM);/* Clear Tx bit in ISR */
 	
 	/* 1. Mask DM9000 interrupt */
 	DM9000_iow(DM9000_IMR, 0x80);
@@ -254,11 +326,10 @@ void dm9000_send(u8* data, u32 length)
 	
 	isr_status = DM9000_ior(DM9000_ISR);
 	
-	DM9000_iow(DM9000_ISR, 0x01); /* clear PR status latched in bit 0 */
-	DM9000_iow(DM9000_ISR, 0x02); /* clear PR status latched in bit 1 */
+	DM9000_iow(DM9000_ISR, IMR_PTM);/* Clear Tx bit in ISR */
 }
 
-int dm9000_recv(u8* data)
+static int DM9000Recv()
 {
 	u16 status, length;
 	u16 tmp;
@@ -266,115 +337,92 @@ int dm9000_recv(u8* data)
 	u8 ready = 0;
 	u8 isr_status = 0;
 	
+	u8 recvBuf[1600] = {0};
+	
 	/* 1. Check if interrupt accrue */
-	if(DM9000_ior(DM9000_ISR) & 0x01)
-        DM9000_iow(DM9000_ISR, 0x01);
-    else
-        return 0;
+	if(!(DM9000_ior(DM9000_ISR) & 0x01))
+		return 0;
 	
-
-	/* 2. Dummy read */
-	ready = DM9000_ior(DM9000_MRCMDX);	/* Dummy read */
+	DM9000_iow(DM9000_ISR, 0x01);/* clear PR status latched in bit 0 */
 	
-	if((ready & 0x01) != 0x01)
+	for(;;)
 	{
+		memset(recvBuf, 0, 1600);
+		/* 2. Dummy read */
 		ready = DM9000_ior(DM9000_MRCMDX);
-		if((ready & 0x01) != 0x01)
+		
+		if((ready & DM9000_PKT_RDY) != DM9000_PKT_RDY)
 		{
 			return 0;
 		}
+
+		/* 3. Read status and get packet length */
+		status = DM9000_ior(DM9000_MRCMD);
+
+		/* 4. Read packed length */
+		length = DM_DAT;
+		
+		/* 5. Read packed data */
+		if(length < PTK_MAX_LEN)
+		{
+			for(i = 0; i < length; i += 2)
+			{
+				tmp = DM_DAT;
+				recvBuf[i] = tmp & 0x0ff;
+				recvBuf[i + 1] = (tmp >> 8) & 0x0ff;
+			}
+		   
+			if(length != 0)
+			{
+				NetHandle(recvBuf, length - 4);//Deduct the length of the first 4 bytes(0x01, status, length)
+			}
+		}
+		
+#ifdef CONFIG_DM9000_DEBUG	
+		printf_string("length = %x\n", length);
+		
+		print_string("----------- Dump receive data -----------\n");
+		
+		PrintAscii(recvBuf, length, 40);
+		
+		print_string("----------- Dump over -----------\n");
+#endif	
 	}
-
-	/* 3. Read status and get packet length */
-	status = DM9000_ior(DM9000_MRCMD);
-
-	/* 4. Read packed length */
-	length = DM_DAT;
-	
-	/* 5. Read packed data */
-	if(length < PTK_MAX_LEN)
-    {
-       for(i = 0; i < length; i += 2)
-       {
-           tmp = DM_DAT;
-           data[i] = tmp & 0x0ff;
-           data[i+1] = (tmp>>8) & 0x0ff;
-       }
-    }
 
 	return length;
 }
 
-void ascii_print(u8* buff, int length, int length_per_line)
-{
-	int i = 0;
-	
-	if(buff != NULL && length >= 0)
-	{
-		printf_string("\n");
-
-		for(i = 0; i < length; i++)
-		{
-			if(((i % length_per_line) == 0))
-			{
-				printf_string("\n");
-			}
-			
-			printf_string("%C ", buff[i]);
-		}
-
-		printf_string("\n");
-	}
-}
-
-/* Main test functino enter */
-MINI2440_STATUS dm9000_test(int argc, char(*argv)[MAX_COMMAND_LENGTH])
-{
-	MINI2440_STATUS status = MINI2440_SUCCESS;
-	
-	print_string("DM9000 test\n");
-	
-	dm9000_init();
-	
-	return status;
-}
-
 /* Interrupt call function */
-void int_DM9000_process()
+void DM9000IntProcess()
 {
 	u32 length = 0;
 	u32 isr_status = 0;
 	
 	u8 rsv_buffer[1500] = {0};
 	
-	print_string("int_DM9000_process\n");
+#ifdef CONFIG_DM9000_DEBUG		
+	print_string("DM9000IntProcess\n");
 	dm9000_dump_register();
-	
+#endif	
 	memset(rsv_buffer, 0, 1500);
 	
-	length = dm9000_recv(rsv_buffer);
+//	length = DM9000Recv(rsv_buffer);
 	
-	if(length != 0)
-	{
-		net_handle(rsv_buffer, length);
-	}
-	
-#ifdef CONFIG_DM9000_DEBUG	
-	printf_string("length = %x\n", length);
-	
-	print_string("----------- Dump receive data -----------\n");
-	
-	ascii_print(rsv_buffer, length, 40);
-	
-	print_string("----------- Dump over -----------\n");
-#endif	
-
 	DM9000_iow(DM9000_ISR, 0x01); /* clear PR status latched in bit 0 */
 	DM9000_iow(DM9000_ISR, 0x02); /* clear PR status latched in bit 1 */
 
 	SRCPND = (1 << 4);
 	INTPND = (1 << 4);
 	EINTPEND = (1 << 7);
-
-//	IntRegDump();
 }
+
+DM9000ModOps dm9000ModOps = {
+	.DM9000Init = DM9000Init,
+	.DM9000DeInit = DM9000DeInit,
+	.DM9000CheckInit = DM9000CheckInit,
+	.DM9000Send = DM9000Send,
+	.DM9000Recv = DM9000Recv,
+};
+
+MODULE_INSTALL(DM9000, MOD_DM9000, 0, &dm9000ModOps);
+

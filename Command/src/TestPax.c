@@ -13,17 +13,17 @@
  * Description:			Print diags ver
  * Author:				Kevin
  *******************************************************************/
-static MINI2440_STATUS TestPax(int argc, char(*argv)[MAX_COMMAND_LENGTH])
+static MINI2440_STATUS TestPax(int argc, char* const* argv)
 {
 	MINI2440_STATUS status = MINI2440_SUCCESS;
 	
 	print_string("TestPax start-----------------------------\n");
 	
-	PaxMain();
+//	PaxMain();
 	
 	print_string("TestPax end-------------------------------\n");
 	
 	return status;
 }
 
-COMMAND_INSTALL(pax, "Do Some TestPax", TestPax);
+COMMAND_INSTALL(pax, "\tDo Some TestPax", TestPax);

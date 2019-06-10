@@ -4,10 +4,11 @@
 #include "Error.h"
 #include "Bootm.h"
 
+unsigned int gLoadAddr = 0x30004000;
 TAG* cur_tag_ptr = NULL;
 void (*the_kernel)(int, int, unsigned int);
 
-const char *cmdline = "console=ttySAC0,115200 init=/init";
+const char *cmdline = "noinitrd root=/dev/nfs rw nfsroot=192.168.1.102:/nfsroot/rootfs ip=192.168.1.99:192.168.1.102:192.168.1.1:255.255.255.0 console=ttySAC0,115200 init=/linuxrc mem=64M";
 
 void setup_core_tag()
 {
@@ -43,6 +44,9 @@ void setup_cmdline_tag()
 	
 	strcpy(cur_tag_ptr->u.cmdline.cmdline, (char*)cmdline);
 	
+	printf_string("(cur_tag_ptr->u.cmdline.cmdline = 0x%x\n", cur_tag_ptr->u.cmdline.cmdline);
+	printf_string("(cur_tag_ptr->u.cmdline.cmdline = %s\n", cur_tag_ptr->u.cmdline.cmdline);
+	
 	cur_tag_ptr = tag_next(cur_tag_ptr);
 }
 
@@ -55,7 +59,7 @@ void setup_end_tag()
 void boot_linux()
 {
 	/* 1. Get Linux boot address */
-	the_kernel = (void (*)(int, int, unsigned int))SDRAM_KERNEL_START;
+	the_kernel = (void (*)(int, int, unsigned int))(gLoadAddr + 0x40);//uImage has a header who's length is 0x40
 	
 	/* 2. Set boot parameter */
 	
@@ -72,14 +76,9 @@ void boot_linux()
 	setup_end_tag();	
 	
 	/* 3. Start boot */
+	print_string("Ready to boot kernel...\n");
+	printf_string("SDRAM_TAG_START = %x\n", SDRAM_TAG_START);
+	printf_string("the_kernel = %x\n", the_kernel);
+	
 	the_kernel(0, 1999, SDRAM_TAG_START);
-}
-
-MINI2440_STATUS bootm(int argc, char(*argv)[MAX_COMMAND_LENGTH])
-{
-	MINI2440_STATUS status = MINI2440_SUCCESS;
-	
-	boot_linux();
-	
-	return status;
 }

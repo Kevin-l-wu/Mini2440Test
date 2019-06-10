@@ -1,5 +1,5 @@
-#ifndef _NAND_PROTOCOL_H_
-#define _NAND_PROTOCOL_H_
+#ifndef _LED_PROTOCOL_H_
+#define _LED_PROTOCOL_H_
 
 #include "GlobalDefine.h"
 
@@ -27,5 +27,5 @@ typedef struct _LedModOps
 } LedModOps;
 
 
-#endif	// _NAND_PROTOCOL_H_
+#endif	// _LED_PROTOCOL_H_
 

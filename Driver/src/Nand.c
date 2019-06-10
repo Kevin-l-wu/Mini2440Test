@@ -4,7 +4,6 @@
 #include "Error.h"
 #include "Framework.h"
 #include "String.h"
-#include "GetoptTemp.h"
 #include "Nand.h"
 
 #include "ModManager.h"
@@ -92,32 +91,27 @@ static void WaitRB()
 
 static void InitEcc()
 {
-	NFCONT |= (1 << 4); 
-//	printf_string("\nInitEcc: NFCONT = 0x%x\n", NFCONT);
+	NFCONT |= (1 << 4);
 }
 
 static void LockMainEcc()
 {
-	NFCONT |= (1 << 5); 
-//	printf_string("\nLockMainEcc: NFCONT = 0x%x\n", NFCONT);
+	NFCONT |= (1 << 5);
 }
 
 static void UnlockMainEcc()
 {
-	NFCONT &= ~(1 << 5); 
-//	printf_string("\nUnlockMainEcc: NFCONT = 0x%x\n", NFCONT);
+	NFCONT &= ~(1 << 5);
 }
 
 static void LockSpareEcc()
 {
-	NFCONT |= (1 << 6); 
-//	printf_string("\nLockSpareEcc: NFCONT = 0x%x\n", NFCONT);
+	NFCONT |= (1 << 6);
 }
 
 static void UnlockSpareEcc()
 {
-	NFCONT &= ~(1 << 6); 
-//	printf_string("\nUnlockSpareEcc: NFCONT = 0x%x\n", NFCONT);
+	NFCONT &= ~(1 << 6);
 }
 
 /*******************************************************************
@@ -153,17 +147,13 @@ static void NandPageRead(unsigned pageAddr, unsigned* readData)
 	SendCommand(0x30);
 	
 	//Wait R/B
-//	printf_string("NandPageRead before WaitRB: NFSTAT = 0x%x\n", NFSTAT);
-//	printf_string("NandPageRead before WaitRB: NFCONT = 0x%x\n", NFCONT);
+
 	WaitRB();
-//	printf_string("NandPageRead After WaitRB: NFSTAT = 0x%x\n", NFSTAT);
-//	printf_string("NandPageRead After WaitRB: NFCONT = 0x%x\n", NFCONT);
 	
 	//Get data
 	for(i = 0; i < (BYTES_PER_PAGE / 4); i++)
 	{
 		readData[i] = NFDATA;
-		data_adjustment((unsigned*)(&readData[i])); //Adjustment data
 	}
 
 	//Deselect NandFlash
@@ -237,7 +227,7 @@ static void NandRandomPageRead(unsigned pageAddr, unsigned columnAddr, unsigned*
 	for(index = 0; index < MAX_MAGNIFICATION(realReadLenth, 4); index++)
 	{
 		readData[index] = NFDATA;
-		data_adjustment((unsigned*)(&readData[index])); //Adjustment data
+//		data_adjustment((unsigned*)(&readData[index])); //Adjustment data
 	}
 
 	//Deselect NandFlash
@@ -251,7 +241,7 @@ static void NandRandomPageRead(unsigned pageAddr, unsigned columnAddr, unsigned*
  * Description:			Write one page data to nand
  * Author:				Kevin
  *******************************************************************/
-static int NandPageWrite(unsigned pageAddr, unsigned* writeData)
+static int NandPageWrite(unsigned int pageAddr, unsigned int* writeData)
 {
 	int ret;
 	int i = 0;
@@ -281,11 +271,7 @@ static int NandPageWrite(unsigned pageAddr, unsigned* writeData)
 	SendCommand(0x10);
 	
 	//Wait RB
-//	printf_string("NandPageWrite before WaitRB: NFSTAT = 0x%x\n", NFSTAT);
-//	printf_string("NandPageWrite before WaitRB: NFCONT = 0x%x\n", NFCONT);
 	WaitRB();
-//	printf_string("NandPageWrite After WaitRB: NFSTAT = 0x%x\n", NFSTAT);
-//	printf_string("NandPageWrite After WaitRB: NFCONT = 0x%x\n", NFCONT);
 
 	//Send command 0x70
 	SendCommand(0x70);
@@ -390,11 +376,7 @@ static int NandBlockErase(unsigned pageAddr)
 	SendCommand(0xd0);
 	
 	//Wait RB
-//	printf_string("NandBlockErase before WaitRB: NFSTAT = 0x%x\n", NFSTAT);
-//	printf_string("NandBlockErase before WaitRB: NFCONT = 0x%x\n", NFCONT);
 	WaitRB();
-//	printf_string("NandBlockErase After WaitRB: NFSTAT = 0x%x\n", NFSTAT);
-//	printf_string("NandBlockErase After WaitRB: NFCONT = 0x%x\n", NFCONT);
 	
 	//Send command 0x70
 	SendCommand(0x70);
@@ -485,13 +467,7 @@ static void NandControllerInit()
 	NFCONT |= 0x11;
 	NFCONT &= ~(1 << 12);
 
-//	printf_string("\n\nBefore Reset NandControllerInit: NFCONF = 0x%x\n\n", NFCONF);
-//	printf_string("\n\nBefore Reset NandControllerInit: NFCONT = 0x%x\n\n", NFCONT);
-
 	NandReset();
-
-//	printf_string("\n\nAfter Reset NandControllerInit: NFCONF = 0x%x\n\n", NFCONF);
-//	printf_string("\n\nAfter Reset NandControllerInit: NFCONT = 0x%x\n\n", NFCONT);
 }
 
 
@@ -523,4 +499,3 @@ NandModOps nandModOps = {
 };
 
 MODULE_INSTALL(Nand, MOD_NAND, 0, &nandModOps);
-

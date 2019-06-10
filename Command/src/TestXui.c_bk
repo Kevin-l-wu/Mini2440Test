@@ -1,0 +1,55 @@
+#include <stdio.h>
+#include "GlobalDefine.h"
+#include "Error.h"
+#include "Xui.h"
+#include "CommandManager.h"
+
+extern unsigned char gImageTest240x280[134400];
+
+MINI2440_STATUS TestXui(int argc, char(*argv)[MAX_COMMAND_LENGTH])
+{
+	MINI2440_STATUS status = MINI2440_SUCCESS;
+	
+	XuiImg img = {240, 280, gImageTest240x280};
+
+	XuiOpen(argc, argv);
+	
+	if(XuiIsRunning())
+	{
+		
+		XuiWindow* pXuiWindow = XuiStatusbarCanvas();
+		
+		
+		XuiCanvasSetBackground(pXuiWindow, XUI_BG_NORMAL, NULL, XUI_COLOR_R);
+		
+		XuiCanvasDrawText(pXuiWindow, 80, 0, 0, NULL, XUI_TEXT_NORMAL, XUI_COLOR_G, "PAX");
+		
+		
+		pXuiWindow = XuiRootCanvas();
+		
+		XuiCanvasSetBackground(pXuiWindow, XUI_BG_NORMAL, NULL, XUI_COLOR_B);
+		
+		XuiCanvasDrawText(pXuiWindow, 80, 0, 0, NULL, XUI_TEXT_NORMAL, XUI_COLOR_G, "HELLO");
+		
+		delay(1024 * 1024);
+		
+		XuiCanvasDrawImg(pXuiWindow, 0, 40, 240, 280, XUI_BG_NORMAL, &img);
+		
+		delay(1024 * 1024);
+		
+		
+		XuiClearArea(pXuiWindow, 0, 0, 240, 320);
+		
+		delay(1024 * 1024);
+	}
+	
+	
+	delay(1024 * 1024 * 1);
+	
+	XuiClose();
+	
+	
+	return status;
+}
+
+COMMAND_INSTALL(xui, "\tXui test", TestXui);

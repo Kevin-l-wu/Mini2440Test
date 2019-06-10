@@ -2,7 +2,9 @@
 .PHONY : all compile link clean rebuild
 
 MODULES := Init \
-           CommonLib \
+           Common \
+		   SimpleFile \
+		   LibCLite \
            Core \
 		   Main \
            Driver \
@@ -11,14 +13,16 @@ MODULES := Init \
 		   Protocol \
 		   Command \
 		   UCos \
-		   Pax
-           
+		   Xui \
+		   Shell
+		   
 MKDIR := mkdir
 RM := rm -fr
 
 CC := arm-linux-gcc
 LD := arm-linux-ld
-LFLAGS := -Tgboot.lds -L /usr/local/arm/4.3.2/lib/gcc/arm-none-linux-gnueabi/4.3.2/armv4t -lgcc
+#LFLAGS := -Tgboot.lds -L /usr/local/arm/4.3.2/lib/gcc/arm-none-linux-gnueabi/4.3.2/armv4t -lgcc
+LFLAGS := -Tgboot.lds -L /usr/local/5.4.0/lib/gcc/arm-none-linux-gnueabi/5.4.0/ -lgcc
 
 OBJCOPY := arm-linux-objcopy
 OFLAG := -O binary

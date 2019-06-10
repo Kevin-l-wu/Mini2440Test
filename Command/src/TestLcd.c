@@ -9,8 +9,9 @@
 #include "CommandManager.h"
 
 LcdModOps* gLcdOps = NULL;
+//extern unsigned char gImageTest[153608];
 
-MINI2440_STATUS TestLcd(int argc, char(*argv)[MAX_COMMAND_LENGTH])
+MINI2440_STATUS TestLcd(int argc, char* const* argv)
 {
 	MINI2440_STATUS status = MINI2440_SUCCESS;
 	int line_index = 0;
@@ -27,10 +28,10 @@ MINI2440_STATUS TestLcd(int argc, char(*argv)[MAX_COMMAND_LENGTH])
 		print_string("Fill all screen test\n");
 		
 		
-		gLcdOps->LcdDrawBox(100, 100, 150, 150, 0xf800);
+		gLcdOps->LcdDrawBox(0, 50, 100, 100, 0xf800);
 		
 		
-		delay(2000000);	
+		delay(1024 * 1024 * 2);
 		
 		
 		gLcdOps->LcdClearScreen(0x0000);
@@ -38,9 +39,19 @@ MINI2440_STATUS TestLcd(int argc, char(*argv)[MAX_COMMAND_LENGTH])
 		
 		gLcdOps->LcdDrawRect(100, 100, 150, 150, 0xf800);
 		
-		delay(2000000);	
+		delay(1024 * 1024 * 2);
 		
 		gLcdOps->LcdClearScreen(0x0000);
+		
+		delay(1024 * 1024 * 2);
+//		gLcdOps->LcdDrawImage(0, 0, 240, 320, (unsigned short*)gImageTest);
+		
+		delay(1024 * 1024 * 2);
+		
+		gLcdOps->LcdClearScreen(0x0000);
+		
+		delay(1024 * 1024 * 2);
+		
 		/*
 		
 		for(color_index = 0; color_index < 15; color_index++)
@@ -132,20 +143,13 @@ MINI2440_STATUS TestLcd(int argc, char(*argv)[MAX_COMMAND_LENGTH])
 
 		*/
 		delay(2000000);	
-		
-		
 	}
 	else
 	{
 		status = MINI2440_LOAD_PROTOCOL_FAIL;
 	}
 	
-	
-	
-	
 	return status;
 }
 
-COMMAND_INSTALL(lcd, "Lcd test", TestLcd);
-
-
+COMMAND_INSTALL(lcd, "\tLcd test", TestLcd);

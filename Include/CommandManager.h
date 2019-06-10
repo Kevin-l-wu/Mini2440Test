@@ -8,7 +8,7 @@ typedef struct _DiagsCommand
 {
 	char* commandString;
 	char* message;
-	MINI2440_STATUS(*function)(int argc, char(*argv)[MAX_COMMAND_LENGTH]);
+	MINI2440_STATUS(*function)(int argc, char* const* argv);
 } DiagsCommand;
 
 typedef void (*CommandForEachCallback)(DiagsCommand* pDiagsCommand);
@@ -19,7 +19,7 @@ typedef void (*CommandForEachCallback)(DiagsCommand* pDiagsCommand);
 	STRUCT_SECTION_COMMAND = {#command, message, function};
 
 	
-void HandleEventCommond(char* commond, int argc, char(*argv)[MAX_COMMAND_LENGTH]);
+void HandleEventCommond(int argc, char* const* argv);
 
 int CommandForEach(CommandForEachCallback callback);
 	

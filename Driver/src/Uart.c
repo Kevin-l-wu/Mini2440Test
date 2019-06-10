@@ -146,13 +146,13 @@ void uart1_init()
 
 void print_string(const char* string)
 {
-	const char* string_temp = string;
-	if(string_temp != NULL)
+	const char* pStringTour = string;
+	if(pStringTour != NULL)
 	{
-		while(*string_temp)
+		while(*pStringTour)
 		{
-			Uart0Send(*string_temp);
-			string_temp++;
+			Uart0Send(*pStringTour);
+			pStringTour++;
 		}
 	}
 }
@@ -351,17 +351,17 @@ void print_char_to_hex(unsigned char char_data)
 
 void printf_string(const char* string, ...)
 {
-	const char* string_temp = string;
+	const char* pStringTour = string;
 	va_list arg_ptr;
 	va_start(arg_ptr, string);
 	
-	if(string_temp != NULL)
+	if(pStringTour != NULL)
 	{
-		while(*string_temp)
+		while(*pStringTour)
 		{
-			if(*string_temp == '%')
+			if(*pStringTour == '%')
 			{
-				switch(*(string_temp + 1))
+				switch(*(pStringTour + 1))
 				{
 					int int_data;
 					char char_data;
@@ -398,15 +398,86 @@ void printf_string(const char* string, ...)
 						break;
 				}
 				
-				string_temp++;
+				pStringTour++;
 			}else
 			{
-				Uart0Send(*string_temp);
+				Uart0Send(*pStringTour);
 			}
 					
-			string_temp++;
+			pStringTour++;
 		}
 	}
 	
 	va_end(arg_ptr);
 }
+
+void AsciiPrintMarker(const char* format, void* marker)
+{
+	const char* pStringTour = format;
+	const char* pMarker = marker;
+	
+	if(pStringTour != NULL)
+	{
+		while(*pStringTour)
+		{
+			if(*pStringTour == '%')
+			{
+				switch(*(pStringTour + 1))
+				{
+					int int_data;
+					char char_data;
+					unsigned char unsigned_char_data;
+					char* string_data;
+					unsigned unsigned_data;
+					
+					case 'd':
+						int_data = *((int*)pMarker);
+						pMarker = pMarker + 4;
+						print_int_data(int_data, PrintOutTypeDec);
+						break;
+						
+					case 'c':
+						char_data = *pMarker;
+						pMarker = pMarker + 1;
+						Uart0Send(char_data);
+						break;
+						
+					case 'C':
+						unsigned_char_data = *((char*)pMarker);
+						pMarker = pMarker + 1;
+						print_char_to_hex(unsigned_char_data);
+						break;
+						
+					case 's':
+						string_data = *((char**)pMarker);
+						pMarker = pMarker + 4;
+						print_string(string_data);
+						break;
+						
+					case 'x':
+						unsigned_data = *((unsigned*)pMarker);
+						pMarker = pMarker + 4;
+						print_unsinged_data(unsigned_data, PrintOutTypeHex);
+						break;
+						
+					case 'a':
+						unsigned_data = *((unsigned*)pMarker);
+						pMarker = pMarker + 4;
+						print_unsinged_data(unsigned_data, PrintOutTypeHex);
+						break;
+						
+					default:
+						break;
+				}
+				
+				pStringTour++;
+			}else
+			{
+				Uart0Send(*pStringTour);
+			}
+					
+			pStringTour++;
+		}
+	}
+}
+

@@ -19,6 +19,8 @@ typedef int (*LCD_DRAW_RECT)(int left, int bottom, int right, int top, U16 color
 
 typedef void (*LCD_CLEAR_SCREEN)(U16 color);
 
+typedef int (*LCD_DRAW_IMAGE)(int x, int y, int width, int height, U16* image);
+
 typedef void (*LCD_DISPLAY_CHAR)(int column_number, int line_number, unsigned short* template);
 
 typedef void (*LCD_DISPLAY_CHAR_WITH_COLOR)(int column_number, int line_number, char ascii_char, unsigned short color);
@@ -42,6 +44,7 @@ typedef struct _LcdModOps
 	LCD_DRAW_BOX LcdDrawBox;
 	LCD_DRAW_RECT LcdDrawRect;
 	LCD_CLEAR_SCREEN LcdClearScreen;
+	LCD_DRAW_IMAGE LcdDrawImage;
 	LCD_DISPLAY_CHAR LcdDisplayChar;
 	LCD_DISPLAY_CHAR_WITH_COLOR LcdDisplayCharWithColor;
 	LCD_DISPLAY_STRINT_WITH_COLOR LcdDisplayStringWithColor;

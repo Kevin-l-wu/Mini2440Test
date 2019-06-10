@@ -14,7 +14,7 @@ ButtonModOps* gButtonOps = NULL;
  * Description:			Button Test
  * Author:				Kevin
  *******************************************************************/
-MINI2440_STATUS TestButton(int argc, char(*argv)[MAX_COMMAND_LENGTH])
+MINI2440_STATUS TestButton(int argc, char* const* argv)
 {
 	MINI2440_STATUS status = MINI2440_SUCCESS;
 	unsigned wait_times = 100;
@@ -63,4 +63,4 @@ MINI2440_STATUS TestButton(int argc, char(*argv)[MAX_COMMAND_LENGTH])
 	return status;
 }
 
-COMMAND_INSTALL(button, "Button test", TestButton);
+COMMAND_INSTALL(button, "\tButton test", TestButton);

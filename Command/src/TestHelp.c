@@ -24,7 +24,7 @@ static void PrintHelpCallback(DiagsCommand* pDiagsCommand)
  * Description:			Print help message
  * Author:				Kevin
  *******************************************************************/
-MINI2440_STATUS TestHelp(int argc, char(*argv)[MAX_COMMAND_LENGTH])
+MINI2440_STATUS TestHelp(int argc, char* const* argv)
 {
 	MINI2440_STATUS status = MINI2440_SUCCESS;
 	int index = 0;
@@ -35,4 +35,4 @@ MINI2440_STATUS TestHelp(int argc, char(*argv)[MAX_COMMAND_LENGTH])
 	return status;
 }
 
-COMMAND_INSTALL(help, "Help Message", TestHelp);
+COMMAND_INSTALL(help, "\tHelp Message", TestHelp);

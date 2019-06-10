@@ -1,8 +1,8 @@
 OUTPUT_ARCH(arm)
 ENTRY(_start)
+
 SECTIONS {
-	. = 0x30050000;
-	
+	. = 0x30500000;
 	. = ALIGN(4);
 	.text :
 	{

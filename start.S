@@ -20,16 +20,20 @@ _irq: .word irq
 _fiq: .word reset
 
 undifined_instruction:
-	nop
+	bl UndifinedInstruction
+	b reset
 
 software_interrupt:
-	nop
+	bl SwiInterrupt
+	b reset
 	
 prefetch_abort:
-	nop
+	bl PrefetchAbort
+	b reset
 	
 data_abort:
-	nop
+	bl DataAbort
+	b reset
 
 not_used:
 	nop
@@ -96,6 +100,8 @@ IRQIsrVect:
 	
 fiq:	
 	nop
+	
+#define _TEXT_BASE 0x30500000	
 .Global reset
 reset:
 	bl set_svc
@@ -107,7 +113,10 @@ reset:
 	bl init_stack
 	bl nandflash_init
 	bl light_led
-	bl copy_to_ram	
+	adr r0, _start
+	ldr r1, =_TEXT_BASE
+	cmp r0, r1
+	blne copy_to_ram
 	bl clean_bss
 	ldr pc, =gboot_main
 
@@ -272,8 +281,6 @@ OSCtxSw:
 	msr SPSR_cxsf, r0
 	ldmfd sp!, {r0-r12, lr, pc}^
 
-
-
 	
 .Global OSIntCtxSw	
 OSIntCtxSw:
@@ -298,19 +305,4 @@ OSIntCtxSw:
 	ldmfd sp!,{r0}
 	msr spsr_cxsf, r0
 	ldmfd sp!, {r0-r12, lr, pc}^
-	
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	

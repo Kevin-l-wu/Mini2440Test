@@ -4,6 +4,8 @@
 #include "Timer.h"
 #include "Interrupt.h"
 
+#define CONFIG_INTERRUPT_DEBUG
+
 extern void OSTickISR();
 
 /* Dump out main interrupt register */
@@ -93,11 +95,14 @@ void HandleIrq()
 	intMaskVal = INTMSK;
 	INTMSK = 0xffffffff;
 	
-//	printf_string("----- Process interrupt -----\n");
+	printf_string("----- Process interrupt -----\n");
 
 	intOffsetVal = (INTOFFSET);
 	
-//	printf_string("intOffsetVal = 0x%x\n", intOffsetVal);
+#ifdef CONFIG_INTERRUPT_DEBUG	
+	printf_string("intOffsetVal = 0x%x\n", intOffsetVal);
+	IntRegDump();
+#endif
 
 	switch(intOffsetVal)
 	{
@@ -111,7 +116,7 @@ void HandleIrq()
 			break;
 			
 		case EINT4_7_IRQ_INDEX: 		/* 4 */
-			int_DM9000_process();
+//			DM9000IntProcess();
 			break;
 		case EINT8_23_IRQ_INDEX:		/* 5 */
 			button_irq();
@@ -188,7 +193,6 @@ void HandleIrq()
 	(SRCPND) |= ~(0x00);
 	(INTPND) |= ~(0x00);
 	(EINTPEND) |= ~(0x00);
-//	IntRegDump();
-	/*  */
+
 	INTMSK = intMaskVal;
 }

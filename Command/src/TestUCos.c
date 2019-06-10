@@ -13,7 +13,7 @@
  * Description:			Print diags ver
  * Author:				Kevin
  *******************************************************************/
-static MINI2440_STATUS TestUCos(int argc, char(*argv)[MAX_COMMAND_LENGTH])
+static MINI2440_STATUS TestUCos(int argc, char* const* argv)
 {
 	MINI2440_STATUS status = MINI2440_SUCCESS;
 	
@@ -26,4 +26,4 @@ static MINI2440_STATUS TestUCos(int argc, char(*argv)[MAX_COMMAND_LENGTH])
 	return status;
 }
 
-COMMAND_INSTALL(ucos, "Do Some TestUCos", TestUCos);
+COMMAND_INSTALL(ucos, "\tDo Some TestUCos", TestUCos);

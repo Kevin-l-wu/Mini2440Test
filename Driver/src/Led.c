@@ -1,11 +1,10 @@
+#include "GlobalDefine.h"
 #include "Error.h"
 #include "Common.h"
 #include "Uart.h"
 #include "Framework.h"
 #include "Gpio.h"
 #include "ModManager.h"
-
-#include "GlobalDefine.h"
 #include "../Protocol/inc/LedProtocol.h"
 
 

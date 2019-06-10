@@ -11,7 +11,7 @@ Function Name:  		TestLed
 Input Paramater:		argc, argv
 Function Description:	Led function test
 ************************************************************************/
-MINI2440_STATUS TestLed(int argc, char(*argv)[MAX_COMMAND_LENGTH])
+MINI2440_STATUS TestLed(int argc, char* const* argv)
 {
 	print_string("In function led_test\n");
 	MINI2440_STATUS status = MINI2440_SUCCESS;
@@ -41,4 +41,4 @@ MINI2440_STATUS TestLed(int argc, char(*argv)[MAX_COMMAND_LENGTH])
 	return status;
 }
 
-COMMAND_INSTALL(led, "Led test", TestLed);
+COMMAND_INSTALL(led, "\tLed test", TestLed);

@@ -1,26 +1,49 @@
-#ifndef STRING_H_
-#define STRING_H_
+/*
+ * Copyright (c) 2011, Apple Inc.
+ * All rights reserved.
+ * LibC-lite - libc -> EFI glue library
+ */
+#ifndef __STRING_H__
+#define __STRING_H__
 
-int strcmp(char* dest_str1, char* dest_str2);
-int strlen(char* dest_str);
-int strcpy(char* dest_str, char* src_str);
-int memcpy(char* dest_str, char* src_str, int length);
-void clean_string(char* dest_string);
-void memset(void* s, int ch, unsigned n);
-void clean_string_prox(char* dest_string);
-int string_to_int(char* source_string);
 
-int memcmp(void* buf1, void* buf2, unsigned int count);
-char* strcat(char* dest, const char* src);
+#include "GlobalDefine.h"
 
-char* strstr(char* str1, const char* str2);
-char* strchr(char* str, int character);
-char* strrchr(char* str, int character);
+// In EfiCommonLib
+void* memcpy(void * s1, const void * s2, size_t n);
+int memcmp(const void *s1, const void *s2, size_t n);
+void* memmove(void *s1, const void *s2, size_t n);
+void* memset(void* s, int c, size_t n);
+void bzero(void* s, size_t n);
 
-void* memmove(void* dest, const void* src, unsigned int count);
+/*
+ * String
+ */
 
-char* strncpy(char* destination, const char* source, unsigned int num);
+size_t strlen(const char *s);
+char *strerror(int errnum);
+int strcmp(const char *s1, const char *s2);
+int strncmp(const char * s1, const char * s2, size_t num);
+char *strstr(const char *s1, const char *s2);
+char *strchr(const char *s, int c);
+unsigned long strtoul(const char * str, char ** endptr, int base);
 
-int strncmp(const char* str1, const char* str2, unsigned int num );
+int stricmp(const char *s1, const char *s2);
+int strnicmp(const char *s1, const char *s2, size_t n);
+#define strcasecmp stricmp
+
+char *strrchr(const char *s, int c);
+char *strncpy(char * s1, const char * s2, size_t n);
+size_t strlcpy(char *dst, const char *src, size_t size);
+size_t strlcat(char *dst, const char *src, size_t size);
+char *strcpy(char * s1, const char * s2);
+char *strcat(char * s1, const char * s2);
+char *strncat(char * s1, const char * s2, size_t n);
+size_t strcspn(const char *s1, const char *s2);
+size_t strspn(const char *s1, const char *s2);
+int putchar(int c);
+char *strpbrk(const char *s1, const char *s2);
+#define strcoll(s1, s2) strcmp(s1, s2)
+void *memchr(const void *s, int c, size_t n);
 
 #endif

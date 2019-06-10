@@ -2,16 +2,16 @@
 #include "GlobalDefine.h"
 #include "Error.h"
 #include "Uart.h"
-#include "GetoptTemp.h"
+#include "GetoptLib.h"
 
 #include "ModManager.h"
 #include "../Protocol/inc/NandProtocol.h"
 #include "CommandManager.h"
 
 
+//#define TEST_NAND_DEBUG_ON 1
 
 NandModOps* gNandModOps = NULL;
-
 
 /*******************************************************************
  * Function Name: 	 	valueDump
@@ -49,8 +49,6 @@ static void AddrConvert(unsigned address, unsigned* pageAddr, unsigned* columnAd
 		
 		*pageAddr = address / base;
 		*columnAddr = address % base;
-		printf_string("\n\nAfter convert, pageAddr(hex) = 0x%x\n\n", *pageAddr);
-		printf_string("\n\nAfter convert, columnAddr(hex) = 0x%x\n\n", *columnAddr);
 	}
 }
 
@@ -78,6 +76,12 @@ static void NandBlockEraseTest(int address)
 	
 	unsigned pageAddr = 0;
 	unsigned columnAddr = 0;
+	
+	if((address % 0x20000) != 0)
+	{
+		printf_string("Address Not support\n");
+		return ;
+	}
 	
 	AddrConvert(address, &pageAddr, &columnAddr, 0);
 	
@@ -224,6 +228,78 @@ void CopyNandToRam(int address, char* sdramAddr, int size)
 	}
 }
 
+void NandReadToMem(int memAddr, int address, unsigned int length)
+{
+	unsigned pageAddr = 0;
+	unsigned columnAddr = 0;
+	unsigned pageIndex = 0;	
+	unsigned copyPages = (length / BYTES_PER_PAGE) + 1;
+	
+	unsigned char pageBuff[BYTES_PER_PAGE] = {0};
+	
+	if((address % BYTES_PER_PAGE) != 0)
+	{
+		printf_string("Not Support nand address\n");
+		return;
+	}
+	
+	AddrConvert(address, &pageAddr, &columnAddr, 0);
+	
+	for(pageIndex = 0; pageIndex < copyPages; pageIndex++)
+	{
+		gNandModOps->NandPageRead(pageAddr + pageIndex, (unsigned int*)pageBuff);
+		
+		if(length > BYTES_PER_PAGE)
+		{
+			memcpy((memAddr + (BYTES_PER_PAGE * pageIndex)), pageBuff, BYTES_PER_PAGE);
+		}
+		
+		if(length <= BYTES_PER_PAGE)
+		{
+			memcpy((memAddr + (BYTES_PER_PAGE * pageIndex)), pageBuff, length);
+			break;
+		}
+		
+		length = length - BYTES_PER_PAGE;
+	}
+}
+
+void NandWriteFromMem(int memAddr, int address, int length)
+{
+	unsigned pageAddr = 0;
+	unsigned columnAddr = 0;
+	unsigned pageIndex = 0;	
+	unsigned writePages = (length / BYTES_PER_PAGE) + 1;
+	
+	unsigned char pageBuff[BYTES_PER_PAGE] = {0};
+	
+	if((address % BYTES_PER_PAGE) != 0)
+	{
+		printf_string("Not Support nand address\n");
+		return;
+	}
+	
+	AddrConvert(address, &pageAddr, &columnAddr, 0);
+	
+	for(pageIndex = 0; pageIndex < writePages; pageIndex++)
+	{
+		if(length > BYTES_PER_PAGE)
+		{
+			memcpy(pageBuff, (memAddr + (BYTES_PER_PAGE * pageIndex)), BYTES_PER_PAGE);
+			gNandModOps->NandPageWrite(pageAddr + pageIndex, (unsigned int*)pageBuff);
+		}
+		
+		if(length <= BYTES_PER_PAGE)
+		{
+			memset(pageBuff, 0, BYTES_PER_PAGE);
+			memcpy(pageBuff, (memAddr + (BYTES_PER_PAGE * pageIndex)), length);
+			gNandModOps->NandPageWrite(pageAddr + pageIndex, (unsigned int*)pageBuff);
+			break;
+		}
+		
+		length = length - BYTES_PER_PAGE;
+	}
+}
 
 /*******************************************************************
  * Function Name: 	 	NandTest
@@ -232,29 +308,21 @@ void CopyNandToRam(int address, char* sdramAddr, int size)
  * Description:			Run nand flash test
  * Author:				Kevin
  *******************************************************************/
-MINI2440_STATUS TestNand(int argc, char (*argv)[MAX_COMMAND_LENGTH])
+MINI2440_STATUS TestNand(int argc, char* const* argv)
 {
 	MINI2440_STATUS status = MINI2440_SUCCESS;
-	char option = 0;
+	int option = 0;
 	int index = 0;
 	
 	int address = 0;
+	int memAddr = 0;
 	int length = 0;
 	int value = 0;
-	
-	printf_string("\n\nargc = %d\n\n", argc);
-		
-	for(index = 0; index < argc; index++)
-	{
-		printf_string("argv[%d] = %s\n", index, argv[index]);
-	}
-	
+
 	if(gNandModOps == NULL)
 	{
 		gLocateProtocol(MOD_NAND, (void*)&gNandModOps);
 	}
-	
-	printf_string("\n\gNandModOps = 0x%x\n\n", gNandModOps);
 	
 	delay(5000);
 	
@@ -264,33 +332,85 @@ MINI2440_STATUS TestNand(int argc, char (*argv)[MAX_COMMAND_LENGTH])
 		print_string("Nand mod test start\n");
 		gNandModOps->NandModInit();
 		
-		GetoptInit();
+		GetoptReset();
 		
-		while ((option = Getopt(argc, argv, "epritca")) != 0)
+		while ((option = Getopt(argc, (char**)argv, "d:p:e:r:w:t:a:ic")) != -1)
 		{
 			switch(option)
 			{
-				case 'e':
-					address = hex_string_to_int(argv[optInd]);
-					NandBlockEraseTest(address);
-					break;
-				
-				case 'p':
-					if(argc - optInd >= 1)
+				case 'd':
+					printf_string("OptInd = %d\n", OptInd);
+					printf_string("OptArg = %s\n", OptArg);
+					
+					if(argc - OptInd >= 0)
 					{
-						address = hex_string_to_int(argv[optInd]);
-						printf_string("\n\nargv[optInd + 1] = %s\n\n", argv[optInd + 1]);
-						value = hex_string_to_int(argv[optInd + 1]);
+						address = hex_string_to_int(argv[OptInd - 1]);
+						NandPageReadTest(address);
+					}
+					break;
+					
+				case 'p':
+					if(argc - OptInd >= 1)
+					{
+						address = hex_string_to_int(argv[OptInd - 1]);
+						printf_string("\n\nwrite address(hex) = 0x%x\n\n", address);
+						value = hex_string_to_int(argv[OptInd]);
 						printf_string("\n\nwrite value(hex) = 0x%x\n\n", value);
 						NandPageWriteTest(address, value);
 					}
 					break;
 					
+				case 'e':
+					address = hex_string_to_int(argv[OptInd - 1]);
+					NandBlockEraseTest(address);
+					break;
+					
 				case 'r':
-					if(argc - optInd >= 0)
+					memAddr = hex_string_to_int(argv[OptInd - 1]);
+					address = hex_string_to_int(argv[OptInd]);
+					length = hex_string_to_int(argv[OptInd + 1]);
+					
+					printf_string("memAddr = 0x%x\n", memAddr);
+					printf_string("address = 0x%x\n", address);
+					printf_string("length = 0x%x\n", length);
+					
+					NandReadToMem(memAddr, address, length);
+					break;
+				
+				case 'w':
+					memAddr = hex_string_to_int(argv[OptInd - 1]);
+					address = hex_string_to_int(argv[OptInd]);
+					length = hex_string_to_int(argv[OptInd + 1]);
+					
+					printf_string("memAddr = 0x%x\n", memAddr);
+					printf_string("address = 0x%x\n", address);
+					printf_string("length = 0x%x\n", length);
+					
+					NandWriteFromMem(memAddr, address, length);
+					break;
+					
+				case 't':
+					if(argc - OptInd >= 0)
 					{
-						address = hex_string_to_int(argv[optInd]);
-						NandPageReadTest(address);
+						address = hex_string_to_int(argv[OptInd - 1]);
+						printf_string("Address(hex) = 0x%x\n", address);
+						
+						length = hex_string_to_int(argv[OptInd]);
+						printf_string("Length(hex) = 0x%x\n", length);
+						
+						NandRandomPageReadTest(address, length);
+					}
+					break;
+				
+				case 'a':
+					if(argc - OptInd >= 1)
+					{
+						address = hex_string_to_int(argv[OptInd - 1]);		
+						printf_string("\n\nwrite address(hex) = %x\n\n", address);
+						value = hex_string_to_int(argv[OptInd]);
+						printf_string("\n\nwrite value(hex) = %x\n\n", value);
+					
+						NandRandomPageProgramTest(address, value);
 					}
 					break;
 					
@@ -298,34 +418,8 @@ MINI2440_STATUS TestNand(int argc, char (*argv)[MAX_COMMAND_LENGTH])
 					NandReadChipId();
 					break;
 					
-				case 't':
-					if(argc - optInd >= 1)
-					{
-						address = hex_string_to_int(argv[optInd]);
-						printf_string("Address(hex) = 0x%x\n", address);
-						
-						length = hex_string_to_int(argv[optInd + 1]);
-						printf_string("Length(hex) = 0x%x\n", length);
-						
-						NandRandomPageReadTest(address, length);
-					}
-					break;
-					
 				case 'c':
 					BadBlockCheck();
-					break;
-
-				case 'a':
-					if(argc - optInd >= 1)
-					{
-						address = hex_string_to_int(argv[optInd]);
-						
-						printf_string("\n\nargv[optInd + 1] = %s\n\n", argv[optInd + 1]);
-						value = hex_string_to_int(argv[optInd + 1]);
-						printf_string("\n\nwrite value(hex) = %x\n\n", value);
-					
-						NandRandomPageProgramTest(address, value);
-					}
 					break;
 					
 				default:
@@ -341,10 +435,12 @@ MINI2440_STATUS TestNand(int argc, char (*argv)[MAX_COMMAND_LENGTH])
 }
 
 #define NAND_COMMAND_HELP "\
-Nand test\n\
-	-r : Read a page. nand -r pageAddress(hex)\n\
-	-p : Write a page. nand -p pageAddress(hex) value(hex)\n\
-	-e : Erase a block. nand -e pageAddress(hex)\n\
+\tNand test\n\
+	-d : Read a page. nand -d address(hex)\n\
+	-p : Write a page. nand -p address(hex) value(hex)\n\
+	-e : Erase a block. nand -e address(hex)(address should be 0x00, 0x20000, 0x40000)\n\
+	-r : Read data to memory. nand -r memAddr(hex) nandAddr(hex) length\n\
+	-w : Write data from memory. nand -w memAddr(hex) nandAddr(hex) length\n\
 	-t : Random read. nand -t address(hex)\n\
 	-a : Random write. nand -a address(hex) value(hex)\n\
 	-i : Read nand ID. nand -i\n\
