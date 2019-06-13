@@ -10,7 +10,7 @@
 #define NFCONF (*(volatile unsigned long*)0x4E000000) 
 #define NFCONT (*(volatile unsigned long*)0x4E000004)		//Nand Control Register
 
-#define NFCMMD (*(volatile unsigned long*)0x4E000008)
+#define NFCMD (*(volatile unsigned long*)0x4E000008)
 #define NFADDR (*(volatile unsigned long*)0x4E00000C)
 #define NFDATA (*(volatile unsigned long*)0x4E000010)
 

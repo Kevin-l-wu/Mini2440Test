@@ -1,6 +1,7 @@
-#include <stdio.h>
 #include "GlobalDefine.h"
 #include "Error.h"
+#include "Stdio.h"
+#include "Common.h"
 
 #include "ModManager.h"
 #include "../Protocol/inc/TimerProtocol.h"
@@ -30,7 +31,7 @@ MINI2440_STATUS TestTimer(int argc, char* const* argv)
 		while(!(pTimerModOps->IsTimeout(TIMER4)))
 		{
 			delay(1000);
-			printf_string("Timer4 start: Interrupt reg dump----\n");
+			printf("Timer4 start: Interrupt reg dump----\n");
 		}
 
 		pTimerModOps->TimerStartStop(TIMER4, 0);
@@ -39,9 +40,9 @@ MINI2440_STATUS TestTimer(int argc, char* const* argv)
 		
 		while(!(pTimerModOps->IsTimeout(TIMER4)))
 		{
-			printf_string("timer4IntCount = %d\n", *(pTimerModOps->pTimer4IntCount));
-			printf_string("timer4TimeOut = %d\n", *(pTimerModOps->pTimer4IntCount));
-			printf_string("timer4TimeOutFlag = %d\n", *(pTimerModOps->pTimer4IntCount));
+			printf("timer4IntCount = %d\n", *(pTimerModOps->pTimer4IntCount));
+			printf("timer4TimeOut = %d\n", *(pTimerModOps->pTimer4IntCount));
+			printf("timer4TimeOutFlag = %d\n", *(pTimerModOps->pTimer4IntCount));
 		}
 
 		pTimerModOps->TimerStartStop(TIMER4, 0);

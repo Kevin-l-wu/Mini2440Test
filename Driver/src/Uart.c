@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <stdarg.h>
 #include "GlobalDefine.h"
 #include "Common.h"
@@ -144,17 +143,22 @@ void uart1_init()
 	UBRDIV1 = 0x1a;
 }
 
-void print_string(const char* string)
+unsigned int print_string(const char* string)
 {
 	const char* pStringTour = string;
+	unsigned int printLength = 0;
+	
 	if(pStringTour != NULL)
 	{
 		while(*pStringTour)
 		{
 			Uart0Send(*pStringTour);
 			pStringTour++;
+			printLength++;
 		}
 	}
+	
+	return printLength;
 }
 
 void uart0_recv_string(char* recv_string)
@@ -349,7 +353,7 @@ void print_char_to_hex(unsigned char char_data)
 	}
 }
 
-void printf_string(const char* string, ...)
+unsigned int printf_string(const char* string, ...)
 {
 	const char* pStringTour = string;
 	va_list arg_ptr;
@@ -409,13 +413,15 @@ void printf_string(const char* string, ...)
 	}
 	
 	va_end(arg_ptr);
+	
+	return 0; //Todo: Return print length
 }
 
 void AsciiPrintMarker(const char* format, void* marker)
 {
 	const char* pStringTour = format;
 	const char* pMarker = marker;
-	
+
 	if(pStringTour != NULL)
 	{
 		while(*pStringTour)
@@ -471,7 +477,8 @@ void AsciiPrintMarker(const char* format, void* marker)
 				}
 				
 				pStringTour++;
-			}else
+			}
+			else
 			{
 				Uart0Send(*pStringTour);
 			}
@@ -480,4 +487,3 @@ void AsciiPrintMarker(const char* format, void* marker)
 		}
 	}
 }
-

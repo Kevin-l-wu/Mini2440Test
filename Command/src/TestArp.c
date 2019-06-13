@@ -1,6 +1,7 @@
-#include <stdio.h>
 #include "GlobalDefine.h"
 #include "Error.h"
+#include "Common.h"
+#include "Stdio.h"
 
 #include "ModManager.h"
 #include "../Protocol/inc/DM9000Protocol.h"
@@ -24,7 +25,7 @@ MINI2440_STATUS TestArp(int argc, char* const* argv)
 			gDM9000ModOps->DM9000Init();
 		}
 
-		print_string("TestArp start\n");
+		printf("TestArp start\n");
 		
 		delay(1024 * 1024);
 		
@@ -39,7 +40,7 @@ MINI2440_STATUS TestArp(int argc, char* const* argv)
 		delay(1024 * 1024);
 	}
 	
-	print_string("TestArp end\n");
+	printf("TestArp end\n");
 	
 	return status;
 }

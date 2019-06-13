@@ -1,8 +1,12 @@
 #include "StdLib.h"
+#include "Stdio.h"
 #include "String.h"
 #include "Errno.h"
 #include "Ctype.h"
 #include "Limits.h"
+
+#define LogError printf
+
 /*
 #include EFI_PROTOCOL_CONSUMER(AppleShellInterpreter)
 #include EFI_PROTOCOL_CONSUMER(AppleIpodRTC)
@@ -80,7 +84,7 @@ int system(const char *string) {
 }
 
 char *getenv(const char *name) {
-	//printf_string("%a(%a)", __FUNCTION__, name);
+	//printf("%a(%a)", __FUNCTION__, name);
 	// Todo: hook this up
 	return NULL;
 }
@@ -439,7 +443,7 @@ long strtol(const char *str, char **endptr, int base) {
 		}
 
 		if ((dval >= base) || (dval < 0)) {
-			printf_string("Digit %c is invalid in base %d", *str, base);
+			printf("Digit %c is invalid in base %d", *str, base);
 			break;
 		}
 
@@ -633,7 +637,7 @@ void __stack_chk_guard_setup()
  
 void __stack_chk_fail()
 { 
-	print_string("Stack was smashed!");
+	printf("Stack was smashed!");
     EFI_DEADLOOP();
 }
 

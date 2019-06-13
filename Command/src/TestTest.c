@@ -23,14 +23,17 @@ static MINI2440_STATUS Test(int argc, char* const* argv)
 	
 	int a = 10;
 	int b = 20;
-	char* c = "Hello world";
+	char c = 'a';
 	
-	print_string("GUI Test Start-----------------------------\n");
+	printf("GUI Test Start-----------------------------\n");
 	
-	printf("a = %d, b = %d, c = %s\n", a, b, c);
-	printf("a = %x, b = %x, c = %x\n", a, b, c);
+	printf("&a = 0x%x\n", &a);
 	
-	print_string("GUI Test End-------------------------------\n");
+	printf("a = %d\n", a);
+	
+	printf("a = %d, b = %d\n", a, b);
+	
+	printf("GUI Test End-------------------------------\n");
 	
 	return status;
 }

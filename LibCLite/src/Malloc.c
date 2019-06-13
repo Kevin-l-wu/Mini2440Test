@@ -2,6 +2,7 @@
 #include "Ctype.h"
 #include "StdLib.h"
 #include "String.h"
+#include "CoreMalloc.h"
 
 typedef struct {
 	UINTN size;

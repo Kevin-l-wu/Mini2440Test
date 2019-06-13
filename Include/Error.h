@@ -63,4 +63,6 @@ void ErrorCheck(MINI2440_STATUS mini2440Status);
 
 #define EFI_NOTIFY_NEED_MORE_ACTION EFINOTIFY(1)
 
+typedef int EFI_STATUS;
+
 #endif

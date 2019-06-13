@@ -18,7 +18,7 @@ LD := arm-linux-ld
 LFLAGS := -r
 
 CC := arm-linux-gcc
-CFLAGS := -I$(DIR_INC) -I$(DIR_COMMON_INC) -fno-builtin
+CFLAGS := -I$(DIR_INC) -I$(DIR_COMMON_INC) -fno-builtin -march=armv4t
 
 ifeq ($(DEBUG),true)
 CFLAGS += -g

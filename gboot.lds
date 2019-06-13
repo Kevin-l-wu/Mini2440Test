@@ -2,13 +2,13 @@ OUTPUT_ARCH(arm)
 ENTRY(_start)
 
 SECTIONS {
-	. = 0x30500000;
+	. = 0x30010000;
 	. = ALIGN(4);
 	.text :
 	{
 	Build/start.o (.text)
-	Build/Main.o (.text)
 	Build/Init.o (.text)
+	Build/Main.o (.text)
 	*(.text)
 	}
 

@@ -1,6 +1,6 @@
-#include <stdio.h>
 #include "GlobalDefine.h"
 #include "Error.h"
+#include "Stdio.h"
 
 #include "CommandManager.h"
 
@@ -17,11 +17,11 @@ static MINI2440_STATUS TestUCos(int argc, char* const* argv)
 {
 	MINI2440_STATUS status = MINI2440_SUCCESS;
 	
-	print_string("TestUCos start-----------------------------\n");
+	printf("TestUCos start-----------------------------\n");
 	
 	UCosMain();
 	
-	print_string("TestUCos end-------------------------------\n");
+	printf("TestUCos end-------------------------------\n");
 	
 	return status;
 }

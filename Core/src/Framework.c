@@ -1,20 +1,9 @@
 #include "GlobalDefine.h"
 #include "Error.h"
+#include "String.h"
 #include "Common.h"
-#include "Gpio.h"
-#include "Nand.h"
-#include "Lcd.h"
-#include "Dm9000.h"
-#include "Net.h"
-#include "Arp.h"
-#include "Tftp.h"
-#include "Bootm.h"
-#include "Button.h"
-#include "I2c.h"
-#include "Timer.h"
-#include "Dma.h"
-#include "Framework.h"
 
+#include "Framework.h"
 
 /*******************************************************************
  * Function Name: 	 	GenerateArgv

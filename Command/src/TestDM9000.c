@@ -1,6 +1,7 @@
-#include <stdio.h>
 #include "GlobalDefine.h"
 #include "Error.h"
+#include "Common.h"
+#include "Stdio.h"
 
 #include "ModManager.h"
 #include "../Protocol/inc/DM9000Protocol.h"
@@ -23,27 +24,27 @@ MINI2440_STATUS TestDM9000(int argc, char* const* argv)
 	
 	if(gDM9000ModOps != NULL)
 	{
-		print_string("Test DM9000\n");
+		printf("Test DM9000\n");
 		
-		print_string("DM9000 init\n");
+		printf("DM9000 init\n");
 		
 		gDM9000ModOps->DM9000Init();
 	
 		delay(1024 * 1024);
 		
-		print_string("DM9000 deinit\n");
+		printf("DM9000 deinit\n");
 	
 		gDM9000ModOps->DM9000DeInit();
 		
 		delay(1024 * 1024);
 		
-		print_string("DM9000 init second\n");
+		printf("DM9000 init second\n");
 				
 		gDM9000ModOps->DM9000Init();
 		
 		delay(1024 * 1024);
 		
-		print_string("DM9000 deinit second\n");
+		printf("DM9000 deinit second\n");
 	
 		gDM9000ModOps->DM9000DeInit();
 		

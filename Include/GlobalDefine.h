@@ -1,6 +1,8 @@
 #ifndef GLOBALDEFINE_H_
 #define GLOBALDEFINE_H_
 
+#include "Error.h"
+
 #define MAX_COMMAND_NUMBER 15
 #define MAX_COMMAND_LENGTH 15
 
@@ -71,7 +73,7 @@ typedef UINT64 EFI_LBA;
 #define OPTIONAL
 #define STATIC static
 #define CONST const
-#define LogError printf_string
+
 
 
 typedef long long int64_t;
@@ -83,7 +85,7 @@ typedef void VOID;
 /* GetOpt Common data struct. We defined here temporarily */
 typedef struct _GETOPT_OPTION
 {
-    CHAR8   *Name;          // name of long option
+    CONST CHAR8   *Name;          // name of long option
     INTN    HasArgument;    // one of NoArgument, RequiredArgument, and OptionalArgument: whether option takes an argument
     INTN    *Flag;          // if not NULL, set *Flag to Value when option found
     INTN    Value;          // if Flag not NULL, value to set *Flag to; else return Value
@@ -101,12 +103,7 @@ typedef struct {
   UINT16  Data3;
   UINT8   Data4[8];
 } EFI_GUID;
-typedef enum _EFI_STATUS
-{
-	EFI_SUCCESS,
-	EFI_UNSUPPORTED,
-	EFI_NOT_FOUND,
-} EFI_STATUS;
+
 #define EFIAPI
 
 #undef NULL

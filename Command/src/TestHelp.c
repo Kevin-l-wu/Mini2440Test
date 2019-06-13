@@ -1,6 +1,6 @@
-#include <stdio.h>
 #include "GlobalDefine.h"
 #include "Error.h"
+#include "Stdio.h"
 
 #include "ModManager.h"
 #include "CommandManager.h"
@@ -13,7 +13,7 @@ static void PrintHelpCallback(DiagsCommand* pDiagsCommand)
 {
 	if(pDiagsCommand != NULL)
 	{
-		printf_string("%s: %s\n", pDiagsCommand->commandString, pDiagsCommand->message);
+		printf("%s: %s\n", pDiagsCommand->commandString, pDiagsCommand->message);
 	}
 }
 

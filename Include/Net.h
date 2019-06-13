@@ -41,7 +41,7 @@ typedef struct _UDP_HDR
 //#define NET_DEBUG
 
 #ifdef NET_DEBUG
-#define NET_DBG(fmt, args...) printf_string(fmt, ##args)
+#define NET_DBG(fmt, args...) printf(fmt, ##args)
 #else
 #define NET_DBG(fmt,args...)
 #endif

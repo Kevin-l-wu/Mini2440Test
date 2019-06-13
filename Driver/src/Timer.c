@@ -1,6 +1,7 @@
 #include "GlobalDefine.h"
 #include "Error.h"
 #include "Common.h"
+#include "Stdio.h"
 #include "Interrupt.h"
 #include "Gpio.h"
 #include "Timer.h"
@@ -31,15 +32,15 @@ static int timer4TimeOutFlag = 0;
 
 static void TimerRegDump()
 {
-	printf_string("---------------------- Timer register -----------------------\n");
+	printf("---------------------- Timer register -----------------------\n");
 	
-	printf_string("TCFG0 = 0x%x\n", TCFG0);
-	printf_string("TCFG1 = 0x%x\n", TCFG1);
-	printf_string("TCON = 0x%x\n", TCON);
-//	printf_string("TCMPB0 = 0x%x\n", TCMPB0);
-	printf_string("TCNTB4 = 0x%x\n", TCNTB4);
+	printf("TCFG0 = 0x%x\n", TCFG0);
+	printf("TCFG1 = 0x%x\n", TCFG1);
+	printf("TCON = 0x%x\n", TCON);
+//	printf("TCMPB0 = 0x%x\n", TCMPB0);
+	printf("TCNTB4 = 0x%x\n", TCNTB4);
 	
-	printf_string("-------------------------------------------------------------\n");
+	printf("-------------------------------------------------------------\n");
 }
 
 
@@ -64,7 +65,7 @@ static void PrescalerSet(PRESCALER prescaler, unsigned char prescalerVal)
 	}
 	else
 	{
-		printf_string("Timer: Invalid prescaler No.\n");
+		printf("Timer: Invalid prescaler No.\n");
 	}
 }
 
@@ -94,7 +95,7 @@ static void DividerSet(TIMER timer, unsigned char dividerVal)
 			break;
 			
 		default:
-			printf_string("Timer: Invalid timer No.\n");
+			printf("Timer: Invalid timer No.\n");
 			break;
 	}
 }
@@ -146,7 +147,7 @@ static void TimerSetOriginalVal(TIMER timer, unsigned short tcmpb, unsigned tcnp
 			break;
 			
 		default:
-			printf_string("Timer: Invalid timer No.\n");
+			printf("Timer: Invalid timer No.\n");
 			break;
 	}
 }
@@ -176,7 +177,7 @@ static void TimerIsReloadSet(TIMER timer, unsigned char isReload)
 			break;
 			
 		default:
-			printf_string("Timer: Invalid timer No.\n");
+			printf("Timer: Invalid timer No.\n");
 			break;
 	}
 }
@@ -202,11 +203,11 @@ static void TimerOutputIsRevert(TIMER timer, unsigned char isRevert)
 			break;
 			
 		case TIMER4:
-			printf_string("Timer: Not support\n");
+			printf("Timer: Not support\n");
 			break;
 			
 		default:
-			printf_string("Timer: Invalid timer No.\n");
+			printf("Timer: Invalid timer No.\n");
 			break;
 	}
 }
@@ -236,7 +237,7 @@ static void TimerStartStop(TIMER timer, unsigned char isStart)
 			break;
 			
 		default:
-			printf_string("Timer: Invalid timer No.\n");
+			printf("Timer: Invalid timer No.\n");
 			break;
 	}
 }

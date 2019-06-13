@@ -1,5 +1,5 @@
-#define NFCONF (*(volatile unsigned long*)0x4E000000)
-#define NFCONT (*(volatile unsigned long*)0x4E000004)
+#define NFCONF (*(volatile unsigned int*)0x4E000000)
+#define NFCONT (*(volatile unsigned int*)0x4E000004)
 #define NFCMD  (*(volatile unsigned char*)0x4E000008)
 #define NFADDR (*(volatile unsigned char*)0x4E00000C)
 #define NFDATA (*(volatile unsigned char*)0x4E000010)
@@ -9,6 +9,7 @@
 #define TWRPH0 2
 #define TWRPH1 1
 
+extern void light_led();
 
 void select_chip()
 {
@@ -45,7 +46,8 @@ void wait_RnB()
 
 void nand_reset()
 {
-    //选中flash
+	
+	//选中flash
     select_chip();
     
     //清除RnB
@@ -65,13 +67,13 @@ void nand_reset()
 }
 
 void nandflash_init()
-{
-    //初始化NFCONF
-    NFCONF = (TACLS<<12) | (TWRPH0<<8) | (TWRPH1<<4);
-    
+{	
+	//初始化NFCONF
+    NFCONF = (TACLS << 12) | (TWRPH0 << 8) | (TWRPH1 << 4);
+
     //初始化NFCONT
-    NFCONT = (1<<0) | (1<<1);
-    
+    NFCONT = (1 << 0) | (1 << 1);
+	
     //复位
     nand_reset();	
 }

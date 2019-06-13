@@ -192,8 +192,8 @@ void  *OSMemGet (OS_MEM  *pmem,
         pmem->OSMemNFree--;                           /*      One less memory block in this partition  */
         OS_EXIT_CRITICAL();
         *perr = OS_ERR_NONE;                          /*      No error                                 */
-        printf_string("pBlk = 0x%x\n", pBlk);
-		printf_string("pmem->OSMemFreeList = 0x%x\n", pmem->OSMemFreeList);
+        printf("pBlk = 0x%x\n", pBlk);
+		printf("pmem->OSMemFreeList = 0x%x\n", pmem->OSMemFreeList);
 		return (pBlk);                                /*      Return memory block to caller            */
     }
     OS_EXIT_CRITICAL();

@@ -1,6 +1,7 @@
-#include <stdio.h>
 #include "GlobalDefine.h"
 #include "Error.h"
+#include "Stdio.h"
+#include "Common.h"
 #include "Uart.h"
 #include "Dma.h"
 
@@ -84,18 +85,18 @@ DMA_CHANNEL gDmaChannel[] = {
 
 static void DmaRegDump()
 {
-	printf_string("DISRC0  = 0x%x\n", DISRC0);
-	printf_string("DISRCC0 = 0x%x\n", DISRCC0);
+	printf("DISRC0  = 0x%x\n", DISRC0);
+	printf("DISRCC0 = 0x%x\n", DISRCC0);
 
-	printf_string("DIDST0  = 0x%x\n", DIDST0);
-	printf_string("DIDSTC0 = 0x%x\n", DIDSTC0);
+	printf("DIDST0  = 0x%x\n", DIDST0);
+	printf("DIDSTC0 = 0x%x\n", DIDSTC0);
 
-	printf_string("DCON0   = 0x%x\n", DCON0);
+	printf("DCON0   = 0x%x\n", DCON0);
 	
-	printf_string("DSTAT0  = 0x%x\n", DSTAT0);	
-	printf_string("DCSRC0  = 0x%x\n", DCSRC0);
+	printf("DSTAT0  = 0x%x\n", DSTAT0);	
+	printf("DCSRC0  = 0x%x\n", DCSRC0);
 	
-	printf_string("DMASKTRIG0 = 0x%x\n", DMASKTRIG0);
+	printf("DMASKTRIG0 = 0x%x\n", DMASKTRIG0);
 }
 
 /* Get DMA channel index */
@@ -149,7 +150,7 @@ static int DmaSrcSet(DMA_CHANNEL_INDEX dmaChannel, DMA_REQ_SRC reqSrc)
 	}
 	else
 	{
-		printf_string("DmaSrcSet: Invalid DMA channel or src request\n");
+		printf("DmaSrcSet: Invalid DMA channel or src request\n");
 		ret = -1;
 	}
 	
@@ -173,7 +174,7 @@ static int DmaDstSet(DMA_CHANNEL_INDEX dmaChannel, DMA_REQ_SRC reqSrc)
 	}
 	else
 	{
-		printf_string("DmaDstSet: Invalid DMA channel or src request\n");
+		printf("DmaDstSet: Invalid DMA channel or src request\n");
 		ret = -1;
 	}
 	
@@ -201,7 +202,7 @@ static unsigned int DmaHwSel(DMA_CHANNEL_INDEX dmaChannel, DMA_REQ_SRC reqSrc)
 	}
 	else
 	{
-		printf_string("DmaHwSel: Invalid DMA channel No.\n");
+		printf("DmaHwSel: Invalid DMA channel No.\n");
 	}
 	
 	return selVal;
@@ -220,7 +221,7 @@ static void DmaCtlSet(DMA_CHANNEL_INDEX dmaChannel,  unsigned int dconVal)
 	}
 	else
 	{
-		printf_string("DmaCtlSet: Invalid DMA channel No.\n");
+		printf("DmaCtlSet: Invalid DMA channel No.\n");
 	}
 }
 
@@ -244,7 +245,7 @@ static void DmaOffOn(DMA_CHANNEL_INDEX dmaChannel, unsigned char isOn)
 	}
 	else
 	{
-		printf_string("DmaOffOn: Invalid DMA channel No.\n");
+		printf("DmaOffOn: Invalid DMA channel No.\n");
 	}
 }
 
@@ -261,7 +262,7 @@ static void DmaStop(DMA_CHANNEL_INDEX dmaChannel)
 	}
 	else
 	{
-		printf_string("Invalid DMA channel No.\n");
+		printf("Invalid DMA channel No.\n");
 	}
 }
 

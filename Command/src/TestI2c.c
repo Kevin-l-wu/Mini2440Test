@@ -1,6 +1,6 @@
-#include <stdio.h>
 #include "GlobalDefine.h"
 #include "Error.h"
+#include "Stdio.h"
 #include "Common.h"
 #include "GetoptLib.h"
 
@@ -24,31 +24,31 @@ void MiscTest()
 		dbuf[i] = 0;
 	}
 	
-	printf_string("dbuf befor I2C read:\r\n");
+	printf("dbuf befor I2C read:\r\n");
 	
 	for(i = 0; i < 256;i++)
 	{
 		if(i % 8 == 0)
-			printf_string("\r\n");
+			printf("\r\n");
 
-		printf_string("%d\t",dbuf[i]);	
+		printf("%d\t",dbuf[i]);	
 	}	
 	
 	for(i = 0; i < 256; i++)
 		gI2cModeOps->I2cWriteByte(sbuf[i], i);
 		
-	printf_string("i2c reading, plese wait!\n");
+	printf("i2c reading, plese wait!\n");
 	
 	gI2cModeOps->I2cReadBytes(0, 256, dbuf);
 	
-	printf_string("dbuf after I2C read:\n");
+	printf("dbuf after I2C read:\n");
 	
 	for(i = 0; i < 256; i++)
 	{
 	   if(i % 8 == 0)
-		   printf_string("\r\n");
+		   printf("\r\n");
 		   
-	   printf_string("%d\t", dbuf[i]);	
+	   printf("%d\t", dbuf[i]);	
 	}
 }
 
@@ -73,34 +73,34 @@ MINI2440_STATUS TestI2c(int argc, char* const* argv)
 		
 		GetoptReset();
 		
-		while ((option = Getopt(argc, argv, "r:w:t")) != -1)
+		while ((option = Getopt(argc, (char**)argv, "r:w:t")) != -1)
 		{
 			switch(option)
 			{
 				case 'r':
 					address = (unsigned char)hex_string_to_int(argv[OptInd - 1]);					
-					printf_string("address = 0x%x\n", address);
+					printf("address = 0x%x\n", address);
 					
 					length = hex_string_to_int(argv[OptInd]);
-					printf_string("length = 0x%x\n", length);
+					printf("length = 0x%x\n", length);
 					
 					gI2cModeOps->I2cReadBytes(address, length, buf);
 					
-					printf_string("Read Content(0x%x):\n", address);
+					printf("Read Content(0x%x):\n", address);
 					
 					for(i = 0; i < length; i++)
 					{
-						printf_string("0x%x\n", buf[i]);
+						printf("0x%x\n", buf[i]);
 					}
 					
 					break;
 				
 				case 'w':
 					address = (unsigned char)hex_string_to_int(argv[OptInd - 1]);					
-					printf_string("address = 0x%x\n", address);
+					printf("address = 0x%x\n", address);
 					
 					data = (unsigned char)hex_string_to_int(argv[OptInd]);
-					printf_string("data = 0x%x\n", data);
+					printf("data = 0x%x\n", data);
 					
 					gI2cModeOps->I2cWriteByte(data, address );
 					
@@ -111,7 +111,7 @@ MINI2440_STATUS TestI2c(int argc, char* const* argv)
 					break;
 				
 				default:
-					printf_string("Invalid Parameter\n");
+					printf("Invalid Parameter\n");
 					break;
 			}
 		

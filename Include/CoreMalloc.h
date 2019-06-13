@@ -11,5 +11,6 @@ typedef struct _MALLOC
 } MALLOC;
 
 void* CoreMalloc(unsigned length);
+void CoreFree(void* ptr);
 
 #endif

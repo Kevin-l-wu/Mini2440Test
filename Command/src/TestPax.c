@@ -1,6 +1,6 @@
-#include <stdio.h>
 #include "GlobalDefine.h"
 #include "Error.h"
+#include "Stdio.h"
 
 #include "CommandManager.h"
 
@@ -17,11 +17,11 @@ static MINI2440_STATUS TestPax(int argc, char* const* argv)
 {
 	MINI2440_STATUS status = MINI2440_SUCCESS;
 	
-	print_string("TestPax start-----------------------------\n");
+	printf("TestPax start-----------------------------\n");
 	
 //	PaxMain();
 	
-	print_string("TestPax end-------------------------------\n");
+	printf("TestPax end-------------------------------\n");
 	
 	return status;
 }

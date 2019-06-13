@@ -1,6 +1,7 @@
-#include <stdio.h>
 #include "GlobalDefine.h"
 #include "Error.h"
+#include "Common.h"
+#include "Stdio.h"
 
 #include "CommandManager.h"
 
@@ -13,7 +14,7 @@ MINI2440_STATUS TestBootm(int argc, char* const* argv)
 	if(argc == 2)
 	{
 		gLoadAddr = hex_string_to_int(argv[1]);
-		printf_string("LoadAddr = 0x%x\n", gLoadAddr);
+		printf("LoadAddr = 0x%x\n", gLoadAddr);
 		
 		DisableMasterIrq();
 		

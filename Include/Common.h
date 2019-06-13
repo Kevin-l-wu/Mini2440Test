@@ -6,6 +6,7 @@
 void delay(int n);
 int caculate_power(int value, int power);
 int data_adjustment(unsigned* input);
+int hex_string_to_int(char* source_string);
 void PrintAscii(unsigned char* buff, int length, int length_per_line);
 
 double pow( double x, double y );

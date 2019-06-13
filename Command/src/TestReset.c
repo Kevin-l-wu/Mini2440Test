@@ -1,8 +1,11 @@
-#include <stdio.h>
 #include "GlobalDefine.h"
 #include "Error.h"
+#include "Common.h"
+#include "Stdio.h"
 
 #include "CommandManager.h"
+
+extern void reset();
 
 /*******************************************************************
  * Function Name: 	 	TestReset

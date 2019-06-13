@@ -123,7 +123,6 @@ typedef struct _UART_REGISTS
 	volatile unsigned int* ubrdiv;
 } UART_REGISTS;
 
-
 typedef enum {
 	PrintOutTypeDec,
 	PrintOutTypeHex,
@@ -140,8 +139,11 @@ typedef struct _PRINT_OUT
 void print_unsinged_data(unsigned unsigned_data, PRINT_OUT_TYPE print_out_type);
 void print_int_data(int int_data, PRINT_OUT_TYPE print_out_type);
 
-void print_string(const char* string);
-void printf_string(const char* string, ...);
+unsigned int print_string(const char* string);
+unsigned int printf_string(const char* string, ...);
 void AsciiPrintMarker(const char* format, void* marker);
+
+int Uart0Init(UART_INDEX uart);
+void uart0_recv_string(char* recv_string);
 
 #endif

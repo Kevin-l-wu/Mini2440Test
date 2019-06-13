@@ -1,27 +1,30 @@
+#include "Stdio.h"
+#include "Common.h"
+
 void UndifinedInstruction()
 {
-	print_string(UndifinedInstruction);
+	printf("UndifinedInstruction");
 	delay(1024 * 2024);
 	return ;
 }
 
 void SwiInterrupt()
 {
-	print_string("SwiInterrupt\n");
+	printf("SwiInterrupt\n");
 	delay(1024 * 2024);
 	return ;
 }
 
 void PrefetchAbort()
 {
-	print_string("PrefetchAbort\n");
+	printf("PrefetchAbort\n");
 	delay(1024 * 2024);
 	return ;
 }
 
 void DataAbort()
 {
-	print_string("DataAbort\n");
+	printf("DataAbort\n");
 	delay(1024 * 2024);
 	return ;
 }

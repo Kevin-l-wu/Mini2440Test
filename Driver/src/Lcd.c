@@ -1,6 +1,7 @@
-#include <stdio.h>
 #include "GlobalDefine.h"
 #include "Template.h"
+#include "Common.h"
+#include "Stdio.h"
 #include "Error.h"
 #include "Uart.h"
 #include "Lcd.h"
@@ -205,7 +206,7 @@ static int LcdDrawBox(int x, int y, int width, int height, U16 color)
 	
 	if((x <= width) && (width <= SCR_XSIZE) && (y <= height) && (height <= SCR_YSIZE))
 	{
-		print_string("LcdDrawBox()\n");
+		printf("LcdDrawBox()\n");
 		
 		for(indexX = x; indexX < width; indexX++)
 		{
@@ -228,7 +229,7 @@ static int LcdDrawImage(int x, int y, int width, int height, U16* image)
 	
 	if((x <= width) && (width <= SCR_XSIZE) && (y <= height) && (height <= SCR_YSIZE))
 	{
-		print_string("LcdDrawBox()\n");
+		printf("LcdDrawBox()\n");
 		
 		for(indexX = x; indexX < width; indexX++)
 		{
@@ -252,7 +253,7 @@ static int LcdDrawRect(int left, int bottom, int right, int top, U16 color)
 	
 	if((left <= right) && (right <= SCR_XSIZE) && (bottom <= top) && (top <= SCR_YSIZE))
 	{
-		print_string("LcdDrawRect()\n");
+		printf("LcdDrawRect()\n");
 		
 		indexX = left;
 		
@@ -303,21 +304,21 @@ static void LcdClearScreen(U16 color)
 
 static void LcdDumpRegister()
 {
-	print_string("Dump register:\n");
-	printf_string("rLCDCON1 = %x\n", rLCDCON1);
-	printf_string("rLCDCON2 = %x\n", rLCDCON2);
-	printf_string("rLCDCON3 = %x\n", rLCDCON3);
-	printf_string("rLCDCON4 = %x\n", rLCDCON4);
-	printf_string("rLCDCON5 = %x\n", rLCDCON5);
+	printf("Dump register:\n");
+	printf("rLCDCON1 = %x\n", rLCDCON1);
+	printf("rLCDCON2 = %x\n", rLCDCON2);
+	printf("rLCDCON3 = %x\n", rLCDCON3);
+	printf("rLCDCON4 = %x\n", rLCDCON4);
+	printf("rLCDCON5 = %x\n", rLCDCON5);
 	
-	printf_string("rLCDSADDR1 = %x\n", rLCDSADDR1);
-	printf_string("rLCDSADDR2 = %x\n", rLCDSADDR2);
-	printf_string("rLCDSADDR3 = %x\n", rLCDSADDR3);
+	printf("rLCDSADDR1 = %x\n", rLCDSADDR1);
+	printf("rLCDSADDR2 = %x\n", rLCDSADDR2);
+	printf("rLCDSADDR3 = %x\n", rLCDSADDR3);
 	
-	printf_string("rLCDINTMSK = %x\n", rLCDINTMSK);
+	printf("rLCDINTMSK = %x\n", rLCDINTMSK);
 	
-	printf_string("rTCONSEL = %x\n", rTCONSEL);
-	printf_string("rTPAL = %x\n", rTPAL);
+	printf("rTCONSEL = %x\n", rTCONSEL);
+	printf("rTPAL = %x\n", rTPAL);
 }
 
 static void LcdLineTest(int start_line, int end_line, U16 color)
@@ -326,12 +327,12 @@ static void LcdLineTest(int start_line, int end_line, U16 color)
 	int column_index = 0;
 	int color_index = 0;
 	
-	printf_string("\nlcd_line_test, start_line = %d, end_line = %d\n", start_line, end_line);
+	printf("\nlcd_line_test, start_line = %d, end_line = %d\n", start_line, end_line);
 	
-	printf_string("Color: %d\n\n", color);
+	printf("Color: %d\n\n", color);
 	for(line_index = start_line; line_index < end_line; line_index++)
 	{
-		printf_string("Fill line: %d\n\n", line_index);
+		printf("Fill line: %d\n\n", line_index);
 		LcdDrawLine(line_index, color);
 		
 		delay(1000);
@@ -345,12 +346,12 @@ static void LcdColumnTest(int start_column, int end_column, U16 color)
 	int column_index = 0;
 	int color_index = 0;
 	
-	printf_string("\nlcd_column_test, start_column = %d, end_column = %d\n", start_column, end_column);
+	printf("\nlcd_column_test, start_column = %d, end_column = %d\n", start_column, end_column);
 
-	printf_string("Color: %d\n\n", color);
+	printf("Color: %d\n\n", color);
 	for(column_index = start_column; column_index < end_column; column_index++)
 	{
-		printf_string("Fill column: %d\n\n", column_index);
+		printf("Fill column: %d\n\n", column_index);
 		LcdDrawColumn(column_index, color);
 		
 		delay(1000);
@@ -361,14 +362,14 @@ static void LcdColumnTest(int start_column, int end_column, U16 color)
 static void LcdDisplayChar(int column_number, int line_number, unsigned short* template)
 {
 	int x = 0, y = 0;
-//	printf_string("LcdDisplayChar()\n");
+//	printf("LcdDisplayChar()\n");
 	
 	for(y = line_number; y < (line_number + 16); y++)
 	{
 		for(x = column_number; x < (column_number + 8); x++)
 		{
 			#ifdef LCD_DEBUG
-			printf_string("x = %d, y = %d\n\n", x, y);
+			printf("x = %d, y = %d\n\n", x, y);
 			#endif
 			if(template[(x - column_number) + (y - line_number) * 8] != 0x00)
 				lcd_buffer[y][x] = template[(x - column_number) + (y - line_number) * 8];

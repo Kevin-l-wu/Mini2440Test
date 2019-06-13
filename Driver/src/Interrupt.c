@@ -1,6 +1,6 @@
 #include "GlobalDefine.h"
 #include "Error.h"
-#include "Uart.h"
+#include "Stdio.h"
 #include "Timer.h"
 #include "Interrupt.h"
 
@@ -11,16 +11,16 @@ extern void OSTickISR();
 /* Dump out main interrupt register */
 void IntRegDump()
 {
-	printf_string("\n---------------------- Dump Interrupt Registers -----------------------\n");
+	printf("\n---------------------- Dump Interrupt Registers -----------------------\n");
 	
-	printf_string("SRCPND = 0x%x\n", SRCPND);
-	printf_string("INTMSK = 0x%x\n", INTMSK);
-	printf_string("INTPND = 0x%x\n", INTPND);
-	printf_string("INTOFFSET = 0x%x\n", INTOFFSET);
-	printf_string("EINTMASK = 0x%x\n", EINTMASK);
-	printf_string("EINTPEND = 0x%x\n", EINTPEND);
+	printf("SRCPND = 0x%x\n", SRCPND);
+	printf("INTMSK = 0x%x\n", INTMSK);
+	printf("INTPND = 0x%x\n", INTPND);
+	printf("INTOFFSET = 0x%x\n", INTOFFSET);
+	printf("EINTMASK = 0x%x\n", EINTMASK);
+	printf("EINTPEND = 0x%x\n", EINTPEND);
 	
-	printf_string("\n-----------------------------------------------------------------------\n");	
+	printf("\n-----------------------------------------------------------------------\n");	
 }
 
 /* Enable irq and mask all interrupt */
@@ -95,12 +95,12 @@ void HandleIrq()
 	intMaskVal = INTMSK;
 	INTMSK = 0xffffffff;
 	
-	printf_string("----- Process interrupt -----\n");
+	printf("----- Process interrupt -----\n");
 
 	intOffsetVal = (INTOFFSET);
 	
 #ifdef CONFIG_INTERRUPT_DEBUG	
-	printf_string("intOffsetVal = 0x%x\n", intOffsetVal);
+	printf("intOffsetVal = 0x%x\n", intOffsetVal);
 	IntRegDump();
 #endif
 

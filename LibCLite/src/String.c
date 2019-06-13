@@ -1,7 +1,7 @@
-#include "Uart.h"
 #include "String.h"
 #include "Ctype.h"
 #include "Errno.h"
+#include "Stdio.h"
 
 void* memcpy(void* s1, const void* s2, size_t n)
 {
@@ -442,7 +442,7 @@ int putchar(int c) {
 	//TRACER();
 	char s[2] = {c, 0};
 //	AsciiPrint(s);
-	print_string(s);
+	printf(s);
 	return c;
 }
 

@@ -1,6 +1,6 @@
-#include <stdio.h>
 #include "GlobalDefine.h"
 #include "Error.h"
+#include "Stdio.h"
 
 #include "CommandManager.h"
 
@@ -15,7 +15,7 @@ MINI2440_STATUS TestVer(int argc, char* const* argv)
 {
 	MINI2440_STATUS status = MINI2440_SUCCESS;
 	
-	print_string("Ver: 20180618\n");
+	printf("Ver: 20190612\n");
 	
 	return status;
 }

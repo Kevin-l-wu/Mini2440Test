@@ -1,6 +1,9 @@
-#include <stdio.h>
 #include "GlobalDefine.h"
 #include "Error.h"
+#include "Stdio.h"
+#include "Common.h"
+
+#include "Tftp.h"
 
 #include "ModManager.h"
 #include "../Protocol/inc/DM9000Protocol.h"
@@ -9,8 +12,7 @@
 extern DM9000ModOps* gDM9000ModOps;
 extern u8 gTftpFinishFlag;
 
-
-extern MINI2440_STATUS TestTftp(int argc, char* const* argv);
+extern MINI2440_STATUS TestArp(int argc, char* const* argv);
 
 MINI2440_STATUS TestTftp(int argc, char* const* argv)
 {
@@ -50,13 +52,13 @@ MINI2440_STATUS TestTftp(int argc, char* const* argv)
 			{
 				if(!(index++ % 50))
 				{
-					print_string("#");
+					printf("#");
 				}
 				
 				gDM9000ModOps->DM9000Recv();
 			}
 		
-	//		print_string("The data received:\n");
+	//		printf("The data received:\n");
 	//		TftpPrintData();
 			delay(1024 * 1024);
 			

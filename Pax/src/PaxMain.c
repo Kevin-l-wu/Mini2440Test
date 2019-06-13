@@ -79,7 +79,7 @@ int PaxMain(void)
 	{
 		// Setup idle timer
 		
-		print_string("EDC Dead Circle\n");
+		printf("EDC Dead Circle\n");
 		if (bUpdateUI)
 		{
 			SetIdleTimer();
@@ -184,7 +184,7 @@ int PaxMain(void)
 
 void GuiTest()
 {
-	print_string("GuiTest()\n");
+	printf("GuiTest()\n");
 	
 	Gui_Init(0x10, 0x200);
 	
@@ -194,12 +194,12 @@ void GuiTest()
 	
 	CLcdGetInfo(&lcdInfo);
 	
-	printf_string("lcdInfo.width = 0x%x\n", lcdInfo.width);
-	printf_string("lcdInfo.height = %d\n", lcdInfo.height);
-	printf_string("lcdInfo.ppl = %d\n", lcdInfo.ppl);
-	printf_string("lcdInfo.ppc = %d\n", lcdInfo.ppc);
-	printf_string("lcdInfo.fgColor = %d\n", lcdInfo.fgColor);
-	printf_string("lcdInfo.bgColor = %d\n", lcdInfo.bgColor);
+	printf("lcdInfo.width = 0x%x\n", lcdInfo.width);
+	printf("lcdInfo.height = %d\n", lcdInfo.height);
+	printf("lcdInfo.ppl = %d\n", lcdInfo.ppl);
+	printf("lcdInfo.ppc = %d\n", lcdInfo.ppc);
+	printf("lcdInfo.fgColor = %d\n", lcdInfo.fgColor);
+	printf("lcdInfo.bgColor = %d\n", lcdInfo.bgColor);
 /*
 	CLcdTextOut(80, 50, "PAX POS");
 	
@@ -232,7 +232,7 @@ void GuiTest()
 	
 	while(!kbhit())
 	{
-		print_string("Wait For Key pressed\n");
+		printf("Wait For Key pressed\n");
 		
 		delay(1024 * 1024);
 	}
@@ -246,7 +246,7 @@ void GuiTest()
 	
 	while(!kbhit())
 	{
-		print_string("Wait For Key pressed\n");
+		printf("Wait For Key pressed\n");
 		
 		delay(1024 * 1024);
 	}
@@ -268,7 +268,7 @@ int MainSub(const ST_EVENT_MSG *pstEventMsg)
 
 	CheckTermSatus(pstEventMsg);
 
-	printf_string("Log1\n");
+	printf("Log1\n");
 	
 	iRet = ERR_NO_DISP;
 	switch( pstEventMsg->MsgType )

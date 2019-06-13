@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "GlobalDefine.h"
 #include "Getopt.h"
 
@@ -58,15 +57,15 @@ GetoptWrapper (
 
 GetOptModOps getOptModOps =
 {
-    Reset,
-    GetoptLongWrapper,
-    GetoptLongOnlyWrapper,
-    GetoptWrapper,
-    &optarg,
-    &optind,
-    &optopt,
-    &opterr,
-    &optreset
+    .Reset = Reset,
+    .Long = GetoptLongWrapper,
+    .LongOnly = GetoptLongOnlyWrapper,
+    .Basic = GetoptWrapper,
+    .OptArg = &optarg,
+    .OptInd = &optind,
+    .OptOpt = &optopt,
+    .OptErr = &opterr,
+    .OptReset = &optreset
 };
 
 MODULE_INSTALL(Getopt, MOD_GETOPT, 0, &getOptModOps);

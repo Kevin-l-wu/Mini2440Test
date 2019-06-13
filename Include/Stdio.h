@@ -6,12 +6,6 @@
 #ifndef __STDIO_H__
 #define __STDIO_H__
 
-/*
-#include <Tiano.h>
-#include <LibCLite/efi_compat.h>
-#include <EfiFileLib/EfiFileLib.h>
-*/
-
 #include "GlobalDefine.h"
 
 

@@ -1,6 +1,7 @@
-#include <stdio.h>
 #include "GlobalDefine.h"
 #include "Error.h"
+#include "Stdio.h"
+#include "Common.h"
 
 #include "ModManager.h"
 #include "../Protocol/inc/LedProtocol.h"
@@ -13,7 +14,7 @@ Function Description:	Led function test
 ************************************************************************/
 MINI2440_STATUS TestLed(int argc, char* const* argv)
 {
-	print_string("In function led_test\n");
+	printf("In function led_test\n");
 	MINI2440_STATUS status = MINI2440_SUCCESS;
 	int index = 0;
 	
@@ -23,7 +24,7 @@ MINI2440_STATUS TestLed(int argc, char* const* argv)
 	
 	for(index = 0; index < LED_MAX_NUMBER; index++)
 	{
-		print_string("Logs\n");
+		printf("Logs\n");
 		ledOps->LightLed(index);
 		delay(500000);
 		ledOps->PutOutLed(index);
@@ -32,7 +33,7 @@ MINI2440_STATUS TestLed(int argc, char* const* argv)
 /*	
 	for(index = 0; index < LED_MAX_NUMBER; index++)
 	{
-		print_string("Logs\n");
+		printf("Logs\n");
 		LightLed(index);
 		delay(500000);
 		PutOutLed(index);

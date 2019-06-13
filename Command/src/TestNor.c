@@ -1,6 +1,7 @@
-#include <stdio.h>
 #include "GlobalDefine.h"
 #include "Error.h"
+#include "Stdio.h"
+#include "Common.h"
 
 #include "GetoptLib.h"
 
@@ -38,12 +39,12 @@ MINI2440_STATUS TestNor(int argc, char* const* argv)
 	{
 		GetoptReset();
 		
-		while ((option = Getopt(argc, argv, "ew:r:t")) != -1)
+		while ((option = Getopt(argc, (char**)argv, "ew:r:t")) != -1)
 		{
 			switch(option)
 			{
 				case 'e':
-					print_string("Erase chip\n");
+					printf("Erase chip\n");
 					gNorModOps->NorFlashChipErase();
 					break;
 				case 'w':
@@ -51,12 +52,12 @@ MINI2440_STATUS TestNor(int argc, char* const* argv)
 					norAddr = hex_string_to_int(argv[OptInd]);
 					length = hex_string_to_int(argv[OptInd + 1]);
 					
-					printf_string("memAddr = %x\n", memAddr);
-					printf_string("norAddr = %x\n", norAddr);
-					printf_string("length = %x\n", length);
+					printf("memAddr = %x\n", memAddr);
+					printf("norAddr = %x\n", norAddr);
+					printf("length = %x\n", length);
 					if((memAddr % 2 != 0) || (norAddr % 2 != 0) || (length % 2 != 0))
 					{
-						print_string("Not support non aligned address or length\n");
+						printf("Not support non aligned address or length\n");
 						return -1;
 					}
 					
@@ -69,12 +70,12 @@ MINI2440_STATUS TestNor(int argc, char* const* argv)
 					norAddr = hex_string_to_int(argv[OptInd]);
 					length = hex_string_to_int(argv[OptInd + 1]);
 					
-					printf_string("memAddr = %x\n", memAddr);
-					printf_string("norAddr = %x\n", norAddr);
-					printf_string("length = %x\n", length);
+					printf("memAddr = %x\n", memAddr);
+					printf("norAddr = %x\n", norAddr);
+					printf("length = %x\n", length);
 					if((memAddr % 2 != 0) || (norAddr % 2 != 0) || (length % 2 != 0))
 					{
-						print_string("Not support non aligned address or length\n");
+						printf("Not support non aligned address or length\n");
 						return -1;
 					}
 					
@@ -88,7 +89,7 @@ MINI2440_STATUS TestNor(int argc, char* const* argv)
 					PrintAscii(readData, 0x60, 16);
 					break;
 				default:
-					printf_string("Invalid Parameter\n");
+					printf("Invalid Parameter\n");
 					break;
 			}	
 		}

@@ -17,7 +17,7 @@ int XuiOpen(int argc, char** argv)
 	if(!isRunning)
 	{
 		statusBar = malloc(sizeof(XuiWindow));
-		printf_string("statusBar = %x\n", statusBar);
+		printf("statusBar = %x\n", statusBar);
 		if(statusBar != NULL)
 		{
 			statusBar->startPoint.x = 0;
@@ -30,7 +30,7 @@ int XuiOpen(int argc, char** argv)
 		}
 		
 		root = malloc(sizeof(XuiWindow));
-		printf_string("root = %x\n", root);
+		printf("root = %x\n", root);
 		if(root != NULL)
 		{
 			root->startPoint.x = 0;
@@ -103,10 +103,10 @@ int XuiCanvasDrawText(XuiWindow *window, unsigned int x, unsigned int y, unsigne
 	
 		if(gLcdOps != NULL)
 		{
-			printf_string("window->startPoint.x = 0x%x\n", window->startPoint.x);
-			printf_string("window->startPoint.y = 0x%x\n", window->startPoint.y);
-			printf_string("window->width = 0x%x\n", window->width);
-			printf_string("window->height = 0x%x\n", window->height);
+			printf("window->startPoint.x = 0x%x\n", window->startPoint.x);
+			printf("window->startPoint.y = 0x%x\n", window->startPoint.y);
+			printf("window->width = 0x%x\n", window->width);
+			printf("window->height = 0x%x\n", window->height);
 			gLcdOps->LcdDisplayStringWithColor((window->startPoint.x + x), (window->startPoint.y + y), text, fg);
 		}
 	}
@@ -122,10 +122,10 @@ int XuiCanvasDrawImg(XuiWindow *window, unsigned int x, unsigned int y, unsigned
 	
 		if(gLcdOps != NULL)
 		{
-			printf_string("window->startPoint.x = 0x%x\n", window->startPoint.x);
-			printf_string("window->startPoint.y = 0x%x\n", window->startPoint.y);
-			printf_string("window->width = 0x%x\n", window->width);
-			printf_string("window->height = 0x%x\n", window->height);
+			printf("window->startPoint.x = 0x%x\n", window->startPoint.x);
+			printf("window->startPoint.y = 0x%x\n", window->startPoint.y);
+			printf("window->width = 0x%x\n", window->width);
+			printf("window->height = 0x%x\n", window->height);
 			gLcdOps->LcdDrawImage(x, y, (width + x), (height + y), img->priv);
 		}
 	}
@@ -144,10 +144,10 @@ int XuiClearArea(XuiWindow *window, unsigned int x, unsigned int y, unsigned int
 	
 		if(gLcdOps != NULL)
 		{
-			printf_string("window->startPoint.x = 0x%x\n", window->startPoint.x);
-			printf_string("window->startPoint.y = 0x%x\n", window->startPoint.y);
-			printf_string("window->width = 0x%x\n", window->width);
-			printf_string("window->height = 0x%x\n", window->height);
+			printf("window->startPoint.x = 0x%x\n", window->startPoint.x);
+			printf("window->startPoint.y = 0x%x\n", window->startPoint.y);
+			printf("window->width = 0x%x\n", window->width);
+			printf("window->height = 0x%x\n", window->height);
 			gLcdOps->LcdClearScreen(0x00);
 		}
 	}
@@ -173,8 +173,8 @@ void XuiShowWindow(XuiWindow *window, int show, int flag);
 
 void XuiCanvasSetBackground(XuiWindow *window, XuiBgStyle bgstyle, XuiImg *img, XuiColor bg)
 {
-	printf_string("window = 0x%x\n", window);
-	printf_string("bg = 0x%x\n", bg);
+	printf("window = 0x%x\n", window);
+	printf("bg = 0x%x\n", bg);
 	if(window != NULL)
 	{
 		if(gLcdOps  == NULL)
@@ -182,10 +182,10 @@ void XuiCanvasSetBackground(XuiWindow *window, XuiBgStyle bgstyle, XuiImg *img, 
 	
 		if(gLcdOps != NULL)
 		{
-			printf_string("window->startPoint.x = 0x%x\n", window->startPoint.x);
-			printf_string("window->startPoint.y = 0x%x\n", window->startPoint.y);
-			printf_string("window->width = 0x%x\n", window->width);
-			printf_string("window->height = 0x%x\n", window->height);
+			printf("window->startPoint.x = 0x%x\n", window->startPoint.x);
+			printf("window->startPoint.y = 0x%x\n", window->startPoint.y);
+			printf("window->width = 0x%x\n", window->width);
+			printf("window->height = 0x%x\n", window->height);
 			gLcdOps->LcdDrawBox(window->startPoint.x, window->startPoint.y, (window->startPoint.x + window->width), 
 				(window->startPoint.y + window->height), bg);
 		}

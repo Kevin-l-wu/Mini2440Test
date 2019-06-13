@@ -21,8 +21,8 @@ RM := rm -fr
 
 CC := arm-linux-gcc
 LD := arm-linux-ld
-#LFLAGS := -Tgboot.lds -L /usr/local/arm/4.3.2/lib/gcc/arm-none-linux-gnueabi/4.3.2/armv4t -lgcc
-LFLAGS := -Tgboot.lds -L /usr/local/5.4.0/lib/gcc/arm-none-linux-gnueabi/5.4.0/ -lgcc
+LFLAGS := -Tgboot.lds -L /usr/local/arm/4.3.2/lib/gcc/arm-none-linux-gnueabi/4.3.2/armv4t -lgcc
+#LFLAGS := -Tgboot.lds -L /usr/local/5.4.0/lib/gcc/arm-none-linux-gnueabi/5.4.0/ -lgcc
 
 OBJCOPY := arm-linux-objcopy
 OFLAG := -O binary
@@ -74,7 +74,7 @@ $(DIR_BUILD) $(DIR_BUILD_SUB) :
 	$(MKDIR) $@
 	
 $(START) : start.S
-	$(CC) -g -c -o $@ $^
+	$(CC) -march=armv4t -g -c -o $@ $^
 	
 clean : 
 	@echo "Begin to clean ..."

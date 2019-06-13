@@ -1,7 +1,10 @@
 #include "GlobalDefine.h"
+#include "Error.h"
+#include "Common.h"
+#include "Stdio.h"
 #include "Gpio.h"
 #include "Interrupt.h"
-#include "Error.h"
+
 #include "Button.h"
 
 #include "ModManager.h"
@@ -14,7 +17,7 @@ static void InitButtonIrq()
 {
 	unsigned cpsr_value = 0;
 	
-	print_string("Button Irq Init\n");
+	printf("Button Irq Init\n");
 	
 	/* Configure GPIOF */
 	GPGCON &= ~(0x03 << 0) & (0x03 << 6) & (0x03 << 10) & (0x03 << 12) & (0x03 << 14) & (0x03 << 22);
@@ -35,14 +38,14 @@ static void InitButtonIrq()
     : [cpsr_value1] "=r" (cpsr_value)
     :
     );
-	printf_string("Cpsr = 0x%x\n", cpsr_value);
+	printf("Cpsr = 0x%x\n", cpsr_value);
 	
 	EINTPEND = ~(0x00);
 }
 
 static void ClearButtonIrq()
 {	
-	print_string("Clear Button Irq\n");
+	printf("Clear Button Irq\n");
 	
 	/* Configure GPIOF */
 	GPFCON &= ~(0x03 << 0) & (0x03 << 6) & (0x03 << 10) & (0x03 << 12) & (0x03 << 14) & (0x03 << 22);
@@ -62,7 +65,7 @@ void button_irq()
 	
 	value = (EINTPEND);
 	
-//	printf_string("vaule(EINTPEND) = 0x%x\n", value);
+//	printf("vaule(EINTPEND) = 0x%x\n", value);
 	
 	switch(value)
 	{

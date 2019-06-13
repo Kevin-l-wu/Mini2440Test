@@ -4,9 +4,9 @@
 #include "GlobalDefine.h"
 #include "Error.h"
 #include "Common.h"
-#include "Uart.h"
+#include "Stdio.h"
 
-#define warnx printf_string
+#define warnx printf
 
 #endif // GETOPT_SUPPORT_H
 

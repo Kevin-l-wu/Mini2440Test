@@ -1,4 +1,6 @@
 #include "GlobalDefine.h"
+#include "Stdio.h"
+#include "String.h"
 #include "Common.h"
 
 void delay(int n)
@@ -45,13 +47,13 @@ void PrintAscii(unsigned char* buff, int length, int length_per_line)
 		{
 			if(((i % length_per_line) == 0))
 			{
-				printf_string("\n0x%x: ", (buff + i));
+				printf("\n0x%x: ", (buff + i));
 			}
 			
-			printf_string("0x%C ", buff[i]);
+			printf("0x%C ", buff[i]);
 		}
 
-		printf_string("\n");
+		printf("\n");
 	}
 }
 

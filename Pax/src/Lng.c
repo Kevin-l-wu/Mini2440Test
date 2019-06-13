@@ -19,7 +19,7 @@ Email       xiliho221@163.com xielh@pazsz.com
 	   ascIdx[99].begin 表示'c'开头的字符串在字符串索引strIdx中的开始位置
 	   ascIdx[99].count 表示'c'开头的字符串在字符串索引strIdx中的个数
 	5.  对于函数char *Translate(char *str);
-	   当printf_string(_T("china")); 
+	   当printf(_T("china")); 
 	   1> 'c'开头的字符 在ascIdx中个数为0,直接返回字符串
 	   2> 'c'开头的字符 在ascIdx中个数为1,直接返回begin所指的字符串 //(如果语言文件有误的话，这一项将会出错)
 	   3> 'c'开头的字符 在ascIdx中个数大于2,根据begin和count,进行二分查找(bsearch),
@@ -417,7 +417,7 @@ GET_MARK2:
 					*pMark4 = '\0';   //目标字符串的结束符
 					strIdx[idxCnt].src = FormatStr(pMark1 + 1);
 					strIdx[idxCnt].dst = FormatStr(pMark3 + 1);
-					//printf_string("\"%s\" -> \"%s\"\n",strIdx[idxCnt].src,strIdx[idxCnt].dst);
+					//printf("\"%s\" -> \"%s\"\n",strIdx[idxCnt].src,strIdx[idxCnt].dst);
 					idxCnt++;		
 					if (MAX_LNG_STR < idxCnt)
 					{

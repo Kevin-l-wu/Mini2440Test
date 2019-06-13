@@ -1,6 +1,7 @@
-#include <stdio.h>
 #include "GlobalDefine.h"
 #include "Error.h"
+#include "Stdio.h"
+#include "Common.h"
 
 #include "ModManager.h"
 #include "../Protocol/inc/ButtonProtocol.h"
@@ -18,7 +19,7 @@ MINI2440_STATUS TestButton(int argc, char* const* argv)
 {
 	MINI2440_STATUS status = MINI2440_SUCCESS;
 	unsigned wait_times = 100;
-	print_string("\n--------------- Button Test ----------------\n");
+	printf("\n--------------- Button Test ----------------\n");
 	
 	int button = 0;
 	gLocateProtocol(MOD_BUTTON, (void*)&gButtonOps);
@@ -32,7 +33,7 @@ MINI2440_STATUS TestButton(int argc, char* const* argv)
 			delay(1024 * 1024);
 			button = gButtonOps->ButtonGet();
 			
-			printf_string("button = 0x%x\n", button);
+			printf("button = 0x%x\n", button);
 		}
 		
 		gButtonOps->ButtonFlush();
@@ -42,7 +43,7 @@ MINI2440_STATUS TestButton(int argc, char* const* argv)
 			delay(1024 * 1024);
 			button = gButtonOps->ButtonGet();
 			
-			printf_string("button = 0x%x\n", button);
+			printf("button = 0x%x\n", button);
 		}
 		
 		gButtonOps->ButtonFlush();
@@ -52,13 +53,13 @@ MINI2440_STATUS TestButton(int argc, char* const* argv)
 			delay(1024 * 1024);
 			button = gButtonOps->ButtonGet();
 			
-			printf_string("button = 0x%x\n", button);
+			printf("button = 0x%x\n", button);
 		}
 			
 		gButtonOps->ButtonExit();
 	}
 	
-	print_string("\n--------------- Button Test Over ----------------\n");
+	printf("\n--------------- Button Test Over ----------------\n");
 	
 	return status;
 }

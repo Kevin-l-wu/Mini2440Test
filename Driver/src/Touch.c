@@ -1,5 +1,6 @@
 #include "Interrupt.h"
-#include "Uart.h"
+#include "Common.h"
+#include "Stdio.h"
 
 #define ADCCON (*(volatile unsigned long*)0x58000000)
 #define ADCTSC (*(volatile unsigned long*)0x58000004)
@@ -29,17 +30,17 @@ void touch_init()
 
 void dump_touch_reg()
 {
-	printf_string("\n\n-------------- dump_touch_reg --------------------\n\n");
+	printf("\n\n-------------- dump_touch_reg --------------------\n\n");
 	
-	printf_string("ADCCON = 0x%x\n", ADCCON);
-	printf_string("ADCTSC = 0x%x\n", ADCTSC);
+	printf("ADCCON = 0x%x\n", ADCCON);
+	printf("ADCTSC = 0x%x\n", ADCTSC);
 	
-	printf_string("\n\n-------------------------------------------------------\n\n");
+	printf("\n\n-------------------------------------------------------\n\n");
 }
 
 void touch_handler()
 {
-	print_string("touch_handler");
+	printf("touch_handler");
 	
 	//1. Start X/Y coordinate auto convert
 	ADCCON |= (1 << 0);
@@ -69,7 +70,7 @@ void touch_handler()
 		}	
 	}
 	
-	printf_string("\n\nxdata = %d\nydata = %d\n\n", xdata, ydata);
+	printf("\n\nxdata = %d\nydata = %d\n\n", xdata, ydata);
 
 	//6. Clear stylus up interrupt
 	(SUBSRCPND) |= (1 << 9);

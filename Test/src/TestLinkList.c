@@ -26,7 +26,7 @@ void TestLinkList()
 
 	noteGet1 = (COMMAND_LIST_NODE*)LinkList_Get(commandLink, 0);
 	
-	printf_string("noteGet1->command = %x\n\n", noteGet1->command);
+	printf("noteGet1->command = %x\n\n", noteGet1->command);
 	
 	LinkList_Clear(commandLink);
 	LinkList_Destroy(commandLink);

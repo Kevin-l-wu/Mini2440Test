@@ -55,16 +55,16 @@ void fill_template_color(unsigned short color, TEMPLATE8X16* ascii_template)
 unsigned get_template(unsigned char ascii_char, unsigned short color, TEMPLATE8X16** ascii_template)
 {
 	unsigned index = 0;
-//	print_string("In function get_template\n\n");
-//	printf_string("&Global_ascii_template = 0x%x\n\n", &Global_ascii_template);
-//	printf_string("Global_ascii_template = 0x%x\n\n", Global_ascii_template);
+//	printf("In function get_template\n\n");
+//	printf("&Global_ascii_template = 0x%x\n\n", &Global_ascii_template);
+//	printf("Global_ascii_template = 0x%x\n\n", Global_ascii_template);
 	
 	for(index = 0; index < (sizeof(Global_ascii_template) / sizeof(Global_ascii_template[0])); index++)
 	{
 		if(Global_ascii_template[index].ascii_char == ascii_char)
 		{
-//			printf_string("index = %d\n\n", index);
-//			printf_string("&(Global_ascii_template[index].ascii_template) = 0x%x\n\n", &(Global_ascii_template[index].ascii_template));
+//			printf("index = %d\n\n", index);
+//			printf("&(Global_ascii_template[index].ascii_template) = 0x%x\n\n", &(Global_ascii_template[index].ascii_template));
 			*ascii_template = &(Global_ascii_template[index].ascii_template);
 			break;
 		}

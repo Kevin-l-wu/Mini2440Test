@@ -716,37 +716,37 @@ main (argc, argv)
 	case '8':
 	case '9':
 	  if (digit_optind != 0 && digit_optind != this_option_optind)
-	    printf_string ("digits occur in two different argv-elements.\n");
+	    printf ("digits occur in two different argv-elements.\n");
 	  digit_optind = this_option_optind;
-	  printf_string ("option %c\n", c);
+	  printf ("option %c\n", c);
 	  break;
 
 	case 'a':
-	  printf_string ("option a\n");
+	  printf ("option a\n");
 	  break;
 
 	case 'b':
-	  printf_string ("option b\n");
+	  printf ("option b\n");
 	  break;
 
 	case 'c':
-	  printf_string ("option c with value `%s'\n", optarg);
+	  printf ("option c with value `%s'\n", optarg);
 	  break;
 
 	case BAD_OPTION:
 	  break;
 
 	default:
-	  printf_string ("?? getopt returned character code 0%o ??\n", c);
+	  printf ("?? getopt returned character code 0%o ??\n", c);
 	}
     }
 
   if (optind < argc)
     {
-      printf_string ("non-option ARGV-elements: ");
+      printf ("non-option ARGV-elements: ");
       while (optind < argc)
-	printf_string ("%s ", argv[optind++]);
-      printf_string ("\n");
+	printf ("%s ", argv[optind++]);
+      printf ("\n");
     }
 
   exit (0);

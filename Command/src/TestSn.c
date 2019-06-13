@@ -1,6 +1,6 @@
-#include <stdio.h>
 #include "GlobalDefine.h"
 #include "Error.h"
+#include "Stdio.h"
 
 #include "CommandManager.h"
 
@@ -15,7 +15,7 @@ MINI2440_STATUS TestSn(int argc, char* const* argv)
 {
 	MINI2440_STATUS status = MINI2440_SUCCESS;
 	
-	print_string("SN: C39HGFG00FF\n");
+	printf("SN: C39HGFG00FF\n");
 	
 	return status;
 }

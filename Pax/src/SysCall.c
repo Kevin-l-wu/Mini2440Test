@@ -11,169 +11,169 @@ unsigned int errno;
 
 uchar SystemInit(void)
 {
-	print_string("SystemInit()\n");
+	printf("SystemInit()\n");
 }
 
 void Beep(void)
 {
-	print_string("Beep()\n");
+	printf("Beep()\n");
 }
 
 void Beef(uchar mode, ushort DlyTime)
 {
-	print_string("Beef()\n");
+	printf("Beef()\n");
 }
 
 void BeepF(uchar mode, ushort DlyTime)
 {
-	print_string("BeepF()\n");
+	printf("BeepF()\n");
 }
 
 uchar SetTime(uchar *time)
 {
-	print_string("SetTime()\n");
+	printf("SetTime()\n");
 }
 
 void GetTime(uchar *time)
 {
-	print_string("GetTime()\n");
+	printf("GetTime()\n");
 }
 
 void DelayMs(ushort Ms)
 {
-	print_string("DelayMs()\n");
+	printf("DelayMs()\n");
 }
 
 void TimerSet(uchar TimerNo, ushort Cnts)
 {
-	print_string("TimerSet()\n");
+	printf("TimerSet()\n");
 }
 
 ushort TimerCheck(uchar TimerNo)
 {
-	print_string("TimerCheck()\n");
+	printf("TimerCheck()\n");
 }
 
 uint GetTimerCount(void)
 {
-	print_string("GetTimerCount()\n");
+	printf("GetTimerCount()\n");
 }
 
 void ReadSN(uchar *SerialNo)
 {
-	print_string("ReadSN()\n");
+	printf("ReadSN()\n");
 }
 
 int ReadCSN(uchar BufferLen, uchar *CSN)
 {
-	print_string("ReadCSN()\n");
+	printf("ReadCSN()\n");
 }
 
 void EXReadSN(uchar *SN)
 {
-	print_string("EXReadSN()\n");
+	printf("EXReadSN()\n");
 }
 
 uchar ReadVerInfo(uchar *VerInfo)
 {
-	print_string("ReadVerInfo()\n");
+	printf("ReadVerInfo()\n");
 }
 
 int GetTermInfo(uchar *out_info)
 {
-	print_string("GetTermInfo()\n");
+	printf("GetTermInfo()\n");
 }
 
 int ReadFontLib(ulong Offset, uchar *FontData, int ReadLen)
 {
-	print_string("ReadFontLib()\n");
+	printf("ReadFontLib()\n");
 }
 
 int EnumFont (ST_FONT *Fonts, int MaxFontNums)
 {
-	print_string("EnumFont()\n");
+	printf("EnumFont()\n");
 }
 
 int Reboot()
 {
-	print_string("Reboot()\n");
+	printf("Reboot()\n");
 }
 
 void PciGetRandom(uchar *random)
 {
-	print_string("PciGetRandom()\n");
+	printf("PciGetRandom()\n");
 }
 
 int SysSleep(uchar *DownCtrl)
 {
-	print_string("SysSleep()\n");
+	printf("SysSleep()\n");
 }
 
 void SysIdle(void)
 {
-	print_string("SysIdle()\n");
+	printf("SysIdle()\n");
 }
 
 uchar OnBase(void)
 {
-	print_string("OnBase()\n");
+	printf("OnBase()\n");
 }
 
 uchar BatteryCheck(void)
 {
-	print_string("BatteryCheck()\n");
+	printf("BatteryCheck()\n");
 }
 
 void PowerOff(void)
 {
-	print_string("PowerOff()\n");
+	printf("PowerOff()\n");
 }
 
 int GetTermInfoExt(uchar *InfoOut, int InfoOutLen)
 {
-	print_string("GetTermInfoExt()\n");
+	printf("GetTermInfoExt()\n");
 }
 
 int EnumBaseFont (ST_FONT *Fonts, int MaxFontNums)
 {
-	print_string("EnumBaseFont()\n");
+	printf("EnumBaseFont()\n");
 }
 
 uchar GetEnv(char *name, uchar *value)
 {
-	print_string("GetEnv()\n");
+	printf("GetEnv()\n");
 }
 
 uchar PutEnv(char *name, uchar *value)
 {
-	print_string("PutEnv()\n");
+	printf("PutEnv()\n");
 }
 
 int SslSaveCerPrivkey(uchar *ServIp, ushort ServPort, ST_SSL_BUF CertChains[], 
 	int CertChainsNum, ST_SSL_BUF *Crl, ST_SSL_BUF LocalCerts[], int LocalCertsNum, 
 	uchar KeyIdx, ST_SSL_BUF *LocalPrivatekey, uchar FormatType)
 {
-	print_string("SslSaveCerPrivkey()\n");	
+	printf("SslSaveCerPrivkey()\n");	
 }
 
 int SslDelCerPrivkey(unsigned char *ServIp, unsigned short ServPort)
 {
-	print_string("SslDelCerPrivkey()\n");
+	printf("SslDelCerPrivkey()\n");
 }
 
 int SysConfig(uchar *ConfigInfoIn, int InfoInLen)
 {
-	print_string("SysConfig()\n");
+	printf("SysConfig()\n");
 }
 
 void LedDisplay(unsigned char type, unsigned char *str)
 {
-	print_string("LedDisplay()\n");
+	printf("LedDisplay()\n");
 }
 
 int SetWakeupChannel (uint index, uchar *attr)
 {
-	print_string("SetWakeupChannel()\n");
+	printf("SetWakeupChannel()\n");
 }
 
 
@@ -181,40 +181,40 @@ int SetWakeupChannel (uint index, uchar *attr)
 
 void des(uchar *input, uchar *output, uchar *deskey, int mode)
 {
-	print_string("des()\n");
+	printf("des()\n");
 }
 
 void Hash(uchar* DataIn, uint DataInLen, uchar* DataOut)
 {
-	print_string("Hash()\n");
+	printf("Hash()\n");
 }
 
 int RSARecover(uchar *pbyModule, uint dwModuleLen, uchar *pbyExp, uint dwExpLen,
 	uchar *pbyDataIn, uchar *pbyDataOut)
 {
-	print_string("RSARecover()\n");
+	printf("RSARecover()\n");
 }
 
 int RSAKeyPairGen(R_RSA_PUBLIC_KEY *pPublicKeyOut, R_RSA_PRIVATE_KEY *pPrivateKeyOut, 
 	int iProtoKeyBit, int iPubEType)
 {
-	print_string("RSAKeyPairGen()\n");
+	printf("RSAKeyPairGen()\n");
 }
 
 int RSAKeyPairVerify(R_RSA_PUBLIC_KEY PublicKey, R_RSA_PRIVATE_KEY PrivateKey)
 {
-	print_string("RSAKeyPairVerify()\n");
+	printf("RSAKeyPairVerify()\n");
 }
 
 int SHA( int Mode, const unsigned char *DataIn, int DataInLen, unsigned char *ShaOut)
 {
-	print_string("SHA()\n");
+	printf("SHA()\n");
 }
 
 int AES(const unsigned char *Input, unsigned char *Output, const unsigned char *AesKey, 
 	int KeyLen, int Mode)
 {
-	print_string("AES()\n");
+	printf("AES()\n");
 }
 
 
@@ -251,7 +251,7 @@ void KeyBoardExit()
 
 uchar kbhit(void)
 {
-	print_string("kbhit()\n");
+	printf("kbhit()\n");
 	
 	int ret = 0;
 	
@@ -270,7 +270,7 @@ uchar kbhit(void)
 
 void kbflush(void)
 {
-	print_string("kbflush()\n");
+	printf("kbflush()\n");
 	
 	if(gPaxKeyOps == NULL)
 	{
@@ -285,7 +285,7 @@ void kbflush(void)
 
 uchar getkey(void)
 {
-	print_string("getkey()\n");
+	printf("getkey()\n");
 	uchar ret = 0;
 	
 	if(gPaxKeyOps == NULL)
@@ -303,32 +303,32 @@ uchar getkey(void)
 
 void kbmute(uchar flag)
 {
-	print_string("kbmute()\n");
+	printf("kbmute()\n");
 }
 
 uchar GetString(uchar *str, uchar mode, uchar minlen, uchar maxlen)
 {
-	print_string("GetString()\n");
+	printf("GetString()\n");
 }
 
 uchar GetHzString(uchar *outstr, uchar max, ushort TimeOut)
 {
-	print_string("GetHzString()\n");
+	printf("GetHzString()\n");
 }
 
 void kblight(uchar mode)
 {
-	print_string("kblight()\n");
+	printf("kblight()\n");
 }
 
 void KbLock(uchar mode)
 {
-	print_string("KbLock()\n");
+	printf("KbLock()\n");
 }
 
 int KbCheck(int iCmd)
 {
-	print_string("KbCheck()\n");
+	printf("KbCheck()\n");
 }
 
 
@@ -336,122 +336,122 @@ int KbCheck(int iCmd)
 
 void ScrCls(void)
 {
-	print_string("ScrCls()\n");
+	printf("ScrCls()\n");
 }
 
 void ScrClrLine(uchar startline, uchar endline)
 {
-	print_string("ScrClrLine()\n");
+	printf("ScrClrLine()\n");
 }
 
 void ScrGray(uchar mode)
 {
-	print_string("ScrGray()\n");
+	printf("ScrGray()\n");
 }
 
 void ScrBackLight(uchar mode)
 {
-	print_string("ScrBackLight()\n");
+	printf("ScrBackLight()\n");
 }
 
 void ScrGotoxy(uchar x, uchar y)
 {
-	print_string("ScrGotoxy()\n");
+	printf("ScrGotoxy()\n");
 }
 
 int ScrSelectFont(ST_FONT *SingleCodeFont, ST_FONT *MultiCodeFont)
 {
-	print_string("ScrSelectFont()\n");
+	printf("ScrSelectFont()\n");
 }
 
 uchar ScrFontSet(uchar fontsize)
 {
-	print_string("ScrFontSet()\n");
+	printf("ScrFontSet()\n");
 }
 
 uchar ScrAttrSet(uchar attr)
 {
-	print_string("ScrAttrSet()\n");
+	printf("ScrAttrSet()\n");
 }
 
 void Lcdprintf_string(uchar *fmt, ...)
 {
-	print_string("Lcdprintf_string()\n");
+	printf("Lcdprintf_string()\n");
 }
 
 void ScrPrint(uchar col, uchar row, uchar mode, char*str,...)
 {
-	print_string("ScrPrint()\n");
+	printf("ScrPrint()\n");
 }
 
 void ScrPlot(uchar X, uchar Y, uchar Color)
 {
-	print_string("ScrPlot()\n");
+	printf("ScrPlot()\n");
 }
 
 void ScrDrLogo(uchar *logo)
 {
-	print_string("ScrDrLogo()\n");
+	printf("ScrDrLogo()\n");
 }
 
 void ScrDrLogoxy(int x, int y, uchar *logo)
 {
-	print_string("ScrDrLogoxy()\n");
+	printf("ScrDrLogoxy()\n");
 }
 
 uchar ScrRestore(uchar mode)
 {
-	print_string("ScrRestore()\n");
+	printf("ScrRestore()\n");
 }
 
 void ScrSetIcon(uchar icon_no, uchar mode)
 {
-	print_string("ScrSetIcon()\n");
+	printf("ScrSetIcon()\n");
 }
 
 void ScrGotoxyEx (int pixel_X, int pixel_Y)
 {
-	print_string("ScrGotoxyEx()\n");
+	printf("ScrGotoxyEx()\n");
 }
 
 void ScrGetxyEx(int *pixel_X, int *pixel_Y)
 {
-	print_string("ScrGetxyEx()\n");
+	printf("ScrGetxyEx()\n");
 }
 
 void ScrDrawRect(int left, int top, int right, int bottom)
 {
-	print_string("ScrDrawRect()\n");
+	printf("ScrDrawRect()\n");
 }
 
 void ScrClrRect(int left, int top, int right, int bottom)
 {
-	print_string("ScrClrRect()\n");
+	printf("ScrClrRect()\n");
 }
 
 void ScrSpaceSet(int CharSpace, int LineSpace)
 {
-	print_string("ScrSpaceSet()\n");
+	printf("ScrSpaceSet()\n");
 }
 
 void ScrGetLcdSize(int *width, int *height)
 {
-	print_string("ScrGetLcdSize()\n");
+	printf("ScrGetLcdSize()\n");
 }
 
 void ScrTextOut(int pixel_X, int pixel_Y, unsigned char *txt)
 {
-	print_string("ScrTextOut()\n");
+	printf("ScrTextOut()\n");
 }
 
 void ScrSetOutput(int device)
 {
-	print_string("ScrSetOutput()\n");
+	printf("ScrSetOutput()\n");
 }
 
 void ScrSetEcho(int mode)
 {
-	print_string("ScrSetEcho()\n");
+	printf("ScrSetEcho()\n");
 }
 
 
@@ -795,7 +795,7 @@ uchar PrnInit(void)
 
 int PrnSelectFont(ST_FONT *SingleCodeFont, ST_FONT *MultiCodeFont)
 {
-	print_string("PrnSelectFont()\n");
+	printf("PrnSelectFont()\n");
 }
 
 void PrnFontSet(uchar Ascii, uchar CFont)
@@ -1107,112 +1107,112 @@ int DoEvent(uchar AppNo, ST_EVENT_MSG *msg)
 
 int open(char *filename, uchar mode)
 {
-	print_string("open()\n");
+	printf("open()\n");
 }
 
 int ex_open(char *filename, uchar mode, uchar* attr)
 {
-	print_string("ex_open()\n");
+	printf("ex_open()\n");
 }
 
 int read(int fid, uchar *dat, int len)
 {
-	print_string("read()\n");
+	printf("read()\n");
 }
 
 int write(int fid, uchar *dat, int len)
 {
-	print_string("write()\n");
+	printf("write()\n");
 }
 
 int close(int fid)
 {
-	print_string("close()\n");
+	printf("close()\n");
 }
 
 int seek(int fid, long offset, uchar fromwhere)
 {
-	print_string("seek()\n");
+	printf("seek()\n");
 }
 
 long filesize(char *filename)
 {
-	print_string("filesize()\n");
+	printf("filesize()\n");
 }
 
 int truncate(int fid, long len)
 {
-	print_string("truncate()\n");
+	printf("truncate()\n");
 }
 
 int remove(const char *filename)
 {
-	print_string("remove()\n");
+	printf("remove()\n");
 }
 
 long freesize(void)
 {
-	print_string("freesize()\n");
+	printf("freesize()\n");
 }
 
 int fexist(char *filename)
 {
-	print_string("fexist()\n");
+	printf("fexist()\n");
 }
 
 int GetFileInfo(FILE_INFO* finfo)
 {
-	print_string("GetFileInfo()\n");
+	printf("GetFileInfo()\n");
 }
 
 int FileToApp(uchar *FileName)
 {
-	print_string("FileToApp()\n");
+	printf("FileToApp()\n");
 }
 
 int FileToParam (uchar *FileName, uchar *AppName, int iType)
 {
-	print_string("FileToParam()\n");
+	printf("FileToParam()\n");
 }
 
 int FileToFont(uchar *FileName)
 {
-	print_string("FileToFont()\n");
+	printf("FileToFont()\n");
 }
 
 int FileToMonitor(uchar *FileName)
 {
-	print_string("FileToMonitor()\n");
+	printf("FileToMonitor()\n");
 }
 
 int FileToPuk(int PukType, int PukIdx, uchar *FileName)
 {
-	print_string("FileToPuk()\n");
+	printf("FileToPuk()\n");
 }
 
 int FileToDriver(uchar *FileName, uint Type)
 {
-	print_string("FileToDriver()\n");
+	printf("FileToDriver()\n");
 }
 
 int DelAppFile(uchar *AppName)
 {
-	print_string("DelAppFile()\n");
+	printf("DelAppFile()\n");
 }
 
 int GetLastError(void)
 {
-	print_string("GetLastError()\n");
+	printf("GetLastError()\n");
 }
 
 void FsRecycle(int NeedSize)
 {
-	print_string("FsRecycle()\n");
+	printf("FsRecycle()\n");
 }
 
 long tell(int fid)
 {
-	print_string("tell()\n");
+	printf("tell()\n");
 }
 
 
@@ -1577,82 +1577,82 @@ int EthMacGet(unsigned char mac[6])
 
 int WlInit(const uchar *SimPinIn)
 {
-	print_string("WlInit()\n");
+	printf("WlInit()\n");
 }
 
 int WlGetSignal(uchar * SingnalLevelOut)
 {
-	print_string("WlGetSignal()\n");
+	printf("WlGetSignal()\n");
 }
 
 int WlPppLogin(uchar *APNIn, uchar * UidIn, uchar * PwdIn, long Auth, int TimeOut, int AliveInterval)
 {
-	print_string("WlPppLogin()\n");
+	printf("WlPppLogin()\n");
 }
 
 void WlPppLogout()
 {
-	print_string("WlPppLogout()\n");
+	printf("WlPppLogout()\n");
 }
 
 int WlPppCheck(void)
 {
-	print_string("WlPppCheck()\n");
+	printf("WlPppCheck()\n");
 }
 
 int WlOpenPort(void)
 {
-	print_string("WlOpenPort()\n");
+	printf("WlOpenPort()\n");
 }
 
 int WlClosePort(void)
 {
-	print_string("WlClosePort()\n");
+	printf("WlClosePort()\n");
 }
 
 int WlSendCmd(const uchar * ATstrIn, uchar *RspOut, ushort Rsplen, ushort TimeOut, ushort Mode)
 {
-	print_string("WlSendCmd()\n");
+	printf("WlSendCmd()\n");
 }
 
 void WlSwitchPower(uchar Onoff)
 {
-	print_string("WlSwitchPower()\n");
+	printf("WlSwitchPower()\n");
 }
 
 int WlSelSim (uchar simno)
 {
-	print_string("WlSelSim()\n");
+	printf("WlSelSim()\n");
 }
 
 int WlAutoStart(unsigned char * pin, unsigned char * APNIn, unsigned char * UidIn, unsigned char * PwdIn, long Auth, int TimeOut, int AliveInterval)
 {
-	print_string("WlAutoStart()\n");
+	printf("WlAutoStart()\n");
 }
 
 int WlAutoCheck(void)
 {
-	print_string("WlAutoCheck()\n");
+	printf("WlAutoCheck()\n");
 }
 
 int WlPppLoginEx(const char *DialNum, const char *apn, char *Uid, char *Pwd, long Auth, int timeout, int AliveInterval)
 {
-	print_string("WlPppLoginEx()\n");
+	printf("WlPppLoginEx()\n");
 }
 
 void WlTcpRetryNum(int value)
 {
-	print_string("WlTcpRetryNum()\n");
+	printf("WlTcpRetryNum()\n");
 }
 
 void WlSetTcpDetect(int value)
 {
-	print_string("WlSetTcpDetect()\n");
+	printf("WlSetTcpDetect()\n");
 }
 
 void WlSetDns(char *dns_ip)
 {
-	print_string("WlSetDns()\n");
+	printf("WlSetDns()\n");
 }
 
 
@@ -1661,42 +1661,42 @@ void WlSetDns(char *dns_ip)
 
 int WifiOpen(void)
 {
-	print_string("WifiOpen()\n");
+	printf("WifiOpen()\n");
 }
 
 int WifiClose(void)
 {
-	print_string("WifiClose()\n");
+	printf("WifiClose()\n");
 }
 
 int WifiScan(ST_WIFI_AP *outAps, int ApCount)
 {
-	print_string("WifiScan()\n");
+	printf("WifiScan()\n");
 }
 
 int WifiConnect(ST_WIFI_AP *Ap, ST_WIFI_PARAM *WifiParam)
 {
-	print_string("WifiConnect()\n");
+	printf("WifiConnect()\n");
 }
 
 int WifiDisconnect(void)
 {
-	print_string("WifiDisconnect()\n");
+	printf("WifiDisconnect()\n");
 }
 
 int WifiCheck(ST_WIFI_AP *Ap)
 {
-	print_string("WifiCheck()\n");
+	printf("WifiCheck()\n");
 }
 
 int WifiCtrl(int iCmd, void *pArgIn, int iSizeIn , void* pArgOut, int iSizeOut)
 {
-	print_string("WifiCtrl()\n");
+	printf("WifiCtrl()\n");
 }
 
 int WifiScanEx(ST_WIFI_AP_EX *outAps, unsigned int apCount )
 {
-	print_string("WifiScanEx()\n");
+	printf("WifiScanEx()\n");
 }
 
 
@@ -1705,47 +1705,47 @@ int WifiScanEx(ST_WIFI_AP_EX *outAps, unsigned int apCount )
 
 int BtOpen(void)
 {
-	print_string("BtOpen()\n");
+	printf("BtOpen()\n");
 }
 
 int BtClose(void)
 {
-	print_string("BtClose()\n");
+	printf("BtClose()\n");
 }
 
 int BtGetConfig(ST_BT_CONFIG *pCfg)
 {
-	print_string("BtGetConfig()\n");
+	printf("BtGetConfig()\n");
 }
 
 int BtSetConfig(ST_BT_CONFIG *pCfg)
 {
-	print_string("BtSetConfig()\n");
+	printf("BtSetConfig()\n");
 }
 
 int BtScan(ST_BT_SLAVE *pSlave, unsigned int Cnt, unsigned int TimeOut)
 {
-	print_string("BtScan()\n");
+	printf("BtScan()\n");
 }
 
 int BtConnect(ST_BT_SLAVE *Slave)
 {
-	print_string("BtConnect()\n");
+	printf("BtConnect()\n");
 }
 
 int BtDisconnect(void)
 {
-	print_string("BtDisconnect()\n");
+	printf("BtDisconnect()\n");
 }
 
 int BtGetStatus(ST_BT_STATUS *pStatus)
 {
-	print_string("BtGetStatus()\n");
+	printf("BtGetStatus()\n");
 }
 
 int BtCtrl(unsigned int iCmd, void *pArgIn, unsigned int iSizeIn, void* pArgOut, unsigned int iSizeOut)
 {
-	print_string("BtCtrl()\n");
+	printf("BtCtrl()\n");
 }
 
 
@@ -1766,7 +1766,7 @@ void ProTimsEntry (void *param)
 
 void GetLeanAngle(int *piXLeanAngle, int *piYLeanAngle, int *piZLeanAngle)
 {
-	print_string("GetLeanAngle()\n");
+	printf("GetLeanAngle()\n");
 }
 
 
@@ -1775,22 +1775,22 @@ void GetLeanAngle(int *piXLeanAngle, int *piYLeanAngle, int *piZLeanAngle)
 
 int TelDial(char *TelNum)
 {
-	print_string("TelDial()\n");
+	printf("TelDial()\n");
 }
 
 void TelCheck(TEL_STATUS *tel_status)
 {
-	print_string("TelCheck()\n");
+	printf("TelCheck()\n");
 }
 
 void TelOffHook(void)
 {
-	print_string("TelOffHook()\n");
+	printf("TelOffHook()\n");
 }
 
 void TelSetPara(TEL_PARA *para)
 {
-	print_string("TelSetPara()\n");
+	printf("TelSetPara()\n");
 }
 
 
@@ -1798,7 +1798,7 @@ void TelSetPara(TEL_PARA *para)
 //Voice Function
 int SoundPlay(char *param, char type)
 {
-	print_string("SoundPlay()\n");
+	printf("SoundPlay()\n");
 }
 
 
@@ -1807,17 +1807,17 @@ int SoundPlay(char *param, char type)
 
 int ScanOpen (void)
 {
-	print_string("ScanOpen()\n");
+	printf("ScanOpen()\n");
 }
 
 int ScanRead (uchar *buf, uint size)
 {
-	print_string("ScanRead()\n");
+	printf("ScanRead()\n");
 }
 
 void ScanClose (void)
 {
-	print_string("ScanClose()\n");
+	printf("ScanClose()\n");
 }
 
 
@@ -1825,17 +1825,17 @@ void ScanClose (void)
 //GPS Module
 int GpsOpen (void)
 {
-	print_string("GpsOpen()\n");
+	printf("GpsOpen()\n");
 }
 
 void GpsClose (void)
 {
-	print_string("GpsClose()\n");
+	printf("GpsClose()\n");
 }
 
 int GpsRead(GpsLocation *outGpsLoc)
 {
-	print_string("GpsRead()\n");
+	printf("GpsRead()\n");
 }
 
 

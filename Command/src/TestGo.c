@@ -1,6 +1,7 @@
-#include <stdio.h>
 #include "GlobalDefine.h"
 #include "Error.h"
+#include "Stdio.h"
+#include "Common.h"
 
 #include "CommandManager.h"
 
@@ -27,7 +28,7 @@ MINI2440_STATUS TestGo(int argc, char* const* argv)
 	{
 		address = hex_string_to_int(argv[1]);
 		
-		printf_string("address = 0x%x\n", address);
+		printf("address = 0x%x\n", address);
 		
 		delay(1024);
 		

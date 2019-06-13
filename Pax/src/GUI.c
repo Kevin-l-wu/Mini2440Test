@@ -787,7 +787,7 @@ static void GuiStaticUpdateCanvasSize() {
 }
 
 static void GuiStaticDrawText(const void *vRes, const void *vAttr, int top, int bottom, int left, int right, char isButton) {
-    print_string("GuiStaticDrawTex\n");
+    printf("GuiStaticDrawTex\n");
 	
 	unsigned char szOneLine[1024];
     GUI_TEXT_ATTR stTextAttr;
@@ -877,7 +877,7 @@ static void GuiStaticDrawText(const void *vRes, const void *vAttr, int top, int 
 				break;
 		}
 
-		printf_string("szOneLine = %s\n", (char *)szOneLine);
+		printf("szOneLine = %s\n", (char *)szOneLine);
 		
 		CLcdTextOut(nLeft, nTop, (char *)szOneLine);
 			
@@ -2613,7 +2613,7 @@ static const Rect *FindMatchedButton(const TS_POINT_T *pPt, const Rect *pButtons
 
 // initialize Gui, clear the whole layout.
 int Gui_Init(unsigned int nBgColor, unsigned int nColor) {
-	print_string("Gui_Init()\n");
+	printf("Gui_Init()\n");
 	
 	unsigned char sTerminalInfo[32];
 
@@ -2653,13 +2653,13 @@ int Gui_Init(unsigned int nBgColor, unsigned int nColor) {
 
     GuiStaticUpdateCanvasSize();
 	
-	print_string("Gui_Init() Success\n");
+	printf("Gui_Init() Success\n");
 
     return GUI_OK;
 }
 
 int Gui_ClearScr() {
-	print_string("Gui_ClearScr()\n");
+	printf("Gui_ClearScr()\n");
     
 	GuiStaticClearScr(NULL, 1);
     
@@ -2667,13 +2667,13 @@ int Gui_ClearScr() {
 }
 
 int Gui_LoadFont(enum FONTSIZE eFontSize, const ST_FONT *pSingleCodeFont, const ST_FONT *pMultiCodeFont) {
-	print_string("Gui_LoadFont()\n");
+	printf("Gui_LoadFont()\n");
 
     return GUI_OK;
 }
 
 int Gui_DrawText(const unsigned char *pszText, const GUI_TEXT_ATTR stTextAttr, unsigned int x_percent, unsigned int y_percent) {
-    print_string("Gui_DrawText()\n");
+    printf("Gui_DrawText()\n");
 
     // verify parameters
     if (!pszText || !IsValid(stTextAttr.eAlign, GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT) 
@@ -2707,7 +2707,7 @@ int Gui_DrawText(const unsigned char *pszText, const GUI_TEXT_ATTR stTextAttr, u
 }
 
 int Gui_DrawLogo(const unsigned char *psLogo, int x, int y) {
-	print_string("Gui_DrawLogo()\n");
+	printf("Gui_DrawLogo()\n");
 	
     // verify parameters
     if (!psLogo || x > sg_nScrWidth || y > sg_nScrHeight) {
@@ -2719,7 +2719,7 @@ int Gui_DrawLogo(const unsigned char *psLogo, int x, int y) {
 }
 
 int Gui_DrawImage(const unsigned char *pszImagePath, unsigned int x_percent, unsigned int y_percent) {
-    print_string("Gui_DrawImage()\n");
+    printf("Gui_DrawImage()\n");
 
     // verify parameters
     if (!pszImagePath || x_percent > 100 || y_percent > 100) {
@@ -2740,7 +2740,7 @@ int Gui_DrawImage(const unsigned char *pszImagePath, unsigned int x_percent, uns
 int Gui_ShowMsgBox(const unsigned char *pszTitle, GUI_TEXT_ATTR stTitleAttr, const unsigned char *pszContent, 
 	GUI_TEXT_ATTR stContentAttr, enum MSGBOXTYPE eType, int timeoutSec, int *pucKeyValue) {
     
-	print_string("Gui_ShowMsgBox()\n");
+	printf("Gui_ShowMsgBox()\n");
 	
 	GUI_TEXT_ATTR stButtonAttr;
     unsigned char bChkTimer;
@@ -2817,7 +2817,7 @@ int Gui_ShowMsgBox(const unsigned char *pszTitle, GUI_TEXT_ATTR stTitleAttr, con
         bChkTimer = FALSE;
     }
 
-	print_string("Gui_ShowMsgBox(): Wait key pressed\n");
+	printf("Gui_ShowMsgBox(): Wait key pressed\n");
     while (1) {
 		int iTouchStatus = 0;
 		GUI_CALLBACK vFunc= NULL;
@@ -2843,7 +2843,7 @@ int Gui_ShowMsgBox(const unsigned char *pszTitle, GUI_TEXT_ATTR stTitleAttr, con
             iKey = NOKEY;
             break;
         }
-		print_string("Gui_ShowMsgBox(): while\n");
+		printf("Gui_ShowMsgBox(): while\n");
 		delay(1024*1024);
 		iKey = KEYENTER;
         if (iKey != 0) {
@@ -2886,7 +2886,7 @@ int Gui_ShowMsgBox(const unsigned char *pszTitle, GUI_TEXT_ATTR stTitleAttr, con
 				}
 			}
 			
-			print_string("Gui_ShowMsgBox(): Dead while\n");
+			printf("Gui_ShowMsgBox(): Dead while\n");
         }
     }
 
@@ -2895,13 +2895,13 @@ int Gui_ShowMsgBox(const unsigned char *pszTitle, GUI_TEXT_ATTR stTitleAttr, con
     }
 	sg_isCalled = 0;
 	
-	print_string("Gui_ShowMsgBox() Success\n");
+	printf("Gui_ShowMsgBox() Success\n");
 	
     return iRet;
 }
 
 int Gui_ShowInputBox(const unsigned char *pszTitle, GUI_TEXT_ATTR stTitleAttr, const unsigned char *pszPrompt, GUI_TEXT_ATTR stPromptAttr, unsigned char *pszContent, GUI_TEXT_ATTR stContentAttr, const GUI_INPUTBOX_ATTR *pstAttr, int timeoutSec) {
-    print_string("Gui_ShowInputBox()\n");
+    printf("Gui_ShowInputBox()\n");
 	
 	GUI_TEXT_ATTR stButtonAttr;
 	
@@ -2946,7 +2946,7 @@ int Gui_ShowInputBox(const unsigned char *pszTitle, GUI_TEXT_ATTR stTitleAttr, c
 }
 
 int Gui_ShowTimeBox(const unsigned char *pszTitle, GUI_TEXT_ATTR stTitleAttr, unsigned char *pszTime, GUI_TEXT_ATTR stContentAttr, unsigned char isTime, int timeoutSec) {
-    print_string("Gui_ShowTimeBox()\n");
+    printf("Gui_ShowTimeBox()\n");
 	
 	GUI_TEXT_ATTR stButtonAttr;
 
@@ -2985,7 +2985,7 @@ int Gui_ShowTimeBox(const unsigned char *pszTitle, GUI_TEXT_ATTR stTitleAttr, un
 }
 
 int Gui_BindMenu(const unsigned char *psztitle, GUI_TEXT_ATTR stTitleAttr, GUI_TEXT_ATTR stTextAttr, const GUI_MENUITEM *pstMenuItem, GUI_MENU *pstMenu) {
-    print_string("Gui_BindMenu()\n");
+    printf("Gui_BindMenu()\n");
 	
 	int i = 0;
 
@@ -3013,7 +3013,7 @@ int Gui_BindMenu(const unsigned char *psztitle, GUI_TEXT_ATTR stTitleAttr, GUI_T
 }
 
 int Gui_ShowMenuList(const GUI_MENU *pstMenu, enum MENUSTYLE eMode, int timeoutSec, int *piSelValue) {
-    print_string("Gui_ShowMenuList()\n");
+    printf("Gui_ShowMenuList()\n");
 	
 	int iRet = 0;
 
@@ -3046,7 +3046,7 @@ int Gui_ShowMenuList(const GUI_MENU *pstMenu, enum MENUSTYLE eMode, int timeoutS
 }
 
 int Gui_ShowAlternative(const unsigned char *pszTitle, GUI_TEXT_ATTR stTitleAttr, const unsigned char *pszPrompt, GUI_TEXT_ATTR stContentAttr, const unsigned char *pszOption1, int iValue1, const unsigned char *pszOption2, int iValue2, int timeoutSec, int *piSelOption) {
-    print_string("Gui_ShowAlternative()\n");
+    printf("Gui_ShowAlternative()\n");
 	GUI_TEXT_ATTR stButtonAttr;
 
     unsigned char bChkTimer;
@@ -3216,7 +3216,7 @@ int Gui_ShowAlternative(const unsigned char *pszTitle, GUI_TEXT_ATTR stTitleAttr
 }
 
 int Gui_ShowInfoPage(const GUI_PAGE *pstPage, unsigned char isMultiChapters, int timeoutSec) {
-    print_string("Gui_ShowInfoPage()\n");
+    printf("Gui_ShowInfoPage()\n");
 	unsigned int i;
     int iRet = 0;
 
@@ -3251,7 +3251,7 @@ int Gui_ShowInfoPage(const GUI_PAGE *pstPage, unsigned char isMultiChapters, int
 }
 
 int Gui_CreateInfoPage(const unsigned char *pszTitle, GUI_TEXT_ATTR stTitleAttr, const GUI_PAGELINE *pstContent, unsigned int nLine, GUI_PAGE *pstPage) {
-    print_string("Gui_CreateInfoPage()\n");
+    printf("Gui_CreateInfoPage()\n");
 	if (!pstPage) {
         return GUI_ERR_INVALIDPARAM;
     }
@@ -3271,7 +3271,7 @@ int Gui_ShowSignatureBoard(const unsigned char *pszTitle, GUI_TEXT_ATTR stTitleA
 	const unsigned char *pszOutputFile,
 	char nMode, int timeoutSec){
 	
-	print_string("Gui_ShowSignatureBoard()\n");
+	printf("Gui_ShowSignatureBoard()\n");
 		
 	GUI_TEXT_ATTR stButtonAttr;
 	unsigned char bChkTimer;
@@ -3411,7 +3411,7 @@ int Gui_ShowSignatureBoard(const unsigned char *pszTitle, GUI_TEXT_ATTR stTitleA
 int Gui_GetImageSize(const unsigned char *File, unsigned int *pWidth, unsigned int *pHeight) {
     int fd;
 	
-	print_string("Gui_GetImageSize()\n");
+	printf("Gui_GetImageSize()\n");
 
     if (!pHeight && !pWidth) {
         return GUI_ERR_INVALIDPARAM;
@@ -3452,27 +3452,27 @@ int Gui_GetImageSize(const unsigned char *File, unsigned int *pWidth, unsigned i
 }
 
 int Gui_GetScrWidth(void){
-	print_string("Gui_GetScrWidth()\n");
+	printf("Gui_GetScrWidth()\n");
 
 	return sg_nScrWidth;
 }
 
 int Gui_GetScrHeight(void){
-	print_string("Gui_GetScrHeight()\n");
+	printf("Gui_GetScrHeight()\n");
 
 	return sg_nScrHeight;
 }
 
 
 int Gui_RegCallback(gui_callbacktype_t type, GUI_CALLBACK func){
-	print_string("Gui_RegCallback()\n");
+	printf("Gui_RegCallback()\n");
 
 	return SetCallbackEvent(type, func);
 }
 
 
 int Gui_UpdateTitle(const char *pszTitle, GUI_TEXT_ATTR stTitleAttr){
-	print_string("Gui_UpdateTitle\n");
+	printf("Gui_UpdateTitle\n");
 
 // verify parameters
     if (pszTitle && (!IsValid(stTitleAttr.eAlign, GUI_ALIGN_LEFT, GUI_ALIGN_RIGHT))) {
@@ -3483,7 +3483,7 @@ int Gui_UpdateTitle(const char *pszTitle, GUI_TEXT_ATTR stTitleAttr){
 }
 
 int Gui_UpdateKey(int index, const char* text){
-	print_string("Gui_UpdateKey\n");
+	printf("Gui_UpdateKey\n");
 	
 	int iRet;
 

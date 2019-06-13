@@ -100,19 +100,26 @@ IRQIsrVect:
 	
 fiq:	
 	nop
-	
-#define _TEXT_BASE 0x30500000	
+
+.extern nandflash_init
+.extern copy_to_ram
+.extern gboot_main
+
+#define _TEXT_BASE 0x30010000
 .Global reset
 reset:
-	bl set_svc
+	bl set_svc	
 	bl disable_watchdog
 	bl disable_interrupt
 	bl disable_mmu
 	bl init_clock
 	bl init_sdram
 	bl init_stack
+
 	bl nandflash_init
+	
 	bl light_led
+	
 	adr r0, _start
 	ldr r1, =_TEXT_BASE
 	cmp r0, r1
@@ -194,7 +201,7 @@ init_stack:
 	ldr sp, =0x33000000
 	msr cpsr_c, #0xd3	//Switch back to SVC
 	ldr sp, =0x34000000
-	mov pc ,lr
+	mov pc, lr
 
 clean_bss:
 	ldr r0, =bss_start

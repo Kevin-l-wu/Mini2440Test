@@ -9,10 +9,11 @@
 #include "CoreMalloc.h"
 #include "Print.h"
 #include "StdArg.h"
+#include "Uart.h"
+
 //#include "Uart.h"
 
-
-#define LogDebug printf_string
+#define LogDebug printf
 
 #define FPRINTF_BUF_SIZE	8192
 
@@ -69,6 +70,7 @@ struct file_s {
 
 char *__fixup_format_string(char * format)
 {
+	return format;
 	//TODO	
 }
 
@@ -240,7 +242,7 @@ int stdin_getc(FILE *stream) {
 			}
 			
 			// Echo on
-			printf_string("%c", c);
+			printf("%c", c);
 			
 			return c;
 		}
@@ -264,7 +266,7 @@ size_t stdout_fwrite(const void * ptr, size_t size, size_t nitems, FILE * stream
 	}
 
 	// Make sure the buffer is always null-terminated
-	// NOTE: This helps avoids using printf_string("%c") for Lua-style strings
+	// NOTE: This helps avoids using printf("%c") for Lua-style strings
 	//       (which do not have a null terminator)
 	if (((char *)ptr)[total - 1] == 0) {
 		termbuf = (char *)ptr;
@@ -298,9 +300,9 @@ size_t stdout_fwrite(const void * ptr, size_t size, size_t nitems, FILE * stream
 		nbytes = e - p;
 		if (nbytes == 0) {
 			nbytes = 1;
-			nprinted = printf_string("%c", *p);
+			nprinted = printf("%c", *p);
 		} else {
-			nprinted = printf_string("%a", p);
+			nprinted = printf("%a", p);
 		}
 		p += nprinted;
 		if (nprinted != nbytes) {
@@ -314,7 +316,7 @@ size_t stdout_fwrite(const void * ptr, size_t size, size_t nitems, FILE * stream
 int stdout_fputs(const char * s, FILE * stream) {
 	(void)stream;
 	
-	printf_string("%a", s);
+	printf("%a", s);
 	return 0;
 }
 
@@ -834,19 +836,17 @@ void clearerr(FILE *stream) {
 }
 
 static int __printf_i(BOOLEAN silent, char * s, size_t size, const char * format, VA_LIST ap) {
-//	printf_string("__printf_i(): format = %s\n", format);
-//	printf_string("__printf_i(): va_args = %s\n", ap);
-    
 	if (silent && !s && size) {
 		return -(errno = EINVAL);
 	}
-    
+	
 	// Switch %s to %a
+
 	char *efi_format = __fixup_format_string((char *)format);
 	if(!efi_format) {
 		return -(errno = ENOMEM);
 	}
-    
+	
 	int r;
 	char *buf;
     
@@ -863,14 +863,18 @@ static int __printf_i(BOOLEAN silent, char * s, size_t size, const char * format
 			}
 		}
 	} else {
-		AsciiPrintMarker(efi_format, ap);
-//		printf_string(format, ap);
+/*		printf("format = %s\n", format);
+		printf("*((char*)ap) = %x\n", *((char*)ap));
+*/		
+		AsciiPrintMarker(format, ap);
+		
+//		printf(format, ap);
 		r = 0;
 	}
     
 Exit:
 	
-	CoreFree(efi_format);
+//	CoreFree(efi_format);
     
 	return r;
 }
