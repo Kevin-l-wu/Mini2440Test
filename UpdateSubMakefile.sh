@@ -17,12 +17,11 @@ MODULES="Init \
 	Xui \
 	Shell"
 
-echo $1
-echo $#
+#Parameter valided check
 
 if [ $# -ne 1 ]
 then
-	echo "Usage of "
+	echo "Usage of: UpdateSubMakefile.sh Driver"
 	exit -1
 fi
 
@@ -35,17 +34,21 @@ do
 	fi
 done
 
-echo $ValidFlag
+echo "Ready to copy makefile to other directorys..."
+
 if [ $ValidFlag = "false" ]
 then
+	echo "Usage of: UpdateSubMakefile.sh Driver"
 	exit -1
 fi
 
 for mod in $MODULES 
 do
-	echo $mod
+#	echo $mod
 	if [ $mod != $1 ]
 	then
 		cp $1/makefile $mod/
 	fi
 done
+
+echo "Copy Success"
