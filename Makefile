@@ -21,6 +21,7 @@ RM := rm -fr
 
 CC := arm-none-eabi-gcc
 LD := arm-none-eabi-ld
+#LFLAGS := -Tgboot.lds
 LFLAGS := -Tgboot.lds -L /Applications/ARM/lib/gcc/arm-none-eabi/10.3.1 -lgcc
 #LFLAGS := -Tgboot.lds -L /usr/local/arm/4.3.2/lib/gcc/arm-none-linux-gnueabi/4.3.2/armv4t -lgcc
 #LFLAGS := -Tgboot.lds -L /usr/local/5.4.0/lib/gcc/arm-none-linux-gnueabi/5.4.0/ -lgcc
