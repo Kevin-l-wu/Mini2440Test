@@ -32,15 +32,15 @@ static int timer4TimeOutFlag = 0;
 
 static void TimerRegDump()
 {
-	printf("---------------------- Timer register -----------------------\n");
+	LogPrintf("---------------------- Timer register -----------------------\n");
 	
-	printf("TCFG0 = 0x%x\n", TCFG0);
-	printf("TCFG1 = 0x%x\n", TCFG1);
-	printf("TCON = 0x%x\n", TCON);
-//	printf("TCMPB0 = 0x%x\n", TCMPB0);
-	printf("TCNTB4 = 0x%x\n", TCNTB4);
+	LogPrintf("TCFG0 = 0x%x\n", TCFG0);
+	LogPrintf("TCFG1 = 0x%x\n", TCFG1);
+	LogPrintf("TCON = 0x%x\n", TCON);
+//	LogPrintf("TCMPB0 = 0x%x\n", TCMPB0);
+	LogPrintf("TCNTB4 = 0x%x\n", TCNTB4);
 	
-	printf("-------------------------------------------------------------\n");
+	LogPrintf("-------------------------------------------------------------\n");
 }
 
 
@@ -65,7 +65,7 @@ static void PrescalerSet(PRESCALER prescaler, unsigned char prescalerVal)
 	}
 	else
 	{
-		printf("Timer: Invalid prescaler No.\n");
+		LogPrintf("Timer: Invalid prescaler No.\n");
 	}
 }
 
@@ -95,7 +95,7 @@ static void DividerSet(TIMER timer, unsigned char dividerVal)
 			break;
 			
 		default:
-			printf("Timer: Invalid timer No.\n");
+			LogPrintf("Timer: Invalid timer No.\n");
 			break;
 	}
 }
@@ -147,7 +147,7 @@ static void TimerSetOriginalVal(TIMER timer, unsigned short tcmpb, unsigned tcnp
 			break;
 			
 		default:
-			printf("Timer: Invalid timer No.\n");
+			LogPrintf("Timer: Invalid timer No.\n");
 			break;
 	}
 }
@@ -177,7 +177,7 @@ static void TimerIsReloadSet(TIMER timer, unsigned char isReload)
 			break;
 			
 		default:
-			printf("Timer: Invalid timer No.\n");
+			LogPrintf("Timer: Invalid timer No.\n");
 			break;
 	}
 }
@@ -203,11 +203,11 @@ static void TimerOutputIsRevert(TIMER timer, unsigned char isRevert)
 			break;
 			
 		case TIMER4:
-			printf("Timer: Not support\n");
+			LogPrintf("Timer: Not support\n");
 			break;
 			
 		default:
-			printf("Timer: Invalid timer No.\n");
+			LogPrintf("Timer: Invalid timer No.\n");
 			break;
 	}
 }
@@ -237,7 +237,7 @@ static void TimerStartStop(TIMER timer, unsigned char isStart)
 			break;
 			
 		default:
-			printf("Timer: Invalid timer No.\n");
+			LogPrintf("Timer: Invalid timer No.\n");
 			break;
 	}
 }

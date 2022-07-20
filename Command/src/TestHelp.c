@@ -13,7 +13,7 @@ static void PrintHelpCallback(DiagsCommand* pDiagsCommand)
 {
 	if(pDiagsCommand != NULL)
 	{
-		printf("%s: %s\n", pDiagsCommand->commandString, pDiagsCommand->message);
+		LogPrintf("%s: %s\n", pDiagsCommand->commandString, pDiagsCommand->message);
 	}
 }
 

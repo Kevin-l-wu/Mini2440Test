@@ -85,18 +85,18 @@ DMA_CHANNEL gDmaChannel[] = {
 
 static void DmaRegDump()
 {
-	printf("DISRC0  = 0x%x\n", DISRC0);
-	printf("DISRCC0 = 0x%x\n", DISRCC0);
+	LogPrintf("DISRC0  = 0x%x\n", DISRC0);
+	LogPrintf("DISRCC0 = 0x%x\n", DISRCC0);
 
-	printf("DIDST0  = 0x%x\n", DIDST0);
-	printf("DIDSTC0 = 0x%x\n", DIDSTC0);
+	LogPrintf("DIDST0  = 0x%x\n", DIDST0);
+	LogPrintf("DIDSTC0 = 0x%x\n", DIDSTC0);
 
-	printf("DCON0   = 0x%x\n", DCON0);
+	LogPrintf("DCON0   = 0x%x\n", DCON0);
 	
-	printf("DSTAT0  = 0x%x\n", DSTAT0);	
-	printf("DCSRC0  = 0x%x\n", DCSRC0);
+	LogPrintf("DSTAT0  = 0x%x\n", DSTAT0);	
+	LogPrintf("DCSRC0  = 0x%x\n", DCSRC0);
 	
-	printf("DMASKTRIG0 = 0x%x\n", DMASKTRIG0);
+	LogPrintf("DMASKTRIG0 = 0x%x\n", DMASKTRIG0);
 }
 
 /* Get DMA channel index */
@@ -150,7 +150,7 @@ static int DmaSrcSet(DMA_CHANNEL_INDEX dmaChannel, DMA_REQ_SRC reqSrc)
 	}
 	else
 	{
-		printf("DmaSrcSet: Invalid DMA channel or src request\n");
+		LogPrintf("DmaSrcSet: Invalid DMA channel or src request\n");
 		ret = -1;
 	}
 	
@@ -174,7 +174,7 @@ static int DmaDstSet(DMA_CHANNEL_INDEX dmaChannel, DMA_REQ_SRC reqSrc)
 	}
 	else
 	{
-		printf("DmaDstSet: Invalid DMA channel or src request\n");
+		LogPrintf("DmaDstSet: Invalid DMA channel or src request\n");
 		ret = -1;
 	}
 	
@@ -202,7 +202,7 @@ static unsigned int DmaHwSel(DMA_CHANNEL_INDEX dmaChannel, DMA_REQ_SRC reqSrc)
 	}
 	else
 	{
-		printf("DmaHwSel: Invalid DMA channel No.\n");
+		LogPrintf("DmaHwSel: Invalid DMA channel No.\n");
 	}
 	
 	return selVal;
@@ -221,7 +221,7 @@ static void DmaCtlSet(DMA_CHANNEL_INDEX dmaChannel,  unsigned int dconVal)
 	}
 	else
 	{
-		printf("DmaCtlSet: Invalid DMA channel No.\n");
+		LogPrintf("DmaCtlSet: Invalid DMA channel No.\n");
 	}
 }
 
@@ -245,7 +245,7 @@ static void DmaOffOn(DMA_CHANNEL_INDEX dmaChannel, unsigned char isOn)
 	}
 	else
 	{
-		printf("DmaOffOn: Invalid DMA channel No.\n");
+		LogPrintf("DmaOffOn: Invalid DMA channel No.\n");
 	}
 }
 
@@ -262,7 +262,7 @@ static void DmaStop(DMA_CHANNEL_INDEX dmaChannel)
 	}
 	else
 	{
-		printf("Invalid DMA channel No.\n");
+		LogPrintf("Invalid DMA channel No.\n");
 	}
 }
 

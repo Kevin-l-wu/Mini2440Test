@@ -30,17 +30,17 @@ void touch_init()
 
 void dump_touch_reg()
 {
-	printf("\n\n-------------- dump_touch_reg --------------------\n\n");
+	LogPrintf("\n\n-------------- dump_touch_reg --------------------\n\n");
 	
-	printf("ADCCON = 0x%x\n", ADCCON);
-	printf("ADCTSC = 0x%x\n", ADCTSC);
+	LogPrintf("ADCCON = 0x%x\n", ADCCON);
+	LogPrintf("ADCTSC = 0x%x\n", ADCTSC);
 	
-	printf("\n\n-------------------------------------------------------\n\n");
+	LogPrintf("\n\n-------------------------------------------------------\n\n");
 }
 
 void touch_handler()
 {
-	printf("touch_handler");
+	LogPrintf("touch_handler");
 	
 	//1. Start X/Y coordinate auto convert
 	ADCCON |= (1 << 0);
@@ -70,7 +70,7 @@ void touch_handler()
 		}	
 	}
 	
-	printf("\n\nxdata = %d\nydata = %d\n\n", xdata, ydata);
+	LogPrintf("\n\nxdata = %d\nydata = %d\n\n", xdata, ydata);
 
 	//6. Clear stylus up interrupt
 	(SUBSRCPND) |= (1 << 9);

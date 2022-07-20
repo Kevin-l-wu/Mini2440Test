@@ -23,8 +23,8 @@ MINI2440_STATUS TestDump(int argc, char* const* argv)
 		addr = (unsigned char*)(hex_string_to_int(argv[1]));
 		len = hex_string_to_int(argv[2]);
 			
-		printf("addr = 0x%x\n", addr);
-		printf("len = 0x%x", len);
+		LogPrintf("addr = 0x%x\n", addr);
+		LogPrintf("len = 0x%x", len);
 				
 		PrintAscii(addr, len, 8);
 	}

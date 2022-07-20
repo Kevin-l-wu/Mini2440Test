@@ -31,7 +31,7 @@ void ArpRequest()
 	{
 		gLocateProtocol(MOD_DM9000, (void*)&gDM9000ModOps);
 	}
-	printf("gDM9000ModOps = %x\n", gDM9000ModOps);
+	LogPrintf("gDM9000ModOps = %x\n", gDM9000ModOps);
 	if(gDM9000ModOps != NULL)
 	{
 		for(i = 0; i < 6; i++)
@@ -109,18 +109,18 @@ void ArpProcess(u8* arp_buff, int length)
 			memcpy(gServerIpAddr, (*arp_buff_ptr).src_ip_addr, 4);
 			memcpy(gServerMacAddr, (*arp_buff_ptr).src_mac, 6);
 			
-			printf("\nHost ip = ");
+			LogPrintf("\nHost ip = ");
 			for(i = 0; i < 4; i++)
 			{
-				printf("%d ", gServerIpAddr[i]);
+				LogPrintf("%d ", gServerIpAddr[i]);
 			}
 			
-			printf("\nHost mac = ");
+			LogPrintf("\nHost mac = ");
 			for(i = 0; i < 6; i++)
 			{
-				printf("%C ", gServerMacAddr[i]);
+				LogPrintf("%C ", gServerMacAddr[i]);
 			}
-			printf("\n");
+			LogPrintf("\n");
 			
 			break;
 			

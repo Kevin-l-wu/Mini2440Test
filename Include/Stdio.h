@@ -22,7 +22,7 @@ extern FILE *stderr;
 #define BUFSIZ  1024        /* size of buffer used by setbuf */
 #define EOF (-1)
 
-int fprintf(FILE * stream, const char * format, ...);
+int fLogPrintf(FILE * stream, const char * format, ...);
 FILE *fopen(const char * path, const char * mode);
 FILE *freopen(const char * filename, const char * mode,
          FILE * stream);
@@ -41,12 +41,12 @@ int feof(FILE *stream);
 int fputs(const char * s, FILE * stream);
 FILE *tmpfile(void);
 void clearerr(FILE *stream);
-int snprintf(char * s, size_t size, const char * format, ...);
-int sprintf(char * s, const char * format, ...);
-int printf(const char * format, ...);
-int vsnprintf(char * s, size_t size, const char * format, VA_LIST ap);
-int vsprintf(char * s, const char * format, VA_LIST ap);
-int vprintf(const char * format, VA_LIST ap);
+int snLogPrintf(char * s, size_t size, const char * format, ...);
+int sLogPrintf(char * s, const char * format, ...);
+int LogPrintf(const char * format, ...);
+int vsnLogPrintf(char * s, size_t size, const char * format, VA_LIST ap);
+int vsLogPrintf(char * s, const char * format, VA_LIST ap);
+int vLogPrintf(const char * format, VA_LIST ap);
 
 #ifndef SEEK_SET
 #define SEEK_SET    EfiSeekStart   /* set file offset to offset */

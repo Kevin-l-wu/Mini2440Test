@@ -13,7 +13,7 @@
 
 //#include "Uart.h"
 
-#define LogDebug printf
+#define LogDebug LogPrintf
 
 #define FPRINTF_BUF_SIZE	8192
 
@@ -37,7 +37,7 @@ typedef size_t (*f_read_ptr)(void * ptr, size_t size, size_t nitems, FILE * stre
 typedef int (*f_eof_ptr)(FILE *stream);
 typedef int (*f_seek_ptr)(FILE *stream, long offset, int whence);
 typedef long (*f_tell_ptr)(FILE *stream);
-typedef int (*vf_printf_ptr)(FILE * stream, const char * efi_format, VA_LIST args);
+typedef int (*vf_LogPrintf_ptr)(FILE * stream, const char * efi_format, VA_LIST args);
 typedef int (*f_flush_ptr)(FILE *stream);
 typedef int (*getc_ptr)(FILE *stream);
 typedef int (*f_puts_ptr)(const char * s, FILE * stream);
@@ -48,7 +48,7 @@ typedef struct {
 	f_eof_ptr		feof;
 	f_seek_ptr		fseek;
 	f_tell_ptr		ftell;
-	vf_printf_ptr	vfprintf;
+	vf_LogPrintf_ptr	vfLogPrintf;
 	f_flush_ptr		fflush;
 	getc_ptr		getc;
 	f_puts_ptr		fputs;
@@ -84,7 +84,7 @@ EfiLibAllocateCopyPool (
 }
 
 
-static int __vsprintf_i (char ** buf, const char * efi_format, VA_LIST ap, int minsize) {
+static int __vsLogPrintf_i (char ** buf, const char * efi_format, VA_LIST ap, int minsize) {
 	static char *printbuf = NULL;
 	static size_t printbufsize = 0;
 	int r = 0;
@@ -170,7 +170,7 @@ long null_ftell(FILE *stream) {
 	return -1;
 }
 
-int null_vfprintf(FILE * stream, const char * efi_format, VA_LIST args) {
+int null_vfLogPrintf(FILE * stream, const char * efi_format, VA_LIST args) {
 	(void)stream;
 	(void)efi_format;
 	(void)args;
@@ -242,7 +242,7 @@ int stdin_getc(FILE *stream) {
 			}
 			
 			// Echo on
-			printf("%c", c);
+			LogPrintf("%c", c);
 			
 			return c;
 		}
@@ -266,7 +266,7 @@ size_t stdout_fwrite(const void * ptr, size_t size, size_t nitems, FILE * stream
 	}
 
 	// Make sure the buffer is always null-terminated
-	// NOTE: This helps avoids using printf("%c") for Lua-style strings
+	// NOTE: This helps avoids using LogPrintf("%c") for Lua-style strings
 	//       (which do not have a null terminator)
 	if (((char *)ptr)[total - 1] == 0) {
 		termbuf = (char *)ptr;
@@ -300,9 +300,9 @@ size_t stdout_fwrite(const void * ptr, size_t size, size_t nitems, FILE * stream
 		nbytes = e - p;
 		if (nbytes == 0) {
 			nbytes = 1;
-			nprinted = printf("%c", *p);
+			nprinted = LogPrintf("%c", *p);
 		} else {
-			nprinted = printf("%a", p);
+			nprinted = LogPrintf("%a", p);
 		}
 		p += nprinted;
 		if (nprinted != nbytes) {
@@ -316,7 +316,7 @@ size_t stdout_fwrite(const void * ptr, size_t size, size_t nitems, FILE * stream
 int stdout_fputs(const char * s, FILE * stream) {
 	(void)stream;
 	
-	printf("%a", s);
+	LogPrintf("%a", s);
 	return 0;
 }
 
@@ -439,9 +439,9 @@ long openfile_ftell(FILE *stream) {
 	return (long)offset;
 }
 
-int generic_vfprintf(FILE * stream, const char * efi_format, VA_LIST args) {
+int generic_vfLogPrintf(FILE * stream, const char * efi_format, VA_LIST args) {
 	char *buf;
-	int r = __vsprintf_i(&buf, efi_format, args, FPRINTF_BUF_SIZE);
+	int r = __vsLogPrintf_i(&buf, efi_format, args, FPRINTF_BUF_SIZE);
 	if (r < 0) { return r; }
 	return (int)fwrite(buf, 1, r, stream);	
 }
@@ -503,7 +503,7 @@ static struct file_s stdin_s = {
 		.feof = null_feof,
 		.fseek = null_fseek,
 		.ftell = null_ftell,
-		.vfprintf = null_vfprintf,
+		.vfLogPrintf = null_vfLogPrintf,
 		.fflush = null_fflush,
 		.getc = stdin_getc,
 		.fputs = null_fputs,
@@ -521,7 +521,7 @@ static struct file_s stdout_s = {
 		.feof = null_feof,
 		.fseek = null_fseek,
 		.ftell = null_ftell,
-		.vfprintf = generic_vfprintf,
+		.vfLogPrintf = generic_vfLogPrintf,
 		.fflush = null_fflush,
 		.getc = null_getc,
 		.fputs = stdout_fputs,
@@ -539,7 +539,7 @@ static struct file_s stderr_s = {
 		.feof = null_feof,
 		.fseek = null_fseek,
 		.ftell = null_ftell,
-		.vfprintf = generic_vfprintf,
+		.vfLogPrintf = generic_vfLogPrintf,
 		.fflush = null_fflush,
 		.getc = null_getc,
 		.fputs = stdout_fputs,
@@ -557,7 +557,7 @@ static struct file_s openfile_template = {
 		.feof = openfile_feof,
 		.fseek = openfile_fseek,
 		.ftell = openfile_ftell,
-		.vfprintf = generic_vfprintf,
+		.vfLogPrintf = generic_vfLogPrintf,
 		.fflush = null_fflush,
 		.getc = openfile_getc,
 		.fputs = openfile_fputs,
@@ -570,10 +570,10 @@ FILE *stdin = &stdin_s;
 FILE *stdout = &stdout_s;
 FILE *stderr = &stderr_s;
 
-int fprintf(FILE * stream, const char * format, ...) {	
+int fLogPrintf(FILE * stream, const char * format, ...) {	
 	char *efi_format = __fixup_format_string((char*)format);
 	
-	if(!stream || !stream->ops.vfprintf) {
+	if(!stream || !stream->ops.vfLogPrintf) {
 		errno = EINVAL;
 		return -EINVAL;
 	}
@@ -586,7 +586,7 @@ int fprintf(FILE * stream, const char * format, ...) {
 	VA_LIST args;
 	
 	VA_START(args, format);
-	int r = stream->ops.vfprintf(stream, efi_format, args);
+	int r = stream->ops.vfLogPrintf(stream, efi_format, args);
 	VA_END(args);
 	
 	CoreFree(efi_format);
@@ -835,7 +835,7 @@ void clearerr(FILE *stream) {
 	}
 }
 
-static int __printf_i(BOOLEAN silent, char * s, size_t size, const char * format, VA_LIST ap) {
+static int __LogPrintf_i(BOOLEAN silent, char * s, size_t size, const char * format, VA_LIST ap) {
 	if (silent && !s && size) {
 		return -(errno = EINVAL);
 	}
@@ -851,7 +851,7 @@ static int __printf_i(BOOLEAN silent, char * s, size_t size, const char * format
 	char *buf;
     
 	if (silent) {
-		r = __vsprintf_i(&buf, efi_format, ap, 256);
+		r = __vsLogPrintf_i(&buf, efi_format, ap, 256);
         if (r >= 0) {
 			if (s) {
 				if (size == (size_t)(-1)) {
@@ -863,12 +863,12 @@ static int __printf_i(BOOLEAN silent, char * s, size_t size, const char * format
 			}
 		}
 	} else {
-/*		printf("format = %s\n", format);
-		printf("*((char*)ap) = %x\n", *((char*)ap));
+/*		LogPrintf("format = %s\n", format);
+		LogPrintf("*((char*)ap) = %x\n", *((char*)ap));
 */		
 		AsciiPrintMarker(format, ap);
 		
-//		printf(format, ap);
+//		LogPrintf(format, ap);
 		r = 0;
 	}
     
@@ -879,51 +879,51 @@ Exit:
 	return r;
 }
 
-int vsnprintf(char * s, size_t size, const char * format, VA_LIST ap) {
+int vsnLogPrintf(char * s, size_t size, const char * format, VA_LIST ap) {
 	
-	return __printf_i(TRUE, s, size, format, ap);
+	return __LogPrintf_i(TRUE, s, size, format, ap);
 }
 
-int vsprintf(char * s, const char * format, VA_LIST ap) {
+int vsLogPrintf(char * s, const char * format, VA_LIST ap) {
 	
-	return __printf_i(TRUE, s, (size_t)(-1), format, ap);
+	return __LogPrintf_i(TRUE, s, (size_t)(-1), format, ap);
 }
 
-int vprintf(const char * format, VA_LIST ap) {
+int vLogPrintf(const char * format, VA_LIST ap) {
 	
-	return __printf_i(FALSE, NULL, (size_t)(-1), format, ap);
+	return __LogPrintf_i(FALSE, NULL, (size_t)(-1), format, ap);
 }
 
-int snprintf(char * s, size_t size, const char * format, ...) {
+int snLogPrintf(char * s, size_t size, const char * format, ...) {
 	
     
 	VA_LIST va_args;
 	
 	VA_START (va_args, format);
-	int r = __printf_i(TRUE, s, size, format, va_args);
+	int r = __LogPrintf_i(TRUE, s, size, format, va_args);
 	VA_END (va_args);
 	
 	return r;
 }
 
-int sprintf(char * s, const char * format, ...) {
+int sLogPrintf(char * s, const char * format, ...) {
 	
     
 	VA_LIST va_args;
     
 	VA_START (va_args, format);
-	int r = __printf_i(TRUE, s, (size_t)(-1), format, va_args);
+	int r = __LogPrintf_i(TRUE, s, (size_t)(-1), format, va_args);
 	VA_END (va_args);
     
 	return r;
 }
 
-int printf(const char* format, ...) {
+int LogPrintf(const char* format, ...) {
 	VA_LIST va_args;
     
 	VA_START (va_args, format);
 
-	int r = __printf_i(FALSE, NULL, (size_t)(-1), format, va_args);
+	int r = __LogPrintf_i(FALSE, NULL, (size_t)(-1), format, va_args);
 	VA_END (va_args);
     
 	return r;

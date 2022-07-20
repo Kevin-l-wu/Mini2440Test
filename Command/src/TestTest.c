@@ -25,15 +25,15 @@ static MINI2440_STATUS Test(int argc, char* const* argv)
 	int b = 20;
 	char c = 'a';
 	
-	printf("GUI Test Start-----------------------------\n");
+	LogPrintf("GUI Test Start-----------------------------\n");
 	
-	printf("&a = 0x%x\n", &a);
+	LogPrintf("&a = 0x%x\n", &a);
 	
-	printf("a = %d\n", a);
+	LogPrintf("a = %d\n", a);
 	
-	printf("a = %d, b = %d\n", a, b);
+	LogPrintf("a = %d, b = %d\n", a, b);
 	
-	printf("GUI Test End-------------------------------\n");
+	LogPrintf("GUI Test End-------------------------------\n");
 	
 	return status;
 }

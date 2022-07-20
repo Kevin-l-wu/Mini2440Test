@@ -11,16 +11,16 @@ extern void OSTickISR();
 /* Dump out main interrupt register */
 void IntRegDump()
 {
-	printf("\n---------------------- Dump Interrupt Registers -----------------------\n");
+	LogPrintf("\n---------------------- Dump Interrupt Registers -----------------------\n");
 	
-	printf("SRCPND = 0x%x\n", SRCPND);
-	printf("INTMSK = 0x%x\n", INTMSK);
-	printf("INTPND = 0x%x\n", INTPND);
-	printf("INTOFFSET = 0x%x\n", INTOFFSET);
-	printf("EINTMASK = 0x%x\n", EINTMASK);
-	printf("EINTPEND = 0x%x\n", EINTPEND);
+	LogPrintf("SRCPND = 0x%x\n", SRCPND);
+	LogPrintf("INTMSK = 0x%x\n", INTMSK);
+	LogPrintf("INTPND = 0x%x\n", INTPND);
+	LogPrintf("INTOFFSET = 0x%x\n", INTOFFSET);
+	LogPrintf("EINTMASK = 0x%x\n", EINTMASK);
+	LogPrintf("EINTPEND = 0x%x\n", EINTPEND);
 	
-	printf("\n-----------------------------------------------------------------------\n");	
+	LogPrintf("\n-----------------------------------------------------------------------\n");	
 }
 
 /* Enable irq and mask all interrupt */
@@ -95,12 +95,12 @@ void HandleIrq()
 	intMaskVal = INTMSK;
 	INTMSK = 0xffffffff;
 	
-	printf("----- Process interrupt -----\n");
+	LogPrintf("----- Process interrupt -----\n");
 
 	intOffsetVal = (INTOFFSET);
 	
 #ifdef CONFIG_INTERRUPT_DEBUG	
-	printf("intOffsetVal = 0x%x\n", intOffsetVal);
+	LogPrintf("intOffsetVal = 0x%x\n", intOffsetVal);
 	IntRegDump();
 #endif
 

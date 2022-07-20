@@ -24,31 +24,31 @@ void MiscTest()
 		dbuf[i] = 0;
 	}
 	
-	printf("dbuf befor I2C read:\r\n");
+	LogPrintf("dbuf befor I2C read:\r\n");
 	
 	for(i = 0; i < 256;i++)
 	{
 		if(i % 8 == 0)
-			printf("\r\n");
+			LogPrintf("\r\n");
 
-		printf("%d\t",dbuf[i]);	
+		LogPrintf("%d\t",dbuf[i]);	
 	}	
 	
 	for(i = 0; i < 256; i++)
 		gI2cModeOps->I2cWriteByte(sbuf[i], i);
 		
-	printf("i2c reading, plese wait!\n");
+	LogPrintf("i2c reading, plese wait!\n");
 	
 	gI2cModeOps->I2cReadBytes(0, 256, dbuf);
 	
-	printf("dbuf after I2C read:\n");
+	LogPrintf("dbuf after I2C read:\n");
 	
 	for(i = 0; i < 256; i++)
 	{
 	   if(i % 8 == 0)
-		   printf("\r\n");
+		   LogPrintf("\r\n");
 		   
-	   printf("%d\t", dbuf[i]);	
+	   LogPrintf("%d\t", dbuf[i]);	
 	}
 }
 
@@ -79,28 +79,28 @@ MINI2440_STATUS TestI2c(int argc, char* const* argv)
 			{
 				case 'r':
 					address = (unsigned char)hex_string_to_int(argv[OptInd - 1]);					
-					printf("address = 0x%x\n", address);
+					LogPrintf("address = 0x%x\n", address);
 					
 					length = hex_string_to_int(argv[OptInd]);
-					printf("length = 0x%x\n", length);
+					LogPrintf("length = 0x%x\n", length);
 					
 					gI2cModeOps->I2cReadBytes(address, length, buf);
 					
-					printf("Read Content(0x%x):\n", address);
+					LogPrintf("Read Content(0x%x):\n", address);
 					
 					for(i = 0; i < length; i++)
 					{
-						printf("0x%x\n", buf[i]);
+						LogPrintf("0x%x\n", buf[i]);
 					}
 					
 					break;
 				
 				case 'w':
 					address = (unsigned char)hex_string_to_int(argv[OptInd - 1]);					
-					printf("address = 0x%x\n", address);
+					LogPrintf("address = 0x%x\n", address);
 					
 					data = (unsigned char)hex_string_to_int(argv[OptInd]);
-					printf("data = 0x%x\n", data);
+					LogPrintf("data = 0x%x\n", data);
 					
 					gI2cModeOps->I2cWriteByte(data, address );
 					
@@ -111,7 +111,7 @@ MINI2440_STATUS TestI2c(int argc, char* const* argv)
 					break;
 				
 				default:
-					printf("Invalid Parameter\n");
+					LogPrintf("Invalid Parameter\n");
 					break;
 			}
 		

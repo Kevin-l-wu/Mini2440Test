@@ -3,28 +3,28 @@
 
 void UndifinedInstruction()
 {
-	printf("UndifinedInstruction");
+	LogPrintf("UndifinedInstruction");
 	delay(1024 * 2024);
 	return ;
 }
 
 void SwiInterrupt()
 {
-	printf("SwiInterrupt\n");
+	LogPrintf("SwiInterrupt\n");
 	delay(1024 * 2024);
 	return ;
 }
 
 void PrefetchAbort()
 {
-	printf("PrefetchAbort\n");
+	LogPrintf("PrefetchAbort\n");
 	delay(1024 * 2024);
 	return ;
 }
 
 void DataAbort()
 {
-	printf("DataAbort\n");
+	LogPrintf("DataAbort\n");
 	delay(1024 * 2024);
 	return ;
 }

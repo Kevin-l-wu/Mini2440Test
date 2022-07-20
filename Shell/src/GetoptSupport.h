@@ -6,7 +6,7 @@
 #include "Common.h"
 #include "Stdio.h"
 
-#define warnx printf
+#define warnx LogPrintf
 
 #endif // GETOPT_SUPPORT_H
 

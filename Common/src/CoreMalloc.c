@@ -11,13 +11,13 @@ void* CoreMalloc(unsigned length)
 	
 	if(length > MALLOC_POOL_SIZE)
 	{
-		printf("Malloc length > MALLOC_POOL_SIZE, malloc fail\n");
+		LogPrintf("Malloc length > MALLOC_POOL_SIZE, malloc fail\n");
 		return ret;
 	}
 	
 	for(i = 0; i < MALLOC_MAX_SIZE; i++)
 	{
-		printf("Malloc: i = 0x%x\n", i);
+		LogPrintf("Malloc: i = 0x%x\n", i);
 		if(gMallocPool[i].isFreed == 0)
 		{
 			gMallocPool[i].isFreed = 1;
@@ -26,7 +26,7 @@ void* CoreMalloc(unsigned length)
 		}
 	}
 	
-//	printf("malloc(): ret = %x\n", ret);
+//	LogPrintf("malloc(): ret = %x\n", ret);
 	
 	return ret;
 }
@@ -42,13 +42,13 @@ void CoreFree(void* ptr)
 			if(gMallocPool[i].mallocPool == ptr)
 			{
 				gMallocPool[i].isFreed = 0;
-				printf("Free gMallocPoo[%d]\n", i);
+				LogPrintf("Free gMallocPoo[%d]\n", i);
 				break;
 			}
 		}
 	}
 	else
 	{
-		printf("Freed failed, NULL pointer input\n");
+		LogPrintf("Freed failed, NULL pointer input\n");
 	}
 }

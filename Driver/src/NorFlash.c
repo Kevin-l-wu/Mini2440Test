@@ -15,8 +15,8 @@ static void NorFlashReadWord(unsigned int address, unsigned short* data)
 
 static void NorFlashWriteWord(unsigned int address, unsigned short data)
 {
-//	printf("address = %x\n", address);
-//	printf("data = %x\n", data);
+//	LogPrintf("address = %x\n", address);
+//	LogPrintf("data = %x\n", data);
 	*FlashAddr16(address) = data;
 }
 
@@ -39,7 +39,7 @@ static void CheckToggle()
 
 void NorFlashInit()
 {
-	printf("Please take the trigger to nor flash\n");
+	LogPrintf("Please take the trigger to nor flash\n");
 }
 
 unsigned int NorFlashRead(unsigned int address, char* data, unsigned int length)
@@ -74,7 +74,7 @@ unsigned int NorFlashWrite(unsigned int address, char* data, unsigned int length
 
 void NorFlashChipErase()
 {
-	printf("NorFlashChipErase\n");
+	LogPrintf("NorFlashChipErase\n");
 	
 	NorFlashWriteWord((0x5555 << 1), 0xaa);
 	NorFlashWriteWord((0x2AAA << 1), 0x55);

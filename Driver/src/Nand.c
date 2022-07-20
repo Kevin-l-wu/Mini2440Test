@@ -46,8 +46,8 @@ static void ClearRB()
 {
 	delay(10);
 	NFSTAT |= 0x04U;
-	printf("ClearRB: NFCONT = 0x%x\n", NFCONT);
-	printf("ClearRB: NFSTAT = 0x%x\n", NFSTAT);
+	LogPrintf("ClearRB: NFCONT = 0x%x\n", NFCONT);
+	LogPrintf("ClearRB: NFSTAT = 0x%x\n", NFSTAT);
 }
 
 /*******************************************************************
@@ -181,9 +181,9 @@ static void NandRandomPageRead(unsigned pageAddr, unsigned columnAddr, unsigned*
 		realReadLenth = (BYTES_PER_PAGE + SPARE_BYTES_PER_PAGE) - columnAddr;
 	}
 	
-	printf("\n\nNandRandomPageRead pageAddress(hex) = 0x%x\n\n", pageAddr);
-	printf("\n\nNandRandomPageRead columnAddress(hex) = 0x%x\n\n", columnAddr);
-	printf("\n\nNandRandomPageRead realReadLenth(hex) = 0x%x\n\n", realReadLenth);
+	LogPrintf("\n\nNandRandomPageRead pageAddress(hex) = 0x%x\n\n", pageAddr);
+	LogPrintf("\n\nNandRandomPageRead columnAddress(hex) = 0x%x\n\n", columnAddr);
+	LogPrintf("\n\nNandRandomPageRead realReadLenth(hex) = 0x%x\n\n", realReadLenth);
 	
 	//Select NandFlash
 	SelectChip();
@@ -207,11 +207,11 @@ static void NandRandomPageRead(unsigned pageAddr, unsigned columnAddr, unsigned*
 	SendCommand(0x30);
 	
 	//Wait R/B
-//	printf("NandPageRead before WaitRB: NFSTAT = 0x%x\n", NFSTAT);
-//	printf("NandPageRead before WaitRB: NFCONT = 0x%x\n", NFCONT);
+//	LogPrintf("NandPageRead before WaitRB: NFSTAT = 0x%x\n", NFSTAT);
+//	LogPrintf("NandPageRead before WaitRB: NFCONT = 0x%x\n", NFCONT);
 	WaitRB();
-//	printf("NandPageRead After WaitRB: NFSTAT = 0x%x\n", NFSTAT);
-//	printf("NandPageRead After WaitRB: NFCONT = 0x%x\n", NFCONT);
+//	LogPrintf("NandPageRead After WaitRB: NFSTAT = 0x%x\n", NFSTAT);
+//	LogPrintf("NandPageRead After WaitRB: NFCONT = 0x%x\n", NFCONT);
 
 	//Send command 0x05
 	SendCommand(0x05);
@@ -306,9 +306,9 @@ static void NandRandomPageWrite(unsigned pageAddr, unsigned columnAddr, unsigned
 		realProgramLenth = (BYTES_PER_PAGE + SPARE_BYTES_PER_PAGE) - columnAddr;
 	}
 	
-	printf("\n\npageAddress = 0x%x\n\n", pageAddr);
-	printf("\n\ncolumnAddress = 0x%x\n\n", columnAddr);
-	printf("\n\nrealProgramLenth = 0x%x\n\n", realProgramLenth);
+	LogPrintf("\n\npageAddress = 0x%x\n\n", pageAddr);
+	LogPrintf("\n\ncolumnAddress = 0x%x\n\n", columnAddr);
+	LogPrintf("\n\nrealProgramLenth = 0x%x\n\n", realProgramLenth);
 	
 	//Select NandFlash
 	SelectChip();
@@ -452,7 +452,7 @@ static void NandReset()
  *******************************************************************/
 static void NandControllerInit()
 {
-//	printf("\n\nNandControllerInit\n\n");
+//	LogPrintf("\n\nNandControllerInit\n\n");
 
 	/*
 	1. NFCONF: 

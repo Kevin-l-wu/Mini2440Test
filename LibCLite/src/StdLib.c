@@ -5,7 +5,7 @@
 #include "Ctype.h"
 #include "Limits.h"
 
-#define LogError printf
+#define LogError LogPrintf
 
 /*
 #include EFI_PROTOCOL_CONSUMER(AppleShellInterpreter)
@@ -84,7 +84,7 @@ int system(const char *string) {
 }
 
 char *getenv(const char *name) {
-	//printf("%a(%a)", __FUNCTION__, name);
+	//LogPrintf("%a(%a)", __FUNCTION__, name);
 	// Todo: hook this up
 	return NULL;
 }
@@ -443,7 +443,7 @@ long strtol(const char *str, char **endptr, int base) {
 		}
 
 		if ((dval >= base) || (dval < 0)) {
-			printf("Digit %c is invalid in base %d", *str, base);
+			LogPrintf("Digit %c is invalid in base %d", *str, base);
 			break;
 		}
 
@@ -637,7 +637,7 @@ void __stack_chk_guard_setup()
  
 void __stack_chk_fail()
 { 
-	printf("Stack was smashed!");
+	LogPrintf("Stack was smashed!");
     EFI_DEADLOOP();
 }
 

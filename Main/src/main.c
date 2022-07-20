@@ -44,16 +44,16 @@ int gboot_main()
 	
 //	dma_init();
 	
-	printf("\r\n---------------- Mini2440 Diags ----------------\r\n");
-	printf(":-) ");
+	LogPrintf("\r\n---------------- Mini2440 Diags ----------------\r\n");
+	LogPrintf(":-) ");
 	
 	while(1)
 	{
 		memset(recvStr, 0, MAX_COMMAND_LENGTH * MAX_COMMAND_NUMBER); 	// Clear command line buffer
 		uart0_recv_string(recvStr);										// Receive command string from terminal
 		
-		printf(recvStr);
-		printf("\n");
+		LogPrintf(recvStr);
+		LogPrintf("\n");
 		
 		/* For generating gArgc and gArgv*/
 		PreGenerateArgv();
@@ -61,28 +61,28 @@ int gboot_main()
 		
 #ifdef DEBUG_ON
 		int index = 0;
-		printf("\ngArgc = %d\n", gArgc);
+		LogPrintf("\ngArgc = %d\n", gArgc);
 		
 		for(index = 0; index < gArgc; index++)
 		{
-			printf("gArgv[%d] = %s\n", index, gArgv[index]);
+			LogPrintf("gArgv[%d] = %s\n", index, gArgv[index]);
 		}
 
 		int i = 0;
 		
-		printf("gArgv = 0x%x\n", gArgv);
+		LogPrintf("gArgv = 0x%x\n", gArgv);
 		
 		for(i = 0; i < 32; i++)
 		{
-			printf("0x%x ", *(((char*)gArgv) + i));
+			LogPrintf("0x%x ", *(((char*)gArgv) + i));
 		}
 
-		printf("\n");	
+		LogPrintf("\n");	
 #endif
 //		handle_event_commond(recvStr, gArgc, gArgv);
 		HandleEventCommond(gArgc, gArgv);
 		
-		printf(":-) ");
+		LogPrintf(":-) ");
 	}
 
     return 0;    

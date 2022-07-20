@@ -10,17 +10,17 @@ void DumpAllOSTCB()
 	
 	while(OSTCBPtr != 0)
 	{
-		printf("------------------------------------------\n");
-		printf("OSTCBPtr->OSTCBPrio = 0x%x\n", OSTCBPtr->OSTCBPrio);
-		printf("OSTCBPtr->OSTCBStkPtr = 0x%x\n", OSTCBPtr->OSTCBStkPtr);
+		LogPrintf("------------------------------------------\n");
+		LogPrintf("OSTCBPtr->OSTCBPrio = 0x%x\n", OSTCBPtr->OSTCBPrio);
+		LogPrintf("OSTCBPtr->OSTCBStkPtr = 0x%x\n", OSTCBPtr->OSTCBStkPtr);
 		
 		for(i = 0; i < 17; i++)
 		{
-			printf("OSTCBPtr->OSTCBStkPtr[%d] = 0x%x\n", i, OSTCBPtr->OSTCBStkPtr[i]);
+			LogPrintf("OSTCBPtr->OSTCBStkPtr[%d] = 0x%x\n", i, OSTCBPtr->OSTCBStkPtr[i]);
 		}
 		
 		OSTCBPtr = OSTCBPtr->OSTCBNext;
-		printf("------------------------------------------\n");
+		LogPrintf("------------------------------------------\n");
 	}
 }
 
@@ -69,9 +69,9 @@ void OSCtxSw(void)
 	
 	//7. Get the new pointer and set to the PC register
 	
-	printf("OSCtxSw start----\n");
-	printf("OSPrioCur = %d\n", OSPrioCur);
-	printf("OSPrioHighRdy = %d\n", OSPrioHighRdy);
+	LogPrintf("OSCtxSw start----\n");
+	LogPrintf("OSPrioCur = %d\n", OSPrioCur);
+	LogPrintf("OSPrioHighRdy = %d\n", OSPrioHighRdy);
 	
 	__asm__ __volatile__(	
 	//1. Save the break pointer to task's stack.
@@ -120,9 +120,9 @@ void OSCtxSw(void)
 /*
 void OSIntCtxSw(void)
 {
-	printf("OSIntCtxSw start----\n");
-	printf("OSPrioCur = %d\n", OSPrioCur);
-	printf("OSPrioHighRdy = %d\n", OSPrioHighRdy);
+	LogPrintf("OSIntCtxSw start----\n");
+	LogPrintf("OSPrioCur = %d\n", OSPrioCur);
+	LogPrintf("OSPrioHighRdy = %d\n", OSPrioHighRdy);
 	
 	__asm__ __volatile__(	
 	//Call OSTaskSwHook();
@@ -196,7 +196,7 @@ void OSStartHighRdy(void)
 #define INTPND              (*(volatile unsigned int *)0x4A000010)
 void OSTickISR()
 {
-	printf("------OSTickISR-------\n");
+	LogPrintf("------OSTickISR-------\n");
 		
 //	DumpAllOSTCB();
 	

@@ -47,13 +47,13 @@ void PrintAscii(unsigned char* buff, int length, int length_per_line)
 		{
 			if(((i % length_per_line) == 0))
 			{
-				printf("\n0x%x: ", (buff + i));
+				LogPrintf("\n0x%x: ", (buff + i));
 			}
 			
-			printf("0x%C ", buff[i]);
+			LogPrintf("0x%C ", buff[i]);
 		}
 
-		printf("\n");
+		LogPrintf("\n");
 	}
 }
 

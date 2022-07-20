@@ -206,7 +206,7 @@ static int LcdDrawBox(int x, int y, int width, int height, U16 color)
 	
 	if((x <= width) && (width <= SCR_XSIZE) && (y <= height) && (height <= SCR_YSIZE))
 	{
-		printf("LcdDrawBox()\n");
+		LogPrintf("LcdDrawBox()\n");
 		
 		for(indexX = x; indexX < width; indexX++)
 		{
@@ -229,7 +229,7 @@ static int LcdDrawImage(int x, int y, int width, int height, U16* image)
 	
 	if((x <= width) && (width <= SCR_XSIZE) && (y <= height) && (height <= SCR_YSIZE))
 	{
-		printf("LcdDrawBox()\n");
+		LogPrintf("LcdDrawBox()\n");
 		
 		for(indexX = x; indexX < width; indexX++)
 		{
@@ -253,7 +253,7 @@ static int LcdDrawRect(int left, int bottom, int right, int top, U16 color)
 	
 	if((left <= right) && (right <= SCR_XSIZE) && (bottom <= top) && (top <= SCR_YSIZE))
 	{
-		printf("LcdDrawRect()\n");
+		LogPrintf("LcdDrawRect()\n");
 		
 		indexX = left;
 		
@@ -304,21 +304,21 @@ static void LcdClearScreen(U16 color)
 
 static void LcdDumpRegister()
 {
-	printf("Dump register:\n");
-	printf("rLCDCON1 = %x\n", rLCDCON1);
-	printf("rLCDCON2 = %x\n", rLCDCON2);
-	printf("rLCDCON3 = %x\n", rLCDCON3);
-	printf("rLCDCON4 = %x\n", rLCDCON4);
-	printf("rLCDCON5 = %x\n", rLCDCON5);
+	LogPrintf("Dump register:\n");
+	LogPrintf("rLCDCON1 = %x\n", rLCDCON1);
+	LogPrintf("rLCDCON2 = %x\n", rLCDCON2);
+	LogPrintf("rLCDCON3 = %x\n", rLCDCON3);
+	LogPrintf("rLCDCON4 = %x\n", rLCDCON4);
+	LogPrintf("rLCDCON5 = %x\n", rLCDCON5);
 	
-	printf("rLCDSADDR1 = %x\n", rLCDSADDR1);
-	printf("rLCDSADDR2 = %x\n", rLCDSADDR2);
-	printf("rLCDSADDR3 = %x\n", rLCDSADDR3);
+	LogPrintf("rLCDSADDR1 = %x\n", rLCDSADDR1);
+	LogPrintf("rLCDSADDR2 = %x\n", rLCDSADDR2);
+	LogPrintf("rLCDSADDR3 = %x\n", rLCDSADDR3);
 	
-	printf("rLCDINTMSK = %x\n", rLCDINTMSK);
+	LogPrintf("rLCDINTMSK = %x\n", rLCDINTMSK);
 	
-	printf("rTCONSEL = %x\n", rTCONSEL);
-	printf("rTPAL = %x\n", rTPAL);
+	LogPrintf("rTCONSEL = %x\n", rTCONSEL);
+	LogPrintf("rTPAL = %x\n", rTPAL);
 }
 
 static void LcdLineTest(int start_line, int end_line, U16 color)
@@ -327,12 +327,12 @@ static void LcdLineTest(int start_line, int end_line, U16 color)
 	int column_index = 0;
 	int color_index = 0;
 	
-	printf("\nlcd_line_test, start_line = %d, end_line = %d\n", start_line, end_line);
+	LogPrintf("\nlcd_line_test, start_line = %d, end_line = %d\n", start_line, end_line);
 	
-	printf("Color: %d\n\n", color);
+	LogPrintf("Color: %d\n\n", color);
 	for(line_index = start_line; line_index < end_line; line_index++)
 	{
-		printf("Fill line: %d\n\n", line_index);
+		LogPrintf("Fill line: %d\n\n", line_index);
 		LcdDrawLine(line_index, color);
 		
 		delay(1000);
@@ -346,12 +346,12 @@ static void LcdColumnTest(int start_column, int end_column, U16 color)
 	int column_index = 0;
 	int color_index = 0;
 	
-	printf("\nlcd_column_test, start_column = %d, end_column = %d\n", start_column, end_column);
+	LogPrintf("\nlcd_column_test, start_column = %d, end_column = %d\n", start_column, end_column);
 
-	printf("Color: %d\n\n", color);
+	LogPrintf("Color: %d\n\n", color);
 	for(column_index = start_column; column_index < end_column; column_index++)
 	{
-		printf("Fill column: %d\n\n", column_index);
+		LogPrintf("Fill column: %d\n\n", column_index);
 		LcdDrawColumn(column_index, color);
 		
 		delay(1000);
@@ -362,14 +362,14 @@ static void LcdColumnTest(int start_column, int end_column, U16 color)
 static void LcdDisplayChar(int column_number, int line_number, unsigned short* template)
 {
 	int x = 0, y = 0;
-//	printf("LcdDisplayChar()\n");
+//	LogPrintf("LcdDisplayChar()\n");
 	
 	for(y = line_number; y < (line_number + 16); y++)
 	{
 		for(x = column_number; x < (column_number + 8); x++)
 		{
 			#ifdef LCD_DEBUG
-			printf("x = %d, y = %d\n\n", x, y);
+			LogPrintf("x = %d, y = %d\n\n", x, y);
 			#endif
 			if(template[(x - column_number) + (y - line_number) * 8] != 0x00)
 				lcd_buffer[y][x] = template[(x - column_number) + (y - line_number) * 8];

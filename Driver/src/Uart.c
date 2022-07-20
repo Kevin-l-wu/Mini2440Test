@@ -1,7 +1,28 @@
-#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "GlobalDefine.h"
 #include "Common.h"
 #include "Uart.h"
+//#include <stdarg.h>
+
+
+
+
+
+typedef char * va_list;
+
+#define _INTSIZEOF(n)       ( (sizeof(n)+sizeof(int)-1) & ~(sizeof(int)-1) )
+
+#define va_start(ap,v)      ( ap = (va_list)&v + _INTSIZEOF(v) )
+
+#define va_arg(ap, type)    ( *(type *)((ap += _INTSIZEOF(type)) - _INTSIZEOF(type)) )
+
+#define va_end(ap)             ( ap = (va_list)0 )
+
+
+
+
+
 
 #define BRDIV_115200 0x1a
 
@@ -353,7 +374,7 @@ void print_char_to_hex(unsigned char char_data)
 	}
 }
 
-unsigned int printf_string(const char* string, ...)
+unsigned int LogPrintf_string(const char* string, ...)
 {
 	const char* pStringTour = string;
 	va_list arg_ptr;

@@ -28,7 +28,7 @@ MINI2440_STATUS TestGo(int argc, char* const* argv)
 	{
 		address = hex_string_to_int(argv[1]);
 		
-		printf("address = 0x%x\n", address);
+		LogPrintf("address = 0x%x\n", address);
 		
 		delay(1024);
 		

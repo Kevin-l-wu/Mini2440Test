@@ -17,11 +17,11 @@ static MINI2440_STATUS TestPax(int argc, char* const* argv)
 {
 	MINI2440_STATUS status = MINI2440_SUCCESS;
 	
-	printf("TestPax start-----------------------------\n");
+	LogPrintf("TestPax start-----------------------------\n");
 	
 //	PaxMain();
 	
-	printf("TestPax end-------------------------------\n");
+	LogPrintf("TestPax end-------------------------------\n");
 	
 	return status;
 }

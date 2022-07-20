@@ -11,17 +11,17 @@ TYPE_SRC := .c
 TYPE_OBJ := .o
 TYPE_DEP := .dep
 
-AR := arm-linux-ar
+AR := arm-none-eabi-ar
 ARFLAGS := crs
 
-LD := arm-linux-ld
+LD := arm-none-eabi-ld
 LFLAGS := -r
 
-CC := arm-linux-gcc
-CFLAGS := -I$(DIR_INC) -I$(DIR_COMMON_INC) -fno-builtin -march=armv4t
+CC := arm-none-eabi-gcc
+CFLAGS_SUB := -I$(DIR_INC) -I$(DIR_COMMON_INC) --specs=nosys.specs -fno-builtin -march=armv4t
 
 ifeq ($(DEBUG),true)
-CFLAGS += -g
+CFLAGS_SUB += -g
 endif
 
 MODULE := $(realpath .)
@@ -51,10 +51,10 @@ $(OUTPUT) : $(OBJS)
 	$(LD) $(LFLAGS) -o $@ $^
 	
 $(DIR_OUTPUT)/%$(TYPE_OBJ) : %$(TYPE_SRC)
-	$(CC) $(CFLAGS) -o $@ -c $(filter %$(TYPE_SRC), $^)
+	$(CC) $(CFLAGS_SUB) -o $@ -c $(filter %$(TYPE_SRC), $^)
 	
 	
 $(DIR_OUTPUT)/%$(TYPE_DEP) : %$(TYPE_SRC)
 	@echo "Creating $@ ..."
 	@set -e; \
-	$(CC) $(CFLAGS) -MM -E $(filter %$(TYPE_SRC), $^) | sed 's,\(.*\)\.o[ :]*,$(DIR_OUTPUT)/\1$(TYPE_OBJ) $@ : ,g' > $@
+	$(CC) $(CFLAGS_SUB) -MM -E $(filter %$(TYPE_SRC), $^) | sed 's,\(.*\)\.o[ :]*,$(DIR_OUTPUT)/\1$(TYPE_OBJ) $@ : ,g' > $@

@@ -26,7 +26,7 @@ MINI2440_STATUS TestLcd(int argc, char* const* argv)
 	{
 		gLcdOps->LcdModInit();
 		
-		printf("Fill all screen test\n");
+		LogPrintf("Fill all screen test\n");
 		
 		
 		gLcdOps->LcdDrawBox(0, 50, 100, 100, 0xf800);
@@ -57,7 +57,7 @@ MINI2440_STATUS TestLcd(int argc, char* const* argv)
 		
 		for(color_index = 0; color_index < 15; color_index++)
 		{
-			printf("Color: %d\n\n", 0x03 << color_index);
+			LogPrintf("Color: %d\n\n", 0x03 << color_index);
 			gLcdOps->LcdClearScreen(0x03 << color_index); 
 			
 			delay(500000);
@@ -65,7 +65,7 @@ MINI2440_STATUS TestLcd(int argc, char* const* argv)
 		
 		gLcdOps->LcdClearScreen(0x0000);
 
-		printf("\nlcd line test\n");
+		LogPrintf("\nlcd line test\n");
 		
 		gLcdOps->LcdLineTest(0, 80, 0x0f);
 		gLcdOps->LcdLineTest(80, 160, 0x0f << 4);
@@ -74,7 +74,7 @@ MINI2440_STATUS TestLcd(int argc, char* const* argv)
 		
 		gLcdOps->LcdClearScreen(0x0000);
 		
-		printf("\nlcd column test\n");
+		LogPrintf("\nlcd column test\n");
 		
 		gLcdOps->LcdColumnTest(0, 60, 0x0f);
 		gLcdOps->LcdColumnTest(60, 120, 0x0f << 4);
@@ -83,7 +83,7 @@ MINI2440_STATUS TestLcd(int argc, char* const* argv)
 		
 		gLcdOps->LcdClearScreen(0x0000);
 		
-		printf("\nDisplay template\n");
+		LogPrintf("\nDisplay template\n");
 		gLcdOps->LcdDisplayChar(50 + 16 * 0, 120 + 0, Global_ascii_template[0].ascii_template);
 		gLcdOps->LcdDisplayChar(50 + 16 * 1, 120 + 0, Global_ascii_template[1].ascii_template);
 		gLcdOps->LcdDisplayChar(50 + 16 * 2, 120 + 0, Global_ascii_template[2].ascii_template);
@@ -129,8 +129,8 @@ MINI2440_STATUS TestLcd(int argc, char* const* argv)
 		
 		gLcdOps->LcdDisplayChar(50 + 16 * 2, 120 + 64, *ascii_template);
 		
-		printf("ascii_template = 0x%x\n", ascii_template);
-		printf("*ascii_template = 0x%x\n", *ascii_template);
+		LogPrintf("ascii_template = 0x%x\n", ascii_template);
+		LogPrintf("*ascii_template = 0x%x\n", *ascii_template);
 		
 		delay(2000000);
 		

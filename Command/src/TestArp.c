@@ -25,7 +25,7 @@ MINI2440_STATUS TestArp(int argc, char* const* argv)
 			gDM9000ModOps->DM9000Init();
 		}
 
-		printf("TestArp start\n");
+		LogPrintf("TestArp start\n");
 		
 		delay(1024 * 1024);
 		
@@ -40,7 +40,7 @@ MINI2440_STATUS TestArp(int argc, char* const* argv)
 		delay(1024 * 1024);
 	}
 	
-	printf("TestArp end\n");
+	LogPrintf("TestArp end\n");
 	
 	return status;
 }

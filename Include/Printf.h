@@ -8,9 +8,9 @@
 
 int Printf(const char* fmt, ...);
 
-int sprintf_string(char* str, char* format, ... );
+int sLogPrintf_string(char* str, char* format, ... );
 
-int vsprintf_string (char * s, const char * format, va_list arg );
+int vsLogPrintf_string (char * s, const char * format, va_list arg );
 
 int atoi(const char * str);
 

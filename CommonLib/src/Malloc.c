@@ -25,7 +25,7 @@ void* malloc(int length)
 		}
 	}
 	
-//	printf_string("malloc(): ret = %x\n", ret);
+//	LogPrintf_string("malloc(): ret = %x\n", ret);
 	
 	return ret;
 }
@@ -41,7 +41,7 @@ void free(void* ptr)
 			if(gMallocPool[i].mallocPool == ptr)
 			{
 				gMallocPool[i].isFreed = 0;
-				printf_string("Free gMallocPoo[%d]\n", i);
+				LogPrintf_string("Free gMallocPoo[%d]\n", i);
 				break;
 			}
 		}

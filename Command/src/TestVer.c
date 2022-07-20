@@ -15,7 +15,7 @@ MINI2440_STATUS TestVer(int argc, char* const* argv)
 {
 	MINI2440_STATUS status = MINI2440_SUCCESS;
 	
-	printf("Ver: 20190612\n");
+	LogPrintf("Ver: 20190612\n");
 	
 	return status;
 }

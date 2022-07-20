@@ -14,7 +14,7 @@
 //#define CONFIG_DM9000_DEBUG
 
 #ifdef CONFIG_DM9000_DEBUG
-#define DM9000_DBG(fmt,args...) printf(fmt, ##args)
+#define DM9000_DBG(fmt,args...) LogPrintf(fmt, ##args)
 #else
 #define DM9000_DBG(fmt,args...)
 #endif
@@ -65,7 +65,7 @@ static void DM9000CSInit()
 
 static void DM9000IntInit()
 {
-	printf("DM9000IntInit\n");
+	LogPrintf("DM9000IntInit\n");
 	
 	/* DM9000 INT is EINT7 -> GPF[7] */
 	/*Configure GPF[7] is EINT7*/
@@ -93,7 +93,7 @@ static void DM9000IntInit()
 
 static void DM9000IntClear()
 {
-	printf("DM9000IntClear\n");
+	LogPrintf("DM9000IntClear\n");
 	
 	/* DM9000 INT is EINT7 -> GPF[7] */
 	/*Configure GPF[7] is EINT7*/
@@ -118,7 +118,7 @@ static void DM9000IntClear()
 static void DM9000Reset()
 {
 	u8 status = 0;
-	printf("DM9000Reset\n");
+	LogPrintf("DM9000Reset\n");
 	
 	/* Make all GPIO0 outputs, all others inputs */
 	DM9000_iow(DM9000_GPCR, GPCR_GPIO0_OUT);
@@ -144,7 +144,7 @@ static void DM9000Reset()
 	} while (DM9000_ior(DM9000_NCR) & 1);
 	
 	status = DM9000_ior(DM9000_ISR);
-	printf("status = %x\n", status);
+	LogPrintf("status = %x\n", status);
 }
 
 static int DM9000Probe()
@@ -164,15 +164,15 @@ static int DM9000Probe()
 
 	if (id_val == DM9000_ID)
 	{
-		printf("dm9000 probed, info as below:\n");
-		printf("dm9000 i/o: 0x%x \n", CONFIG_DM9000_BASE);
-		printf("dm9000 id: 0x%x \n", id_val);
-		printf("dm9000 chip_rev: 0x%x \n", chip_rev);
+		LogPrintf("dm9000 probed, info as below:\n");
+		LogPrintf("dm9000 i/o: 0x%x \n", CONFIG_DM9000_BASE);
+		LogPrintf("dm9000 id: 0x%x \n", id_val);
+		LogPrintf("dm9000 chip_rev: 0x%x \n", chip_rev);
 		return 0;
 	}
 	else
 	{
-		printf("dm9000  not probed\n");
+		LogPrintf("dm9000  not probed\n");
 		return -1;
 	}
 }
@@ -182,7 +182,7 @@ static int DM9000Init()
 	u32 i = 0;
 	u32 status = 0;
 	
-	printf("---------------- DM9000Init -----------------\n");
+	LogPrintf("---------------- DM9000Init -----------------\n");
 	/* 1. Select Dm9000 chip */
 	DM9000CSInit();
 		
@@ -226,7 +226,7 @@ static int DM9000Init()
 	
 	dm9000InitFlag = 1;	//Set the dm9000 init flag
 	
-	printf("---------------- DM9000Init complete -----------------\n");
+	LogPrintf("---------------- DM9000Init complete -----------------\n");
 	return 0;
 }
 
@@ -267,7 +267,7 @@ static void DM9000Halt()
 
 static void DM9000DeInit()
 {
-	printf("---------------- DM9000DeInit -----------------\n");
+	LogPrintf("---------------- DM9000DeInit -----------------\n");
 	
 	DM9000Halt();
 	
@@ -287,7 +287,7 @@ static void DM9000Send(u8* data, u32 length)
 	u32 status = 0;
 	u8 isr_status = 0;
 	
-//	printf("DM9000Send\n");
+//	LogPrintf("DM9000Send\n");
 	
 	DM9000_iow(DM9000_ISR, IMR_PTM);/* Clear Tx bit in ISR */
 	
@@ -379,13 +379,13 @@ static int DM9000Recv()
 		}
 		
 #ifdef CONFIG_DM9000_DEBUG	
-		printf("length = %x\n", length);
+		LogPrintf("length = %x\n", length);
 		
-		printf("----------- Dump receive data -----------\n");
+		LogPrintf("----------- Dump receive data -----------\n");
 		
 		PrintAscii(recvBuf, length, 40);
 		
-		printf("----------- Dump over -----------\n");
+		LogPrintf("----------- Dump over -----------\n");
 #endif	
 	}
 
@@ -401,7 +401,7 @@ void DM9000IntProcess()
 	u8 rsv_buffer[1500] = {0};
 	
 #ifdef CONFIG_DM9000_DEBUG		
-	printf("DM9000IntProcess\n");
+	LogPrintf("DM9000IntProcess\n");
 	dm9000_dump_register();
 #endif	
 	memset(rsv_buffer, 0, 1500);

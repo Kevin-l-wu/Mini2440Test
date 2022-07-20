@@ -31,7 +31,7 @@ MINI2440_STATUS TestTimer(int argc, char* const* argv)
 		while(!(pTimerModOps->IsTimeout(TIMER4)))
 		{
 			delay(1000);
-			printf("Timer4 start: Interrupt reg dump----\n");
+			LogPrintf("Timer4 start: Interrupt reg dump----\n");
 		}
 
 		pTimerModOps->TimerStartStop(TIMER4, 0);
@@ -40,9 +40,9 @@ MINI2440_STATUS TestTimer(int argc, char* const* argv)
 		
 		while(!(pTimerModOps->IsTimeout(TIMER4)))
 		{
-			printf("timer4IntCount = %d\n", *(pTimerModOps->pTimer4IntCount));
-			printf("timer4TimeOut = %d\n", *(pTimerModOps->pTimer4IntCount));
-			printf("timer4TimeOutFlag = %d\n", *(pTimerModOps->pTimer4IntCount));
+			LogPrintf("timer4IntCount = %d\n", *(pTimerModOps->pTimer4IntCount));
+			LogPrintf("timer4TimeOut = %d\n", *(pTimerModOps->pTimer4IntCount));
+			LogPrintf("timer4TimeOutFlag = %d\n", *(pTimerModOps->pTimer4IntCount));
 		}
 
 		pTimerModOps->TimerStartStop(TIMER4, 0);

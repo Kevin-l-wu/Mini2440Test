@@ -489,7 +489,7 @@ _getopt_internal (argc, argv, optstring, longopts, longind, long_only)
       if (ambig && !exact)
 	{
 	  if (opterr)
-	    fprintf_string (stderr, "%s: option `%s' is ambiguous\n",
+	    fLogPrintf_string (stderr, "%s: option `%s' is ambiguous\n",
 		     argv[0], argv[optind]);
 	  nextchar += my_strlen (nextchar);
 	  optind++;
@@ -512,12 +512,12 @@ _getopt_internal (argc, argv, optstring, longopts, longind, long_only)
 		    {
 		      if (argv[optind - 1][1] == '-')
 			/* --option */
-			fprintf_string (stderr,
+			fLogPrintf_string (stderr,
 				 "%s: option `--%s' doesn't allow an argument\n",
 				 argv[0], pfound->name);
 		      else
 			/* +option or -option */
-			fprintf_string (stderr,
+			fLogPrintf_string (stderr,
 			     "%s: option `%c%s' doesn't allow an argument\n",
 			     argv[0], argv[optind - 1][0], pfound->name);
 		    }
@@ -532,7 +532,7 @@ _getopt_internal (argc, argv, optstring, longopts, longind, long_only)
 	      else
 		{
 		  if (opterr)
-		    fprintf_string (stderr, "%s: option `%s' requires an argument\n",
+		    fLogPrintf_string (stderr, "%s: option `%s' requires an argument\n",
 			     argv[0], argv[optind - 1]);
 		  nextchar += my_strlen (nextchar);
 		  return optstring[0] == ':' ? ':' : BAD_OPTION;
@@ -562,11 +562,11 @@ _getopt_internal (argc, argv, optstring, longopts, longind, long_only)
 	    {
 	      if (argv[optind][1] == '-')
 		/* --option */
-		fprintf_string (stderr, "%s: unrecognized option `--%s'\n",
+		fLogPrintf_string (stderr, "%s: unrecognized option `--%s'\n",
 			 argv[0], nextchar);
 	      else
 		/* +option or -option */
-		fprintf_string (stderr, "%s: unrecognized option `%c%s'\n",
+		fLogPrintf_string (stderr, "%s: unrecognized option `%c%s'\n",
 			 argv[0], argv[optind][0], nextchar);
 	    }
 	  nextchar = (char *) "";
@@ -591,13 +591,13 @@ _getopt_internal (argc, argv, optstring, longopts, longind, long_only)
 	  {
 #if 0
 	    if (c < 040 || c >= 0177)
-	      fprintf_string (stderr, "%s: unrecognized option, character code 0%o\n",
+	      fLogPrintf_string (stderr, "%s: unrecognized option, character code 0%o\n",
 		       argv[0], c);
 	    else
-	      fprintf_string (stderr, "%s: unrecognized option `-%c'\n", argv[0], c);
+	      fLogPrintf_string (stderr, "%s: unrecognized option `-%c'\n", argv[0], c);
 #else
 	    /* 1003.2 specifies the format of this message.  */
-	    fprintf_string (stderr, "%s: illegal option -- %c\n", argv[0], c);
+	    fLogPrintf_string (stderr, "%s: illegal option -- %c\n", argv[0], c);
 #endif
 	  }
 	optopt = c;
@@ -632,11 +632,11 @@ _getopt_internal (argc, argv, optstring, longopts, longind, long_only)
 		if (opterr)
 		  {
 #if 0
-		    fprintf_string (stderr, "%s: option `-%c' requires an argument\n",
+		    fLogPrintf_string (stderr, "%s: option `-%c' requires an argument\n",
 			     argv[0], c);
 #else
 		    /* 1003.2 specifies the format of this message.  */
-		    fprintf_string (stderr, "%s: option requires an argument -- %c\n",
+		    fLogPrintf_string (stderr, "%s: option requires an argument -- %c\n",
 			     argv[0], c);
 #endif
 		  }
@@ -716,37 +716,37 @@ main (argc, argv)
 	case '8':
 	case '9':
 	  if (digit_optind != 0 && digit_optind != this_option_optind)
-	    printf_string ("digits occur in two different argv-elements.\n");
+	    LogPrintf_string ("digits occur in two different argv-elements.\n");
 	  digit_optind = this_option_optind;
-	  printf_string ("option %c\n", c);
+	  LogPrintf_string ("option %c\n", c);
 	  break;
 
 	case 'a':
-	  printf_string ("option a\n");
+	  LogPrintf_string ("option a\n");
 	  break;
 
 	case 'b':
-	  printf_string ("option b\n");
+	  LogPrintf_string ("option b\n");
 	  break;
 
 	case 'c':
-	  printf_string ("option c with value `%s'\n", optarg);
+	  LogPrintf_string ("option c with value `%s'\n", optarg);
 	  break;
 
 	case BAD_OPTION:
 	  break;
 
 	default:
-	  printf_string ("?? getopt returned character code 0%o ??\n", c);
+	  LogPrintf_string ("?? getopt returned character code 0%o ??\n", c);
 	}
     }
 
   if (optind < argc)
     {
-      printf_string ("non-option ARGV-elements: ");
+      LogPrintf_string ("non-option ARGV-elements: ");
       while (optind < argc)
-	printf_string ("%s ", argv[optind++]);
-      printf_string ("\n");
+	LogPrintf_string ("%s ", argv[optind++]);
+      LogPrintf_string ("\n");
     }
 
   exit (0);

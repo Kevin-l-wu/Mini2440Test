@@ -14,7 +14,7 @@ MINI2440_STATUS TestBootm(int argc, char* const* argv)
 	if(argc == 2)
 	{
 		gLoadAddr = hex_string_to_int(argv[1]);
-		printf("LoadAddr = 0x%x\n", gLoadAddr);
+		LogPrintf("LoadAddr = 0x%x\n", gLoadAddr);
 		
 		DisableMasterIrq();
 		

@@ -44,7 +44,7 @@ MINI2440_STATUS TestNor(int argc, char* const* argv)
 			switch(option)
 			{
 				case 'e':
-					printf("Erase chip\n");
+					LogPrintf("Erase chip\n");
 					gNorModOps->NorFlashChipErase();
 					break;
 				case 'w':
@@ -52,12 +52,12 @@ MINI2440_STATUS TestNor(int argc, char* const* argv)
 					norAddr = hex_string_to_int(argv[OptInd]);
 					length = hex_string_to_int(argv[OptInd + 1]);
 					
-					printf("memAddr = %x\n", memAddr);
-					printf("norAddr = %x\n", norAddr);
-					printf("length = %x\n", length);
+					LogPrintf("memAddr = %x\n", memAddr);
+					LogPrintf("norAddr = %x\n", norAddr);
+					LogPrintf("length = %x\n", length);
 					if((memAddr % 2 != 0) || (norAddr % 2 != 0) || (length % 2 != 0))
 					{
-						printf("Not support non aligned address or length\n");
+						LogPrintf("Not support non aligned address or length\n");
 						return -1;
 					}
 					
@@ -70,12 +70,12 @@ MINI2440_STATUS TestNor(int argc, char* const* argv)
 					norAddr = hex_string_to_int(argv[OptInd]);
 					length = hex_string_to_int(argv[OptInd + 1]);
 					
-					printf("memAddr = %x\n", memAddr);
-					printf("norAddr = %x\n", norAddr);
-					printf("length = %x\n", length);
+					LogPrintf("memAddr = %x\n", memAddr);
+					LogPrintf("norAddr = %x\n", norAddr);
+					LogPrintf("length = %x\n", length);
 					if((memAddr % 2 != 0) || (norAddr % 2 != 0) || (length % 2 != 0))
 					{
-						printf("Not support non aligned address or length\n");
+						LogPrintf("Not support non aligned address or length\n");
 						return -1;
 					}
 					
@@ -89,7 +89,7 @@ MINI2440_STATUS TestNor(int argc, char* const* argv)
 					PrintAscii(readData, 0x60, 16);
 					break;
 				default:
-					printf("Invalid Parameter\n");
+					LogPrintf("Invalid Parameter\n");
 					break;
 			}	
 		}

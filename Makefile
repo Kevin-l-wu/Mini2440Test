@@ -2,29 +2,30 @@
 .PHONY : all compile link clean rebuild
 
 MODULES := Init \
-           Common \
-		   SimpleFile \
-		   LibCLite \
-           Core \
-		   Main \
-           Driver \
-		   Net \
-		   Test \
-		   Protocol \
-		   Command \
-		   UCos \
-		   Xui \
-		   Shell
+	Common \
+	SimpleFile \
+	LibCLite \
+	Core \
+	Main \
+	Driver \
+	Net \
+	Test \
+	Protocol \
+	Command \
+	UCOS\
+	Xui \
+	Shell
 		   
 MKDIR := mkdir
 RM := rm -fr
 
-CC := arm-linux-gcc
-LD := arm-linux-ld
-LFLAGS := -Tgboot.lds -L /usr/local/arm/4.3.2/lib/gcc/arm-none-linux-gnueabi/4.3.2/armv4t -lgcc
+CC := arm-none-eabi-gcc
+LD := arm-none-eabi-ld
+LFLAGS := -Tgboot.lds -L /Applications/ARM/lib/gcc/arm-none-eabi/10.3.1 -lgcc
+#LFLAGS := -Tgboot.lds -L /usr/local/arm/4.3.2/lib/gcc/arm-none-linux-gnueabi/4.3.2/armv4t -lgcc
 #LFLAGS := -Tgboot.lds -L /usr/local/5.4.0/lib/gcc/arm-none-linux-gnueabi/5.4.0/ -lgcc
 
-OBJCOPY := arm-linux-objcopy
+OBJCOPY := arm-none-eabi-objcopy
 OFLAG := -O binary
 
 DIR_PROJECT := $(realpath .)
@@ -47,7 +48,7 @@ DEBUG := true
 
 all : compile $(OUTPUT) $(OUTPUT_BIN)
 	@echo "Success! Target ==> $(OUTPUT)"
-
+	:
 compile : $(DIR_BUILD) $(DIR_BUILD_SUB)
 	@echo "Begin to compile ..."
 	@set -e; \

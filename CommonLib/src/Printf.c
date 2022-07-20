@@ -10,7 +10,7 @@ int Printf(const char* fmt, ...)
 	va_list args;
 	va_start(args, fmt);
 	
-	length = vsprintf_string((char*)gOutputBuf, fmt, args);
+	length = vsLogPrintf_string((char*)gOutputBuf, fmt, args);
 	
 	va_end(args);
 	
@@ -23,12 +23,12 @@ int Printf(const char* fmt, ...)
 */	
 }
 
-int sprintf_string(char* str, char* format, ... )
+int sLogPrintf_string(char* str, char* format, ... )
 {
 	
 }
 
-int vsprintf_string (char * s, const char * format, va_list arg )
+int vsLogPrintf_string (char * s, const char * format, va_list arg )
 {
 	
 }

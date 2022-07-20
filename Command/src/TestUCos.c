@@ -17,11 +17,11 @@ static MINI2440_STATUS TestUCos(int argc, char* const* argv)
 {
 	MINI2440_STATUS status = MINI2440_SUCCESS;
 	
-	printf("TestUCos start-----------------------------\n");
+	LogPrintf("TestUCos start-----------------------------\n");
 	
-	UCosMain();
+//	UCosMain();
 	
-	printf("TestUCos end-------------------------------\n");
+	LogPrintf("TestUCos end-------------------------------\n");
 	
 	return status;
 }

@@ -140,7 +140,7 @@ void print_unsinged_data(unsigned unsigned_data, PRINT_OUT_TYPE print_out_type);
 void print_int_data(int int_data, PRINT_OUT_TYPE print_out_type);
 
 unsigned int print_string(const char* string);
-unsigned int printf_string(const char* string, ...);
+unsigned int LogPrintf_string(const char* string, ...);
 void AsciiPrintMarker(const char* format, void* marker);
 
 int Uart0Init(UART_INDEX uart);

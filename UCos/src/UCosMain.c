@@ -30,15 +30,15 @@ OS_STK yourTaskStk[TASK_STK_SIZE] = {0};
 void DumpOSTCB(OS_TCB* pTCBCurr)
 {
 	int i = 0;
-	printf("------DumpOSTCB----\n");
+	LogPrintf("------DumpOSTCB----\n");
 	if(pTCBCurr != NULL)
 	{
-		printf("pTCBCurr->OSTCBPrio = 0x%x\n", pTCBCurr->OSTCBPrio);
-		printf("pTCBCurr->OSTCBStkPtr = 0x%x\n", pTCBCurr->OSTCBStkPtr);
+		LogPrintf("pTCBCurr->OSTCBPrio = 0x%x\n", pTCBCurr->OSTCBPrio);
+		LogPrintf("pTCBCurr->OSTCBStkPtr = 0x%x\n", pTCBCurr->OSTCBStkPtr);
 		
 		for(i = 0; i < 16; i++)
 		{
-			printf("pTCBCurr->OSTCBStkPtr[%d] = 0x%x\n", i, pTCBCurr->OSTCBStkPtr[i]);
+			LogPrintf("pTCBCurr->OSTCBStkPtr[%d] = 0x%x\n", i, pTCBCurr->OSTCBStkPtr[i]);
 		}	
 	}
 }
@@ -47,7 +47,7 @@ void Func(void* pData)
 {
 	if(pData != NULL)
 	{
-		printf("%s call Func\n", (char*)pData);
+		LogPrintf("%s call Func\n", (char*)pData);
 	}
 }
 
@@ -59,13 +59,13 @@ void MyTask(void* pData)
 	
 	pData = pData;
 	
-//	printf("-------MyTask()-------\n");
+//	LogPrintf("-------MyTask()-------\n");
 	
 	for(;;)
 	{	
 		ss = OSQPend(strQueue, 0, &err);
 		
-		printf("%s\n", ss);
+		LogPrintf("%s\n", ss);
 	
 		OSTimeDlyHMSM(0, 0, 0, 100);
 	}
@@ -79,13 +79,13 @@ void YourTask(void* pData)
 	
 	pData = pData;
 	
-//	printf("-------YourTask()-------\n");
+//	LogPrintf("-------YourTask()-------\n");
 	
 	for(;;)
 	{
 		ss = OSQPend(strQueue, 0, &err);
 		
-		printf("%s\n", ss);
+		LogPrintf("%s\n", ss);
 	
 		OSTimeDlyHMSM(0, 0, 0, 100);
 	}
@@ -99,7 +99,7 @@ void TaskStart(void* pData)
 	
 	pData = pData;
 	
-//	printf("-------TaskStart()-------\n");
+//	LogPrintf("-------TaskStart()-------\n");
 	
 	OSTaskCreate(MyTask, 0, &myTaskStk[TASK_STK_SIZE - 1], 6);
 	OSTaskCreate(YourTask, 0, &yourTaskStk[TASK_STK_SIZE - 1], 7);
@@ -111,7 +111,7 @@ void TaskStart(void* pData)
 	{
 		OSTimes = OSTimeGet();
 		
-		printf("OSTimes = 0x%x\n", OSTimes);
+		LogPrintf("OSTimes = 0x%x\n", OSTimes);
 		if( (10 < OSTimes) && (OSTimes < 50))
 		{
 			s2 = "The value of OSTimes is between 10 and 50";
@@ -127,7 +127,7 @@ void TaskStart(void* pData)
 			OSQPostFront(strQueue, s4);
 		}
 		
-		printf("TaskStart is running\n");
+		LogPrintf("TaskStart is running\n");
 		OSTimeDly(1);
 	}
 }
@@ -155,18 +155,18 @@ void UCosMain()
 	
 	
 	
-	printf("-------OSInit()-------\n");
+	LogPrintf("-------OSInit()-------\n");
 	
 	
 	OSInit();
 	
 	strQueue = OSQCreate(&msgGrp[0], MSG_LEN);
 	
-	printf("strQueue->OSEventType = 0x%x\n", strQueue->OSEventType);
+	LogPrintf("strQueue->OSEventType = 0x%x\n", strQueue->OSEventType);
 	
 	OSTaskCreate(TaskStart, 0, &taskStart[TASK_STK_SIZE - 1], 5);
 	
-	printf("-------OSStart()-------\n");
+	LogPrintf("-------OSStart()-------\n");
 	
 	StartTimer();
 	

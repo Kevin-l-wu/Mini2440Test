@@ -442,7 +442,7 @@ int putchar(int c) {
 	//TRACER();
 	char s[2] = {c, 0};
 //	AsciiPrint(s);
-	printf(s);
+	LogPrintf(s);
 	return c;
 }
 

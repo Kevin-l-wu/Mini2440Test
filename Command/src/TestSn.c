@@ -15,7 +15,7 @@ MINI2440_STATUS TestSn(int argc, char* const* argv)
 {
 	MINI2440_STATUS status = MINI2440_SUCCESS;
 	
-	printf("SN: C39HGFG00FF\n");
+	LogPrintf("SN: C39HGFG00FF\n");
 	
 	return status;
 }

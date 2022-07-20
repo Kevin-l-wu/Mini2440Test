@@ -44,8 +44,8 @@ void setup_cmdline_tag()
 	
 	strcpy(cur_tag_ptr->u.cmdline.cmdline, (char*)cmdline);
 	
-	printf("(cur_tag_ptr->u.cmdline.cmdline = 0x%x\n", cur_tag_ptr->u.cmdline.cmdline);
-	printf("(cur_tag_ptr->u.cmdline.cmdline = %s\n", cur_tag_ptr->u.cmdline.cmdline);
+	LogPrintf("(cur_tag_ptr->u.cmdline.cmdline = 0x%x\n", cur_tag_ptr->u.cmdline.cmdline);
+	LogPrintf("(cur_tag_ptr->u.cmdline.cmdline = %s\n", cur_tag_ptr->u.cmdline.cmdline);
 	
 	cur_tag_ptr = tag_next(cur_tag_ptr);
 }
@@ -76,9 +76,9 @@ void boot_linux()
 	setup_end_tag();	
 	
 	/* 3. Start boot */
-	printf("Ready to boot kernel...\n");
-	printf("SDRAM_TAG_START = %x\n", SDRAM_TAG_START);
-	printf("the_kernel = %x\n", the_kernel);
+	LogPrintf("Ready to boot kernel...\n");
+	LogPrintf("SDRAM_TAG_START = %x\n", SDRAM_TAG_START);
+	LogPrintf("the_kernel = %x\n", the_kernel);
 	
 	the_kernel(0, 1999, SDRAM_TAG_START);
 }

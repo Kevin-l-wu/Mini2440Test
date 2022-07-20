@@ -52,13 +52,13 @@ MINI2440_STATUS TestTftp(int argc, char* const* argv)
 			{
 				if(!(index++ % 50))
 				{
-					printf("#");
+					LogPrintf("#");
 				}
 				
 				gDM9000ModOps->DM9000Recv();
 			}
 		
-	//		printf("The data received:\n");
+	//		LogPrintf("The data received:\n");
 	//		TftpPrintData();
 			delay(1024 * 1024);
 			

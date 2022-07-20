@@ -14,7 +14,7 @@ Function Description:	Led function test
 ************************************************************************/
 MINI2440_STATUS TestLed(int argc, char* const* argv)
 {
-	printf("In function led_test\n");
+	LogPrintf("In function led_test\n");
 	MINI2440_STATUS status = MINI2440_SUCCESS;
 	int index = 0;
 	
@@ -24,7 +24,7 @@ MINI2440_STATUS TestLed(int argc, char* const* argv)
 	
 	for(index = 0; index < LED_MAX_NUMBER; index++)
 	{
-		printf("Logs\n");
+		LogPrintf("Logs\n");
 		ledOps->LightLed(index);
 		delay(500000);
 		ledOps->PutOutLed(index);
@@ -33,7 +33,7 @@ MINI2440_STATUS TestLed(int argc, char* const* argv)
 /*	
 	for(index = 0; index < LED_MAX_NUMBER; index++)
 	{
-		printf("Logs\n");
+		LogPrintf("Logs\n");
 		LightLed(index);
 		delay(500000);
 		PutOutLed(index);
